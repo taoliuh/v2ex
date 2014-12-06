@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">V2ex</string>
+    <string name="authority">com.sonaive.v2ex</string>
 </resources>
