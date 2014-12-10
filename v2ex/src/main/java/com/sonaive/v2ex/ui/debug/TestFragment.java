@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.ui.widgets.CollectionView;
@@ -42,8 +43,7 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
  */
-public class TestFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor>, CollectionViewCallbacks {
+public class TestFragment extends Fragment implements CollectionViewCallbacks {
 
     private static final String TAG = makeLogTag(TestFragment.class);
 
@@ -86,7 +86,8 @@ public class TestFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
         mImageLoader = new ImageLoader(getActivity(), android.R.color.transparent);
         // Initializes the CursorLoader
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, new PicasaImagesLoader());
+        getLoaderManager().initLoader(1, null, new AccountLoader());
 
         /*
          * Creates a new Intent to send to the download IntentService. The Intent contains the
@@ -137,29 +138,63 @@ public class TestFragment extends Fragment implements
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-                getActivity(),                                     // Context
-                PicasaImages.CONTENT_URI,                          // Table to query
-                PROJECTION,                                        // Projection to return
-                null,                                              // No selection clause
-                null,                                              // No selection arguments
-                null                                               // Default sort order
-        );
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursor = data;
-        if (mCursor != null) {
-            updateCollectionView();
+    class PicasaImagesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(
+                    getActivity(),                                     // Context
+                    PicasaImages.CONTENT_URI,                          // Table to query
+                    PROJECTION,                                        // Projection to return
+                    null,                                              // No selection clause
+                    null,                                              // No selection arguments
+                    null                                               // Default sort order
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            mCursor = data;
+            if (mCursor != null) {
+                updateCollectionView();
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
         }
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    class AccountLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(
+                    getActivity(),
+                    Members.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            data.moveToPosition(-1);
+            if (data.moveToNext()) {
+                String id = data.getString(data.getColumnIndex(Members.MEMBER_ID));
+                String userName = data.getString(data.getColumnIndex(Members.MEMBER_USERNAME));
+                String avatarNormal = data.getString(data.getColumnIndex(Members.MEMBER_AVATAR_NORMAL));
+                Toast.makeText(getActivity(), "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
     }
 
     public boolean canCollectionViewScrollUp() {

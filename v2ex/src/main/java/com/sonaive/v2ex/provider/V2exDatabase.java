@@ -73,6 +73,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
                 + MemberColumns.MEMBER_AVATAR_NORMAL + " TEXT,"
                 + MemberColumns.MEMBER_AVATAR_LARGE + " TEXT,"
                 + MemberColumns.MEMBER_CREATED + " TEXT NOT NULL,"
+                + MemberColumns.MEMBER_IMPORT_HASHCODE + " TEXT NOT NULL,"
                 + "UNIQUE (" + MemberColumns.MEMBER_ID + ") ON CONFLICT REPLACE)");
 
         // Defines an SQLite statement that builds the Picasa picture URL table

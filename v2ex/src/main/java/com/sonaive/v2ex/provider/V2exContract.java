@@ -63,6 +63,7 @@ public class V2exContract {
         String MEMBER_AVATAR_NORMAL = "member_avatar_normal";
         String MEMBER_AVATAR_LARGE = "member_avatar_large";
         String MEMBER_CREATED = "member_created";
+        String MEMBER_IMPORT_HASHCODE = "member_import_hashcode";
     }
 
     interface PicasaImageColumns {
@@ -83,6 +84,10 @@ public class V2exContract {
     private static final String PATH_MEMBERS = "members";
     private static final String PATH_PICASA_IMAGES = "picasas";
     private static final String PATH_MODI_DATES = "dates";
+
+    public static final String[] TOP_LEVEL_PATHS = {
+            PATH_MEMBERS
+    };
 
     public static class Members implements MemberColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
@@ -122,6 +127,11 @@ public class V2exContract {
 
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.modidates";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.modidates";
+    }
+
+    public static Uri addCallerIsSyncAdapterParameter(Uri uri) {
+        return uri.buildUpon().appendQueryParameter(
+                ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
     }
 
     public static boolean hasCallerIsSyncAdapterParameter(Uri uri) {

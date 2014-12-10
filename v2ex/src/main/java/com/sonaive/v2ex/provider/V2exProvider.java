@@ -17,8 +17,11 @@
 package com.sonaive.v2ex.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,6 +33,7 @@ import android.util.Log;
 import com.sonaive.v2ex.provider.V2exContract.*;
 import com.sonaive.v2ex.util.SelectionBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.sonaive.v2ex.provider.V2exDatabase.*;
@@ -149,7 +153,7 @@ public class V2exProvider extends ContentProvider {
 
         switch (match) {
             // For the modification date table
-            case DATE:
+            case DATE: {
 
                 // Inserts the row into the table and returns the new row's _id value
                 long id = db.insert(
@@ -165,14 +169,33 @@ public class V2exProvider extends ContentProvider {
                 } else {
                     throw new SQLiteException("Insert error:" + uri);
                 }
+            }
+            case MEMBERS: {
+                db.insertOrThrow(Tables.MEMBERS, null, values);
+                notifyChange(uri);
+                return Members.buildMemberUri(values.getAsString(Members.MEMBER_ID));
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        LOGV(TAG, "delete(uri=" + uri);
+        if (uri == V2exContract.BASE_CONTENT_URI) {
+            // Handle whole database deletes (e.g. when signing out)
+            deleteDatabase();
+            notifyChange(uri);
+            return 1;
+        }
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final SelectionBuilder builder = buildSimpleSelection(uri);
+        int retVal = builder.where(selection, selectionArgs).delete(db);
+        notifyChange(uri);
+        return retVal;
     }
 
     @Override
@@ -182,9 +205,17 @@ public class V2exProvider extends ContentProvider {
 
         // Decodes the content URI and choose which insert to use
         switch (match) {
+            default: {
+                LOGV(TAG, "update(uri=" + uri + ", values=" + values.toString());
+
+                final SelectionBuilder builder = buildSimpleSelection(uri);
+                int retVal = builder.where(selection, selectionArgs).update(db, values);
+                notifyChange(uri);
+                return retVal;
+            }
 
             // A picture URL content URI
-            case PICASAS:
+            case PICASAS: {
 
                 // Updates the table
                 int rows = db.update(
@@ -200,11 +231,11 @@ public class V2exProvider extends ContentProvider {
                 } else {
                     throw new SQLiteException("Update error:" + uri);
                 }
-
-            case DATE:
+            }
+            case DATE: {
                 throw new UnsupportedOperationException("Update: Invalid URI: " + uri);
+            }
         }
-        return 0;
     }
 
     /**
@@ -270,6 +301,23 @@ public class V2exProvider extends ContentProvider {
         }
     }
 
+    @Override
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            final int numOperations = operations.size();
+            final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+            for (int i = 0; i < numOperations; i++) {
+                results[i] = operations.get(i).apply(this, results, i);
+            }
+            db.setTransactionSuccessful();
+            return results;
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     private void notifyChange(Uri uri) {
         // We only notify changes if the caller is not the sync adapter.
         // The sync adapter has the responsibility of notifying changes (it can do so
@@ -278,6 +326,24 @@ public class V2exProvider extends ContentProvider {
         if (!V2exContract.hasCallerIsSyncAdapterParameter(uri)) {
             Context context = getContext();
             context.getContentResolver().notifyChange(uri, null);
+        }
+    }
+
+    /**
+     * Build a simple {@link SelectionBuilder} to match the requested
+     * {@link Uri}. This is usually enough to support {@link #insert},
+     * {@link #update}, and {@link #delete} operations.
+     */
+    private SelectionBuilder buildSimpleSelection(Uri uri) {
+        final SelectionBuilder builder = new SelectionBuilder();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case MEMBERS: {
+                return builder.table(Tables.MEMBERS);
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
         }
     }
 

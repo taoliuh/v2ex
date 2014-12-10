@@ -18,6 +18,7 @@ package com.sonaive.v2ex.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -30,6 +31,8 @@ import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.sonaive.v2ex.Api;
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.V2exDataHandler;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
@@ -44,6 +47,7 @@ import com.turbomanage.httpclient.ParameterMap;
 import com.turbomanage.httpclient.android.AndroidHttpClient;
 
 import org.apache.http.Header;
+import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -180,6 +184,8 @@ public class LoginHelper {
                         if (status != null && status.equals("found")) {
                             result.addProperty("result", "ok");
                             LOGD(TAG, "userInfo: " + responseBody);
+                            V2exDataHandler dataHandler = new V2exDataHandler(mAppContext);
+                            dataHandler.applyData(new String[]{responseBody}, V2exDataHandler.DATA_KEY_MEMBERS);
                             if (mCallbacksRef != null) {
                                 mCallbacksRef.get().onIdentityCheckedSuccess(result);
                             }

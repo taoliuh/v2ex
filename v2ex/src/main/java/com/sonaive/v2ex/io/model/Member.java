@@ -16,6 +16,8 @@
 
 package com.sonaive.v2ex.io.model;
 
+import com.sonaive.v2ex.util.HashUtils;
+
 /**
  * Created by liutao on 12/9/14.
  */
@@ -35,4 +37,24 @@ public class Member {
     public String avatar_normal;
     public String avatar_large;
     public long created;
+
+    public String getImportHashcode() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("id").append(id)
+                .append("url").append(url == null ? "" : url)
+                .append("username").append(username == null ? "" : username)
+                .append("website").append(website == null ? "" : website)
+                .append("twitter").append(twitter == null ? "" : twitter)
+                .append("psn").append(psn == null ? "" : psn)
+                .append("github").append(github == null ? "" : github)
+                .append("btc").append(btc == null ? "" : btc)
+                .append("location").append(location == null ? "" : location)
+                .append("tagline").append(tagline == null ? "" : tagline)
+                .append("bio").append(bio == null ? "" : bio)
+                .append("avatar_mini").append(avatar_mini == null ? "" : avatar_mini)
+                .append("avatar_normal").append(avatar_normal == null ? "" : avatar_normal)
+                .append("avatar_large").append(avatar_large == null ? "" : avatar_large)
+                .append("created").append(created);
+        return HashUtils.computeWeakHash(sb.toString());
+    }
 }
