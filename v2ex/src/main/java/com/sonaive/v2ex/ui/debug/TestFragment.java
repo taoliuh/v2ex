@@ -35,21 +35,22 @@ import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.ui.widgets.CollectionView;
 import com.sonaive.v2ex.ui.widgets.CollectionViewCallbacks;
 import com.sonaive.v2ex.util.ImageLoader;
+import com.sonaive.v2ex.provider.V2exContract.*;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
  */
-public class NavDrawerTestFragment extends Fragment implements
+public class TestFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>, CollectionViewCallbacks {
 
-    private static final String TAG = makeLogTag(NavDrawerTestFragment.class);
+    private static final String TAG = makeLogTag(TestFragment.class);
 
     private static final String[] PROJECTION = {
-        DataProviderContract._ID,
-        DataProviderContract.IMAGE_THUMBURL_COLUMN,
-        DataProviderContract.IMAGE_URL_COLUMN
+        PicasaImages._ID,
+        PicasaImages.PICASA_THUMB_URL,
+        PicasaImages.PICASA_IMAGE_URL
     };
 
     // Constants that define the order of columns in the returned cursor
@@ -140,7 +141,7 @@ public class NavDrawerTestFragment extends Fragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
                 getActivity(),                                     // Context
-                DataProviderContract.PICTUREURL_TABLE_CONTENTURI,  // Table to query
+                PicasaImages.CONTENT_URI,                          // Table to query
                 PROJECTION,                                        // Projection to return
                 null,                                              // No selection clause
                 null,                                              // No selection arguments

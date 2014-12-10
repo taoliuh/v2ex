@@ -17,29 +17,110 @@
 package com.sonaive.v2ex.provider;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
+import com.sonaive.v2ex.provider.V2exContract.*;
+
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
+import static com.sonaive.v2ex.util.LogUtils.LOGW;
+import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
  * Created by liutao on 12/6/14.
  */
 public class V2exDatabase extends SQLiteOpenHelper {
-    public V2exDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+
+    private static final String TAG = makeLogTag(V2exDatabase.class);
+
+    private static final String DATABASE_NAME = "v2ex.db";
+
+    // NOTE: carefully update onUpgrade() when bumping database versions to make
+    // sure user data is saved.
+
+    private static final int VER_2014_RELEASE_A = 1; // app version 1.0
+    private static final int CUR_DATABASE_VERSION = VER_2014_RELEASE_A;
+
+    private final Context mContext;
+
+    interface Tables {
+        String MEMBERS = "members";
+        String PICASA_IMAGES = "picasa_images";
+        String MODI_DATE = "modi_date";
     }
 
-    public V2exDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
-        super(context, name, factory, version, errorHandler);
+    public V2exDatabase(Context context) {
+        super(context, DATABASE_NAME, null, CUR_DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + Tables.MEMBERS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + MemberColumns.MEMBER_ID + " TEXT NOT NULL,"
+                + MemberColumns.MEMBER_URL + " TEXT NOT NULL,"
+                + MemberColumns.MEMBER_USERNAME + " TEXT NOT NULL,"
+                + MemberColumns.MEMBER_WEBSITE + " TEXT,"
+                + MemberColumns.MEMBER_TWITTER + " TEXT,"
+                + MemberColumns.MEMBER_PSN + " TEXT,"
+                + MemberColumns.MEMBER_GITHUB + " TEXT,"
+                + MemberColumns.MEMBER_BTC + " TEXT,"
+                + MemberColumns.MEMBER_LOCATION + " TEXT,"
+                + MemberColumns.MEMBER_TAGLINE + " TEXT,"
+                + MemberColumns.MEMBER_BIO + " TEXT,"
+                + MemberColumns.MEMBER_AVATAR_MINI + " TEXT,"
+                + MemberColumns.MEMBER_AVATAR_NORMAL + " TEXT,"
+                + MemberColumns.MEMBER_AVATAR_LARGE + " TEXT,"
+                + MemberColumns.MEMBER_CREATED + " TEXT NOT NULL,"
+                + "UNIQUE (" + MemberColumns.MEMBER_ID + ") ON CONFLICT REPLACE)");
+
+        // Defines an SQLite statement that builds the Picasa picture URL table
+        db.execSQL("CREATE TABLE " + Tables.PICASA_IMAGES + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PicasaImageColumns.PICASA_THUMB_URL + " TEXT,"
+                + PicasaImageColumns.PICASA_IMAGE_URL + " TEXT,"
+                + PicasaImageColumns.PICASA_THUMB_URL_NAME + " TEXT,"
+                + PicasaImageColumns.PICASA_IMAGE_NAME + " TEXT)");
+
+        // Defines an SQLite statement that builds the URL modification date table
+        db.execSQL("CREATE TABLE " + Tables.MODI_DATE + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + ModiDateColumns.MODI_DATE + " INTEGER)");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        LOGD(TAG, "onUpgrade() from " + oldVersion + " to " + newVersion);
 
+        // Current DB version. We update this variable as we perform upgrades to reflect
+        // the current version we are in.
+        int version = oldVersion;
+
+        // Indicates whether the data we currently have should be invalidated as a
+        // result of the db upgrade. Default is true (invalidate); if we detect that this
+        // is a trivial DB upgrade, we set this to false.
+        boolean dataInvalidated = true;
+
+        LOGD(TAG, "After upgrade logic, at version " + version);
+
+        // at this point, we ran out of upgrade logic, so if we are still at the wrong
+        // version, we have no choice but to delete everything and create everything again.
+        if (version != CUR_DATABASE_VERSION) {
+            LOGW(TAG, "Upgrade unsuccessful -- destroying old data during upgrade");
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.MEMBERS);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.PICASA_IMAGES);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.MODI_DATE);
+            onCreate(db);
+        }
+
+        if (dataInvalidated) {
+
+        }
+    }
+
+    public static void deleteDatabase(Context context) {
+        context.deleteDatabase(DATABASE_NAME);
     }
 }

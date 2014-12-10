@@ -19,6 +19,8 @@ package com.sonaive.v2ex.ui.debug;
 import android.content.ContentValues;
 import android.net.Uri;
 
+import com.sonaive.v2ex.provider.V2exContract.*;
+
 import org.xml.sax.helpers.DefaultHandler;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -148,15 +150,19 @@ public class RSSPullParser extends DefaultHandler {
                     if (eventName.equalsIgnoreCase(CONTENT)) {
 
                         // Stores the image URL and image name column names as keys
-                        imageUrlKey = DataProviderContract.IMAGE_URL_COLUMN;
-                        imageNameKey = DataProviderContract.IMAGE_PICTURENAME_COLUMN;
+//                        imageUrlKey = DataProviderContract.IMAGE_URL_COLUMN;
+//                        imageNameKey = DataProviderContract.IMAGE_PICTURENAME_COLUMN;
+                        imageUrlKey = PicasaImages.PICASA_IMAGE_URL;
+                        imageNameKey = PicasaImages.PICASA_IMAGE_NAME;
 
                     // If it's a THUMBNAIL
                     } else if (eventName.equalsIgnoreCase(THUMBNAIL)) {
 
                         // Stores the thumbnail URL and thumbnail name column names as keys
-                        imageUrlKey = DataProviderContract.IMAGE_THUMBURL_COLUMN;
-                        imageNameKey = DataProviderContract.IMAGE_THUMBNAME_COLUMN;
+//                        imageUrlKey = DataProviderContract.IMAGE_THUMBURL_COLUMN;
+//                        imageNameKey = DataProviderContract.IMAGE_THUMBNAME_COLUMN;
+                        imageUrlKey = PicasaImages.PICASA_THUMB_URL;
+                        imageNameKey = PicasaImages.PICASA_THUMB_URL_NAME;
 
                     // Otherwise it's some other event that isn't important
                     } else {
@@ -190,8 +196,11 @@ public class RSSPullParser extends DefaultHandler {
                 mImages.add(mImage);
 
                 // Logs progress
+//                progressNotifier.notifyProgress("Parsed Image[" + imageCount + "]:"
+//                        + mImage.getAsString(DataProviderContract.IMAGE_URL_COLUMN));
+
                 progressNotifier.notifyProgress("Parsed Image[" + imageCount + "]:"
-                        + mImage.getAsString(DataProviderContract.IMAGE_URL_COLUMN));
+                                + mImage.getAsString(PicasaImages.PICASA_IMAGE_URL));
 
                 // Clears out the current ContentValues
                 mImage = null;

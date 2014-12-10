@@ -23,6 +23,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -47,20 +48,24 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
+import com.google.gson.JsonObject;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;
 import com.sonaive.v2ex.ui.widgets.ScrimInsetsScrollView;
 import com.sonaive.v2ex.util.LUtils;
+import com.sonaive.v2ex.util.LoginHelper;
 import com.sonaive.v2ex.util.UIUtils;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.LOGW;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
@@ -71,7 +76,9 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
  * Created by liutao on 11/29/14.
  */
 public class BaseActivity extends ActionBarActivity implements
-        MultiSwipeRefreshLayout.CanChildScrollUpCallback {
+        MultiSwipeRefreshLayout.CanChildScrollUpCallback,
+        SignInDialogFragment.SignInDialogListener,
+        LoginHelper.Callbacks {
 
     private static final String TAG = makeLogTag(BaseActivity.class);
 
@@ -123,6 +130,9 @@ public class BaseActivity extends ActionBarActivity implements
     private ImageView mExpandAccountBoxIndicator;
     private boolean mAccountBoxExpanded = false;
 
+    // LoginHelper handles sign in
+    private LoginHelper mLoginHelper;
+
     // When set, these components will be shown/hidden in sync with the action bar
     // to implement the "quick recall" effect (the Action Bar and the header views disappear
     // when you scroll down a list, and reappear quickly when you scroll up).
@@ -134,6 +144,7 @@ public class BaseActivity extends ActionBarActivity implements
     private ObjectAnimator mStatusBarColorAnimator;
     private LinearLayout mAccountListContainer;
     private ViewGroup mDrawerItemsListContainer;
+    private ImageView profileImage;
 
     private int mThemedStatusBarColor;
     private int mNormalStatusBarColor;
@@ -168,6 +179,28 @@ public class BaseActivity extends ActionBarActivity implements
         mLUtils = LUtils.getInstance(this);
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startLoginProcess();
+    }
+
+    @Override
+    public void onStop() {
+        LOGD(TAG, "onStop");
+        super.onStop();
+        if (mLoginHelper != null) {
+            mLoginHelper.stop();
+        }
+    }
+
+    private void startLoginProcess() {
+        if (mLoginHelper != null) {
+            return;
+        }
+        mLoginHelper = new LoginHelper(this, this, "", "");
     }
 
     private void trySetupSwipeRefresh() {
@@ -368,6 +401,7 @@ public class BaseActivity extends ActionBarActivity implements
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        setUpAccount();
         setupNavDrawer();
 
         trySetupSwipeRefresh();
@@ -389,6 +423,18 @@ public class BaseActivity extends ActionBarActivity implements
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void setUpAccount() {
+        profileImage = (ImageView) findViewById(R.id.profile_image);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an instance of the dialog fragment and show it
+                DialogFragment dialog = new SignInDialogFragment();
+                dialog.show(getFragmentManager(), "SignInDialogFragment");
+            }
+        });
     }
 
     private void createNavDrawerItems() {
@@ -794,4 +840,35 @@ public class BaseActivity extends ActionBarActivity implements
         return intent;
     }
 
+    @Override
+    public void onDialogPositiveClick(String accountName, String password) {
+        Toast.makeText(this, "accountName=" + accountName + ", password=" + password, Toast.LENGTH_SHORT).show();
+        mLoginHelper = new LoginHelper(this, this, accountName, password);
+        mLoginHelper.start();
+    }
+
+    @Override
+    public void onDialogNegativeClick() {
+
+    }
+
+    @Override
+    public void onIdentityCheckedSuccess(JsonObject result) {
+
+    }
+
+    @Override
+    public void onIdentityCheckedFailed(JsonObject result) {
+
+    }
+
+    @Override
+    public void onNodeCollectionFetchedSuccess(JsonObject result) {
+
+    }
+
+    @Override
+    public void onNodeCollectionFetchedFailed(JsonObject result) {
+
+    }
 }

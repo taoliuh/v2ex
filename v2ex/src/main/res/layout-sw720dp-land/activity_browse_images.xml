@@ -48,7 +48,7 @@
             <!-- Images fragment showing the image list -->
             <fragment
                 android:id="@+id/images_fragment"
-                android:name="com.sonaive.v2ex.ui.debug.NavDrawerTestFragment"
+                android:name="com.sonaive.v2ex.ui.debug.TestFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_images" />

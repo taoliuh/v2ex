@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">V2ex</string>
     <string name="authority">com.sonaive.v2ex</string>
+    <string name="err_io_exception">数据读写异常</string>
+    <string name="err_get_once_failed">获取once失败</string>
+    <string name="err_get_my_nodes_failed">无法获取用户收藏的节点</string>
+    <string name="account_name">用户名</string>
+    <string name="password">密码</string>
+    <string name="signin">登录</string>
+    <string name="cancel">取消</string>
+    <string name="err_user_not_found">查无此人，请确认用户名是否正确</string>
+    <string name="err_unknown_error">未知错误</string>
+    <string name="err_get_node_collections_failed">无法获取用户收藏的节点</string>
 </resources>

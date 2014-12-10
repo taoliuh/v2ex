@@ -28,12 +28,12 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
  */
-public class NavDrawerTestActivity extends BaseActivity {
+public class TestActivity extends BaseActivity {
 
-    private static final String TAG = makeLogTag(NavDrawerTestActivity.class);
+    private static final String TAG = makeLogTag(TestActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
-    private NavDrawerTestFragment mFrag;
+    private TestFragment mFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class NavDrawerTestActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
 
-        mFrag = (NavDrawerTestFragment) getFragmentManager().findFragmentById(R.id.images_fragment);
+        mFrag = (TestFragment) getFragmentManager().findFragmentById(R.id.images_fragment);
         if (mFrag != null) {
             // configure images fragment's top clearance to take our overlaid controls (Action Bar
             // ) into account.
@@ -91,7 +91,7 @@ public class NavDrawerTestActivity extends BaseActivity {
 
     // Updates the Sessions fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
-        mFrag = (NavDrawerTestFragment) getFragmentManager().findFragmentById(
+        mFrag = (TestFragment) getFragmentManager().findFragmentById(
                 R.id.images_fragment);
         if (mFrag == null) {
             return;

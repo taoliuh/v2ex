@@ -21,6 +21,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 
+import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.provider.V2exContract.*;
+
 import org.apache.http.HttpStatus;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -71,10 +74,9 @@ public class RSSPullService extends IntentService {
         String localUrlString = workIntent.getDataString();
 
         // Creates a projection to use in querying the modification date table in the provider.
-        final String[] dateProjection = new String[]
-        {
-            DataProviderContract.ROW_ID,
-            DataProviderContract.DATA_DATE_COLUMN
+        final String[] dateProjection = new String[]{
+                ModiDates._ID,
+                ModiDates.MODI_DATE
         };
 
         // A URL that's local to this method
@@ -115,7 +117,7 @@ public class RSSPullService extends IntentService {
                  * The content provider throws an exception if the URI is invalid.
                  */
                 cursor = getContentResolver().query(
-                        DataProviderContract.DATE_TABLE_CONTENTURI,
+                        ModiDates.CONTENT_URI,
                         dateProjection,
                         null,
                         null,
@@ -129,12 +131,11 @@ public class RSSPullService extends IntentService {
                  */
                 if (null != cursor && cursor.moveToFirst()) {
 
-                    // Find the URL's last modified date in the content provider
                     long storedModifiedDate =
                             cursor.getLong(cursor.getColumnIndex(
-                                    DataProviderContract.DATA_DATE_COLUMN)
+                                            ModiDates.MODI_DATE)
                             )
-                    ;
+                            ;
 
                     /*
                      * If the modified date isn't 0, sets another request property to ensure that
@@ -208,32 +209,30 @@ public class RSSPullService extends IntentService {
                          * Stores the image data in the content provider. The content provider
                          * throws an exception if the URI is invalid.
                          */
-                        getContentResolver().bulkInsert(
-                                DataProviderContract.PICTUREURL_TABLE_CONTENTURI, imageValuesArray);
+                        getContentResolver().bulkInsert(PicasaImages.CONTENT_URI, imageValuesArray);
 
                         // Creates another ContentValues for storing date information
                         ContentValues dateValues = new ContentValues();
 
                         // Adds the URL's last modified date to the ContentValues
-                        dateValues.put(DataProviderContract.DATA_DATE_COLUMN, lastModifiedDate);
+                        dateValues.put(ModiDates.MODI_DATE, lastModifiedDate);
 
                         if (newMetadataRetrieved) {
 
                             // No previous metadata existed, so insert the data
                             getContentResolver().insert(
-                                DataProviderContract.DATE_TABLE_CONTENTURI,
-                                dateValues
+                                    ModiDates.CONTENT_URI,
+                                    dateValues
                             );
-
                         } else {
 
                             // Previous metadata existed, so update it.
                             getContentResolver().update(
-                                    DataProviderContract.DATE_TABLE_CONTENTURI,
+                                    ModiDates.CONTENT_URI,
                                     dateValues,
-                                    DataProviderContract.ROW_ID + "=" +
+                                    ModiDates._ID + "=" +
                                             cursor.getString(cursor.getColumnIndex(
-                                                            DataProviderContract.ROW_ID)), null);
+                                                    ModiDates._ID)), null);
                         }
                         break;
 
