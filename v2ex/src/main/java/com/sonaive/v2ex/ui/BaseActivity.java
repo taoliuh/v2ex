@@ -62,6 +62,7 @@ import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;
 import com.sonaive.v2ex.ui.widgets.ScrimInsetsScrollView;
+import com.sonaive.v2ex.util.AccountUtils;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.LUtils;
 import com.sonaive.v2ex.util.LoginHelper;
@@ -70,6 +71,8 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.LOGW;
@@ -171,12 +174,6 @@ public class BaseActivity extends ActionBarActivity implements
 
     private ImageLoader imageLoader;
 
-    private OnLoadUserAvatarListener mListener;
-
-    interface OnLoadUserAvatarListener {
-        void onLoadUserAvatar();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,13 +192,14 @@ public class BaseActivity extends ActionBarActivity implements
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
 
-        getLoaderManager().initLoader(0, null, new AccountLoader());
+        getLoaderManager().restartLoader(0, buildLoaderArgs(), new AccountLoader());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         startLoginProcess();
+        EventBus.getDefault().registerSticky(this);
     }
 
     @Override
@@ -211,6 +209,7 @@ public class BaseActivity extends ActionBarActivity implements
         if (mLoginHelper != null) {
             mLoginHelper.stop();
         }
+        EventBus.getDefault().unregister(this);
     }
 
     private void startLoginProcess() {
@@ -218,6 +217,13 @@ public class BaseActivity extends ActionBarActivity implements
             return;
         }
         mLoginHelper = new LoginHelper(this, this, "", "");
+    }
+
+    private Bundle buildLoaderArgs() {
+        String accountName = AccountUtils.getActiveAccountName(BaseActivity.this) == null ? "unknown" : AccountUtils.getActiveAccountName(BaseActivity.this);
+        Bundle data = new Bundle();
+        data.putString("account_name", accountName);
+        return data;
     }
 
     private void trySetupSwipeRefresh() {
@@ -452,9 +458,6 @@ public class BaseActivity extends ActionBarActivity implements
                 dialog.show(getFragmentManager(), "SignInDialogFragment");
             }
         });
-        if (mListener != null) {
-            mListener.onLoadUserAvatar();
-        }
     }
 
     private void createNavDrawerItems() {
@@ -874,7 +877,12 @@ public class BaseActivity extends ActionBarActivity implements
 
     @Override
     public void onIdentityCheckedSuccess(JsonObject result) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getLoaderManager().restartLoader(0, buildLoaderArgs(), new AccountLoader());
+            }
+        });
     }
 
     @Override
@@ -892,14 +900,39 @@ public class BaseActivity extends ActionBarActivity implements
 
     }
 
+    public void onEventMainThread(UpdateUiEvent event) {
+        if (profileImage != null) {
+            EventBus.getDefault().removeStickyEvent(event);
+            imageLoader.loadImage(event.url, profileImage);
+        }
+    }
+
+    class UpdateUiEvent {
+
+        public String url;
+
+        public UpdateUiEvent(String url) {
+            this.url = url;
+        }
+    }
+
+    private static final String[] PROJECTION = {
+            V2exContract.Members.MEMBER_ID,
+            V2exContract.Members.MEMBER_USERNAME,
+            V2exContract.Members.MEMBER_AVATAR_MINI,
+            V2exContract.Members.MEMBER_AVATAR_NORMAL,
+            V2exContract.Members.MEMBER_AVATAR_LARGE
+    };
+
     class AccountLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            String accountName = args.getString("account_name");
             return new CursorLoader(
                     BaseActivity.this,
-                    V2exContract.Members.CONTENT_URI,
-                    null,
+                    V2exContract.Members.buildMemberUsernameUri(accountName),
+                    PROJECTION,
                     null,
                     null,
                     null
@@ -910,7 +943,7 @@ public class BaseActivity extends ActionBarActivity implements
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (data != null) {
                 data.moveToPosition(-1);
-                if (data.moveToNext()) {
+                if (data.moveToFirst()) {
                     final String avatarNormal;
                     String id = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_ID));
                     String userName = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_USERNAME));
@@ -920,15 +953,7 @@ public class BaseActivity extends ActionBarActivity implements
                     } else {
                         avatarNormal = (url == null) ? "" : url;
                     }
-
-                    mListener = new OnLoadUserAvatarListener() {
-                        @Override
-                        public void onLoadUserAvatar() {
-                            if (profileImage != null) {
-                                imageLoader.loadImage(avatarNormal, profileImage);
-                            }
-                        }
-                    };
+                    EventBus.getDefault().postSticky(new UpdateUiEvent(avatarNormal));
                     Toast.makeText(BaseActivity.this, "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
                 }
             }

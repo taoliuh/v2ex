@@ -42,7 +42,7 @@ public class SyncUtils {
                 .getDefaultSharedPreferences(context).getBoolean(PREF_SETUP_COMPLETE, false);
 
         // Create account, if it's missing. (Either first run, or user has deleted account.)
-        Account account = GenericAccountService.getAccount();
+        Account account = AccountService.getAccount();
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         if (accountManager.addAccountExplicitly(account, null, null)) {
             // Inform the system that this account supports sync
@@ -83,7 +83,7 @@ public class SyncUtils {
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(
-                GenericAccountService.getAccount(),      // Sync account
+                AccountService.getAccount(),      // Sync account
                 "",                                      // Content authority
                 b);                                      // Extras
     }

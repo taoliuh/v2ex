@@ -97,12 +97,12 @@ public class V2exContract {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.members";
 
         /** Build {@link Uri} for given member. */
-        public static Uri buildMemberUri(String memberId) {
-            return CONTENT_URI.buildUpon().appendPath(memberId).build();
+        public static Uri buildMemberUsernameUri(String username) {
+            return CONTENT_URI.buildUpon().appendPath(username).build();
         }
 
-        /** Return member ID given URI. */
-        public static String getMemberId(Uri uri) {
+        /** Return member USERNAME given URI. */
+        public static String getMemberUsername(Uri uri) {
             return uri.getPathSegments().get(1);
         }
 

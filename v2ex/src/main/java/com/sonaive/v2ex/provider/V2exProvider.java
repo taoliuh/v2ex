@@ -49,7 +49,7 @@ public class V2exProvider extends ContentProvider {
     private static final String TAG = makeLogTag(V2exProvider.class);
 
     private static final int MEMBERS = 100;
-    private static final int MEMBERS_ID = 101;
+    private static final int MEMBERS_USERNAME = 101;
 
     private static final int PICASAS = 200;
     private static final int PICASAS_ID = 201;
@@ -69,7 +69,7 @@ public class V2exProvider extends ContentProvider {
         final String authority = V2exContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, "members", MEMBERS);
-        matcher.addURI(authority, "members/*", MEMBERS_ID);
+        matcher.addURI(authority, "members/*", MEMBERS_USERNAME);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -99,7 +99,7 @@ public class V2exProvider extends ContentProvider {
         switch (match) {
             case MEMBERS:
                 return Members.CONTENT_TYPE;
-            case MEMBERS_ID:
+            case MEMBERS_USERNAME:
                 return Members.CONTENT_ITEM_TYPE;
             case PICASAS:
                 return PicasaImages.CONTENT_TYPE;
@@ -170,10 +170,10 @@ public class V2exProvider extends ContentProvider {
                     throw new SQLiteException("Insert error:" + uri);
                 }
             }
-            case MEMBERS: {
+            case MEMBERS_USERNAME: {
                 db.insertOrThrow(Tables.MEMBERS, null, values);
                 notifyChange(uri);
-                return Members.buildMemberUri(values.getAsString(Members.MEMBER_ID));
+                return Members.buildMemberUsernameUri(values.getAsString(Members.MEMBER_USERNAME));
             }
 
             default:
@@ -338,8 +338,11 @@ public class V2exProvider extends ContentProvider {
         final SelectionBuilder builder = new SelectionBuilder();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case MEMBERS: {
+            case MEMBERS:
                 return builder.table(Tables.MEMBERS);
+            case MEMBERS_USERNAME: {
+                final String username = Members.getMemberUsername(uri);
+                return builder.table(Tables.MEMBERS).where(Members.MEMBER_USERNAME + "=?", username);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -357,9 +360,9 @@ public class V2exProvider extends ContentProvider {
         switch (match) {
             case MEMBERS:
                 return builder.table(Tables.MEMBERS);
-            case MEMBERS_ID:
-                final String memberId = Members.getMemberId(uri);
-                return builder.table(Tables.MEMBERS).where(Members.MEMBER_ID + "=?" + memberId);
+            case MEMBERS_USERNAME:
+                final String username = Members.getMemberUsername(uri);
+                return builder.table(Tables.MEMBERS).where(Members.MEMBER_USERNAME + "=?", username);
             case PICASAS:
                 return builder.table(Tables.PICASA_IMAGES);
             case DATE:

@@ -91,14 +91,13 @@ public class MembersHandler extends JSONHandler {
 
     private void buildMember(boolean isInsert, Member member,
                             ArrayList<ContentProviderOperation> list) {
-        Uri allMembersUri = V2exContract.Members.CONTENT_URI;
-        Uri thisMemberUri = V2exContract.Members.buildMemberUri(String.valueOf(member.id));
+        Uri uri = V2exContract.Members.buildMemberUsernameUri(member.username);
 
         ContentProviderOperation.Builder builder;
         if (isInsert) {
-            builder = ContentProviderOperation.newInsert(allMembersUri);
+            builder = ContentProviderOperation.newInsert(uri);
         } else {
-            builder = ContentProviderOperation.newUpdate(thisMemberUri);
+            builder = ContentProviderOperation.newUpdate(uri);
         }
 
         list.add(builder.withValue(V2exContract.Members.MEMBER_ID, member.id)
@@ -121,7 +120,7 @@ public class MembersHandler extends JSONHandler {
     }
 
     private void buildDeleteOperation(String memberId, ArrayList<ContentProviderOperation> list) {
-        Uri thisMemberUri = V2exContract.Members.buildMemberUri(memberId);
+        Uri thisMemberUri = V2exContract.Members.buildMemberUsernameUri(memberId);
         list.add(ContentProviderOperation.newDelete(thisMemberUri).build());
     }
 

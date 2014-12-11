@@ -28,8 +28,8 @@ import android.os.IBinder;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
-public class GenericAccountService extends Service {
-    private static final String TAG = makeLogTag(GenericAccountService.class);
+public class AccountService extends Service {
+    private static final String TAG = makeLogTag(AccountService.class);
     private static final String ACCOUNT_TYPE = "com.sonaive.v2ex";
     public static final String ACCOUNT_NAME = "sync";
     private Authenticator mAuthenticator;

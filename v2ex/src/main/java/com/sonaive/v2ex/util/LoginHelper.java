@@ -167,6 +167,7 @@ public class LoginHelper {
                         if (status != null && status.equals("found")) {
                             result.addProperty("result", "ok");
                             LOGD(TAG, "userInfo: " + responseBody);
+                            AccountUtils.setActiveAccount(mAppContext, mAccountName);
                             V2exDataHandler dataHandler = new V2exDataHandler(mAppContext);
                             dataHandler.applyData(new String[]{responseBody}, V2exDataHandler.DATA_KEY_MEMBERS);
                             if (mCallbacksRef != null) {
