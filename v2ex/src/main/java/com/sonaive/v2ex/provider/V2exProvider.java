@@ -215,11 +215,11 @@ public class V2exProvider extends ContentProvider {
             }
 
             // A picture URL content URI
-            case PICASAS: {
+            case DATE: {
 
                 // Updates the table
                 int rows = db.update(
-                        Tables.PICASA_IMAGES,
+                        Tables.MODI_DATE,
                         values,
                         selection,
                         selectionArgs);
@@ -232,7 +232,7 @@ public class V2exProvider extends ContentProvider {
                     throw new SQLiteException("Update error:" + uri);
                 }
             }
-            case DATE: {
+            case PICASAS: {
                 throw new UnsupportedOperationException("Update: Invalid URI: " + uri);
             }
         }

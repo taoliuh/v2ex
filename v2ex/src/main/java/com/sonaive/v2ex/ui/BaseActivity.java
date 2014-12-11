@@ -24,7 +24,11 @@ import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.DialogFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -55,8 +59,10 @@ import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.google.gson.JsonObject;
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;
 import com.sonaive.v2ex.ui.widgets.ScrimInsetsScrollView;
+import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.LUtils;
 import com.sonaive.v2ex.util.LoginHelper;
 import com.sonaive.v2ex.util.UIUtils;
@@ -163,6 +169,14 @@ public class BaseActivity extends ActionBarActivity implements
 
     private Handler mHandler;
 
+    private ImageLoader imageLoader;
+
+    private OnLoadUserAvatarListener mListener;
+
+    interface OnLoadUserAvatarListener {
+        void onLoadUserAvatar();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,6 +184,7 @@ public class BaseActivity extends ActionBarActivity implements
                 new OkHttpUrlLoader.Factory(new OkHttpClient()));
 
         mHandler = new Handler();
+        imageLoader = new ImageLoader(this);
 
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -179,6 +194,8 @@ public class BaseActivity extends ActionBarActivity implements
         mLUtils = LUtils.getInstance(this);
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
+
+        getLoaderManager().initLoader(0, null, new AccountLoader());
     }
 
     @Override
@@ -435,6 +452,9 @@ public class BaseActivity extends ActionBarActivity implements
                 dialog.show(getFragmentManager(), "SignInDialogFragment");
             }
         });
+        if (mListener != null) {
+            mListener.onLoadUserAvatar();
+        }
     }
 
     private void createNavDrawerItems() {
@@ -870,5 +890,54 @@ public class BaseActivity extends ActionBarActivity implements
     @Override
     public void onNodeCollectionFetchedFailed(JsonObject result) {
 
+    }
+
+    class AccountLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(
+                    BaseActivity.this,
+                    V2exContract.Members.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data != null) {
+                data.moveToPosition(-1);
+                if (data.moveToNext()) {
+                    final String avatarNormal;
+                    String id = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_ID));
+                    String userName = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_USERNAME));
+                    String url = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_AVATAR_NORMAL));
+                    if (url != null && !url.contains("http:")) {
+                        avatarNormal = "http:" + url;
+                    } else {
+                        avatarNormal = (url == null) ? "" : url;
+                    }
+
+                    mListener = new OnLoadUserAvatarListener() {
+                        @Override
+                        public void onLoadUserAvatar() {
+                            if (profileImage != null) {
+                                imageLoader.loadImage(avatarNormal, profileImage);
+                            }
+                        }
+                    };
+                    Toast.makeText(BaseActivity.this, "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            LOGD(TAG, "onLoaderReset called");
+            loader = null;
+        }
     }
 }

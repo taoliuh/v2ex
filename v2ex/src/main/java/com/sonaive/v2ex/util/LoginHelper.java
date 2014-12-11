@@ -18,36 +18,19 @@ package com.sonaive.v2ex.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.OperationApplicationException;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.PersistentCookieStore;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.SyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.sonaive.v2ex.Api;
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.V2exDataHandler;
 import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.turbomanage.httpclient.AsyncCallback;
-import com.turbomanage.httpclient.BasicHttpClient;
-import com.turbomanage.httpclient.HttpResponse;
-import com.turbomanage.httpclient.ParameterMap;
-import com.turbomanage.httpclient.android.AndroidHttpClient;
-
-import org.apache.http.Header;
-import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;

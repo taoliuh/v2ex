@@ -41,6 +41,9 @@ import com.sonaive.v2ex.provider.V2exContract.*;
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
+ * LoaderCallbacks.OnLoadFinished called twice after screen rotation changes.
+ * see "http://stackoverflow.com/questions/11293441/android-loadercallbacks-onloadfinished-called-twice"
+ * and i put initLoader in onResume function instead of onActivityCreated or onCreate.
  * Created by liutao on 12/1/14.
  */
 public class TestFragment extends Fragment implements CollectionViewCallbacks {
@@ -85,9 +88,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mImageLoader = new ImageLoader(getActivity(), android.R.color.transparent);
-        // Initializes the CursorLoader
-        getLoaderManager().initLoader(0, null, new PicasaImagesLoader());
-        getLoaderManager().initLoader(1, null, new AccountLoader());
 
         /*
          * Creates a new Intent to send to the download IntentService. The Intent contains the
@@ -98,6 +98,13 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
                         .setData(Uri.parse(PICASA_RSS_URL));
 
         getActivity().startService(mServiceIntent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Initializes the CursorLoader
+        getLoaderManager().initLoader(1, null, new PicasaImagesLoader());
     }
 
     public void setContentTopClearance(int clearance) {
@@ -138,7 +145,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
         }
     }
 
-
     class PicasaImagesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -157,37 +163,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
             mCursor = data;
             if (mCursor != null) {
                 updateCollectionView();
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-
-        }
-    }
-
-    class AccountLoader implements LoaderManager.LoaderCallbacks<Cursor> {
-
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(
-                    getActivity(),
-                    Members.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            data.moveToPosition(-1);
-            if (data.moveToNext()) {
-                String id = data.getString(data.getColumnIndex(Members.MEMBER_ID));
-                String userName = data.getString(data.getColumnIndex(Members.MEMBER_USERNAME));
-                String avatarNormal = data.getString(data.getColumnIndex(Members.MEMBER_AVATAR_NORMAL));
-                Toast.makeText(getActivity(), "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
             }
         }
 
