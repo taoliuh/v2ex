@@ -16,15 +16,9 @@
 package com.sonaive.v2ex.io.model;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.GsonBuilder;
 import com.sonaive.v2ex.util.HashUtils;
 
-import java.io.StringReader;
-
-import static com.sonaive.v2ex.util.LogUtils.LOGE;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -39,11 +33,11 @@ public class Feed {
     public String content;
     public String content_rendered;
     public int replies;
-//    public String member;
-//    public String node;
     public long created;
     public long last_modified;
     public long last_touched;
+    public Member member;
+//    public String node;
 
     public String getImportHashcode() {
         StringBuilder sb = new StringBuilder();
@@ -53,12 +47,21 @@ public class Feed {
                 .append("content").append(content == null ? "" : content)
                 .append("content_rendered").append(content_rendered == null ? "" : content_rendered)
                 .append("replies").append(replies)
-//                .append("member").append(member == null ? "" : member)
+                .append("member").append(member == null ? "" : serializeMember())
 //                .append("node").append(node == null ? "" : node)
                 .append("created").append(created)
                 .append("last_modified").append(last_modified)
                 .append("last_touched").append(last_touched);
         return HashUtils.computeWeakHash(sb.toString());
+    }
+
+    public String serializeMember() {
+        if (member != null) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Member.class, new MemberSerializer()).create();
+            return gson.toJson(member);
+        } else {
+            return "";
+        }
     }
 
 //    public Member getAuthor() {

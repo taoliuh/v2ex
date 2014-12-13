@@ -143,7 +143,8 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
             if (data.moveToFirst()) {
                 String id = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_ID));
                 String feedTitle = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
-                Toast.makeText(this, "feed_id=" + id + ", feedTitle=" + feedTitle, Toast.LENGTH_SHORT).show();
+                String feedAuthor = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_MEMBER));
+                Toast.makeText(this, "feed_id=" + id + ", feedTitle=" + feedTitle + ", feedAuthor=" + feedAuthor, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -156,5 +157,6 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
     private static final String[] PROJECTION = {
             V2exContract.Feeds.FEED_ID,
             V2exContract.Feeds.FEED_TITLE,
+            V2exContract.Feeds.FEED_MEMBER
     };
 }

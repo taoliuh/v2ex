@@ -124,7 +124,7 @@ public class FeedsHandler extends JSONHandler {
                 .withValue(V2exContract.Feeds.FEED_CONTENT, feed.content)
                 .withValue(V2exContract.Feeds.FEED_CONTENT_RENDERED, feed.content_rendered)
                 .withValue(V2exContract.Feeds.FEED_REPLIES, feed.replies)
-//                .withValue(V2exContract.Feeds.FEED_MEMBER, feed.member)
+                .withValue(V2exContract.Feeds.FEED_MEMBER, feed.serializeMember())
 //                .withValue(V2exContract.Feeds.FEED_NODE, feed.node)
                 .withValue(V2exContract.Feeds.FEED_CREATED, feed.created)
                 .withValue(V2exContract.Feeds.FEED_LAST_MODIFIED, feed.last_modified)
