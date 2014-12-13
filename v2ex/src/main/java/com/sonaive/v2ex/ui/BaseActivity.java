@@ -247,15 +247,15 @@ public class BaseActivity extends ActionBarActivity implements
         }
     }
 
-    private void requestDataRefresh() {
-        Runnable fakeWorker = new Runnable() {
-            @Override
-            public void run() {
-                onRefreshingStateChanged(false);
-            }
-        };
-        Handler handler = new Handler();
-        handler.postDelayed(fakeWorker, 3000);
+    protected void requestDataRefresh() {
+//        Runnable fakeWorker = new Runnable() {
+//            @Override
+//            public void run() {
+//                onRefreshingStateChanged(false);
+//            }
+//        };
+//        Handler handler = new Handler();
+//        handler.postDelayed(fakeWorker, 3000);
     }
 
     private void updateSwipeRefreshProgressBarTop() {

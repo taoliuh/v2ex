@@ -66,6 +66,28 @@ public class V2exContract {
         String MEMBER_IMPORT_HASHCODE = "member_import_hashcode";
     }
 
+    interface FeedColumns {
+        String FEED_ID = "feed_id";
+        String FEED_TITLE = "feed_title";
+        /** The web page url. */
+        String FEED_URL = "feed_url";
+        String FEED_CONTENT = "feed_content";
+        String FEED_CONTENT_RENDERED = "feed_content_rendered";
+        /** The post replies num. */
+        String FEED_REPLIES = "feed_replies";
+        /** The post author */
+        String FEED_MEMBER = "feed_member";
+        String FEED_NODE = "feed_node";
+        /** The time millis when this post created */
+        String FEED_CREATED = "feed_created";
+        String FEED_LAST_MODIFIED = "feed_last_modified";
+        String FEED_LAST_TOUCHED = "feed_last_touched";
+        /** The feed type(latest, hot, etc.) */
+        String FEED_TYPE = "feed_type";
+        /** The hashcode of the data used to create this record. */
+        String FEED_IMPORT_HASHCODE = "feed_import_hashcode";
+    }
+
     interface PicasaImageColumns {
         String PICASA_THUMB_URL = "picasa_thumb_url";
         String PICASA_THUMB_URL_NAME = "picasa_thumb_url_name";
@@ -82,11 +104,13 @@ public class V2exContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     private static final String PATH_MEMBERS = "members";
+    private static final String PATH_FEEDS = "feeds";
     private static final String PATH_PICASA_IMAGES = "picasas";
     private static final String PATH_MODI_DATES = "dates";
 
     public static final String[] TOP_LEVEL_PATHS = {
-            PATH_MEMBERS
+            PATH_MEMBERS,
+            PATH_FEEDS
     };
 
     public static class Members implements MemberColumns, BaseColumns {
@@ -107,6 +131,26 @@ public class V2exContract {
         }
 
     }
+
+    public static class Feeds implements FeedColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_FEEDS).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.feeds";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.feeds";
+
+        /** Build {@link Uri} for given member. */
+        public static Uri buildFeedUri(String feedId) {
+            return CONTENT_URI.buildUpon().appendPath(feedId).build();
+        }
+
+        /** Return member USERNAME given URI. */
+        public static String getFeedId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+    }
+
+
 
     public static class PicasaImages implements PicasaImageColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()

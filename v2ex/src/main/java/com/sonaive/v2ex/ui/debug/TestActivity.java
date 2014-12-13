@@ -15,20 +15,29 @@
  */
 package com.sonaive.v2ex.ui.debug;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.SyncHelper;
+import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.BaseActivity;
 import com.sonaive.v2ex.ui.widgets.CollectionView;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
+import com.sonaive.v2ex.util.AccountUtils;
 import com.sonaive.v2ex.util.UIUtils;
 
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
  */
-public class TestActivity extends BaseActivity {
+public class TestActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = makeLogTag(TestActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
@@ -44,6 +53,8 @@ public class TestActivity extends BaseActivity {
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
         registerHideableHeaderView(findViewById(R.id.headerbar));
+
+        getLoaderManager().restartLoader(2, null, this);
     }
 
     @Override
@@ -89,6 +100,14 @@ public class TestActivity extends BaseActivity {
         return NAVDRAWER_ITEM_SETTINGS;
     }
 
+    @Override
+    protected void requestDataRefresh() {
+        super.requestDataRefresh();
+        Bundle args = new Bundle();
+        args.putString(Api.ARG_API_NAME, Api.API_LATEST);
+        SyncHelper.requestManualSync(this, AccountUtils.getActiveAccount(this), args);
+    }
+
     // Updates the Sessions fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
         mFrag = (TestFragment) getFragmentManager().findFragmentById(
@@ -110,4 +129,32 @@ public class TestActivity extends BaseActivity {
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
         mFrag.setContentTopClearance(actionBarClearance + butterBarClearance + gridPadding);
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, V2exContract.Feeds.CONTENT_URI,
+                PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null) {
+            data.moveToPosition(-1);
+            if (data.moveToFirst()) {
+                String id = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_ID));
+                String feedTitle = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
+                Toast.makeText(this, "feed_id=" + id + ", feedTitle=" + feedTitle, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        loader = null;
+    }
+
+    private static final String[] PROJECTION = {
+            V2exContract.Feeds.FEED_ID,
+            V2exContract.Feeds.FEED_TITLE,
+    };
 }

@@ -18,6 +18,7 @@ package com.sonaive.v2ex.io;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.os.Bundle;
 
 import com.google.gson.JsonElement;
 
@@ -41,6 +42,8 @@ public abstract class JSONHandler {
     public abstract void makeContentProviderOperations(ArrayList<ContentProviderOperation> list);
 
     public abstract void process(JsonElement element);
+
+    public abstract String getBody(Bundle data);
 
     public static String parseResource(Context context, int resource) throws IOException {
         InputStream is = context.getResources().openRawResource(resource);

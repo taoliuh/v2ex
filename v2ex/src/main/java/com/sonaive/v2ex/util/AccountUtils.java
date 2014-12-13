@@ -57,11 +57,12 @@ public class AccountUtils {
 
     public static Account getActiveAccount(final Context context) {
         String account = getActiveAccountName(context);
+        String accountType = context.getResources().getString(R.string.authority);
         if (account != null) {
-            return new Account(account, account);
+            return new Account(account, accountType);
         } else {
             String defaultName = context.getResources().getString(R.string.app_name);
-            return new Account(defaultName, defaultName);
+            return new Account(defaultName, accountType);
         }
     }
 

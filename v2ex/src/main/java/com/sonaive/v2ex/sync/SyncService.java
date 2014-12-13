@@ -48,7 +48,7 @@ public class SyncService extends Service {
         LOGD(TAG, "Service created");
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), false);
+                sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
             }
         }
     }

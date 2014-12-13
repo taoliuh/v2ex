@@ -31,7 +31,7 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class AccountService extends Service {
     private static final String TAG = makeLogTag(AccountService.class);
     private static final String ACCOUNT_TYPE = "com.sonaive.v2ex";
-    public static final String ACCOUNT_NAME = "sync";
+    public static final String ACCOUNT_NAME = "V2ex";
     private Authenticator mAuthenticator;
 
     /**
@@ -53,13 +53,13 @@ public class AccountService extends Service {
 
     @Override
     public void onCreate() {
-        LOGD(TAG, "GenericAccountService created");
+        LOGD(TAG, "AccountService created");
         mAuthenticator = new Authenticator(this);
     }
 
     @Override
     public void onDestroy() {
-        LOGD(TAG, "GenericAccountService destroyed");
+        LOGD(TAG, "AccountService destroyed");
     }
 
     @Override

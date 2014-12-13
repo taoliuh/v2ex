@@ -20,10 +20,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.RemoteException;
 
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
+import com.sonaive.v2ex.io.FeedsHandler;
 import com.sonaive.v2ex.io.JSONHandler;
 import com.sonaive.v2ex.io.MembersHandler;
 import com.sonaive.v2ex.provider.V2exContract;
@@ -43,16 +45,21 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class V2exDataHandler {
     private static final String TAG = makeLogTag(V2exDataHandler.class);
 
+    public static final String ARG_DATA_KEY = "arg_data_key";
+
     public static final String DATA_KEY_MEMBERS = "members";
+    public static final String DATA_KEY_FEEDS = "feeds";
 
     private static final String[] DATA_KEYS_IN_ORDER = {
-            DATA_KEY_MEMBERS
+            DATA_KEY_MEMBERS,
+            DATA_KEY_FEEDS
     };
 
     Context mContext = null;
 
     // Handlers for each entity type:
     MembersHandler mMembersHandler = null;
+    FeedsHandler mFeedsHandler = null;
 
     // Convenience map that maps the key name to its corresponding handler (e.g.
     // "blocks" to mBlocksHandler (to avoid very tedious if-elses)
@@ -70,27 +77,28 @@ public class V2exDataHandler {
      * content provider.
      *
      * @param dataBodies The collection of JSON objects to parse and import.
-     * @param key The type key of the json string to be processed
      * @throws java.io.IOException If there is a problem parsing the data.
      */
-    public void applyData(String[] dataBodies, String key) throws IOException {
+    public void applyData(Bundle[] dataBodies) throws IOException {
         LOGD(TAG, "Applying data from " + dataBodies.length + " files");
 
         // create handlers for each data type
         mHandlerForKey.put(DATA_KEY_MEMBERS, mMembersHandler = new MembersHandler(mContext));
+        mHandlerForKey.put(DATA_KEY_FEEDS, mFeedsHandler = new FeedsHandler(mContext));
 
         // process the jsons. This will call each of the handlers when appropriate to deal
         // with the objects we see in the data.
         LOGD(TAG, "Processing " + dataBodies.length + " JSON objects.");
         for (int i = 0; i < dataBodies.length; i++) {
             LOGD(TAG, "Processing json object #" + (i + 1) + " of " + dataBodies.length);
+            String key = dataBodies[i].getString(V2exDataHandler.ARG_DATA_KEY);
             processDataBody(dataBodies[i], key);
         }
 
         // produce the necessary content provider operations
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
         for (String dataKey : DATA_KEYS_IN_ORDER) {
-            LOGD(TAG, "Building content provider operations for: " + key);
+            LOGD(TAG, "Building content provider operations for: " + dataKey);
             mHandlerForKey.get(dataKey).makeContentProviderOperations(batch);
             LOGD(TAG, "Content provider operations so far: " + batch.size());
         }
@@ -132,13 +140,15 @@ public class V2exDataHandler {
      * Processes data body and calls the appropriate data type handlers
      * to process each of the objects represented therein.
      *
-     * @param dataBody The body of data to process
+     * @param dataBundle The body of data to process
      * @throws IOException If there is an error parsing the data.
      */
-    private void processDataBody(String dataBody, String key) throws IOException {
-        JsonReader reader = new JsonReader(new StringReader(dataBody));
-        JsonParser parser = new JsonParser();
+    private void processDataBody(Bundle dataBundle, String key) throws IOException {
+
         if (mHandlerForKey.containsKey(key)) {
+            String dataBody = mHandlerForKey.get(key).getBody(dataBundle);
+            JsonReader reader = new JsonReader(new StringReader(dataBody));
+            JsonParser parser = new JsonParser();
             // pass the value to the corresponding handler
             mHandlerForKey.get(key).process(parser.parse(reader));
         }

@@ -56,6 +56,9 @@ public class V2exProvider extends ContentProvider {
 
     private static final int DATE = 300;
 
+    private static final int FEEDS = 400;
+    private static final int FEEDS_ID = 401;
+
     private V2exDatabase mOpenHelper;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -70,6 +73,9 @@ public class V2exProvider extends ContentProvider {
 
         matcher.addURI(authority, "members", MEMBERS);
         matcher.addURI(authority, "members/*", MEMBERS_USERNAME);
+
+        matcher.addURI(authority, "feeds", FEEDS);
+        matcher.addURI(authority, "feeds/*", FEEDS_ID);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -97,18 +103,30 @@ public class V2exProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case MEMBERS:
+            case MEMBERS: {
                 return Members.CONTENT_TYPE;
-            case MEMBERS_USERNAME:
+            }
+            case MEMBERS_USERNAME: {
                 return Members.CONTENT_ITEM_TYPE;
-            case PICASAS:
+            }
+            case FEEDS: {
+                return Feeds.CONTENT_TYPE;
+            }
+            case FEEDS_ID: {
+                return Feeds.CONTENT_ITEM_TYPE;
+            }
+            case PICASAS: {
                 return PicasaImages.CONTENT_TYPE;
-            case PICASAS_ID:
+            }
+            case PICASAS_ID: {
                 return PicasaImages.CONTENT_ITEM_TYPE;
-            case DATE:
+            }
+            case DATE: {
                 return ModiDates.CONTENT_TYPE;
-            default:
+            }
+            default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
         }
     }
 
@@ -175,6 +193,11 @@ public class V2exProvider extends ContentProvider {
                 notifyChange(uri);
                 return Members.buildMemberUsernameUri(values.getAsString(Members.MEMBER_USERNAME));
             }
+            case FEEDS: {
+                db.insertOrThrow(Tables.FEEDS, null, values);
+                notifyChange(uri);
+                return Feeds.buildFeedUri(values.getAsString(Feeds.FEED_ID));
+            }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -202,11 +225,10 @@ public class V2exProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-
+        LOGV(TAG, "update(uri=" + uri + ", values=" + values.toString());
         // Decodes the content URI and choose which insert to use
         switch (match) {
             default: {
-                LOGV(TAG, "update(uri=" + uri + ", values=" + values.toString());
 
                 final SelectionBuilder builder = buildSimpleSelection(uri);
                 int retVal = builder.where(selection, selectionArgs).update(db, values);
@@ -344,6 +366,19 @@ public class V2exProvider extends ContentProvider {
                 final String username = Members.getMemberUsername(uri);
                 return builder.table(Tables.MEMBERS).where(Members.MEMBER_USERNAME + "=?", username);
             }
+            case FEEDS: {
+                return builder.table(Tables.FEEDS);
+            }
+            case FEEDS_ID: {
+                final String feedId = Feeds.getFeedId(uri);
+                return builder.table(Tables.FEEDS).where(Feeds.FEED_ID + "=?", feedId);
+            }
+            case PICASAS: {
+                return builder.table(Tables.PICASA_IMAGES);
+            }
+            case DATE: {
+                return builder.table(Tables.MODI_DATE);
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -358,15 +393,26 @@ public class V2exProvider extends ContentProvider {
     private SelectionBuilder buildExpandedSelection(Uri uri, int match) {
         final SelectionBuilder builder = new SelectionBuilder();
         switch (match) {
-            case MEMBERS:
+            case MEMBERS: {
                 return builder.table(Tables.MEMBERS);
-            case MEMBERS_USERNAME:
+            }
+            case MEMBERS_USERNAME: {
                 final String username = Members.getMemberUsername(uri);
                 return builder.table(Tables.MEMBERS).where(Members.MEMBER_USERNAME + "=?", username);
-            case PICASAS:
+            }
+            case FEEDS: {
+                return builder.table(Tables.FEEDS);
+            }
+            case FEEDS_ID: {
+                final String feedId = Feeds.getFeedId(uri);
+                return builder.table(Tables.FEEDS).where(Feeds.FEED_ID + "=?", feedId);
+            }
+            case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);
-            case DATE:
+            }
+            case DATE: {
                 return builder.table(Tables.MODI_DATE);
+            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }

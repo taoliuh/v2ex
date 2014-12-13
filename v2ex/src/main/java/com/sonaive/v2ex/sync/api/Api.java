@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sonaive.v2ex;
+package com.sonaive.v2ex.sync.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +22,18 @@ import java.util.Map;
 /**
  * Created by liutao on 12/6/14.
  */
-public class Api {
+public abstract class Api {
+
+    public static final String ARG_RESULT = "arg_result";
+    public static final String ARG_API_NAME = "arg_api_name";
+
     public static final String API_HOST_URL = "http://www.v2ex.com";
-    public static final String API_LATEST = "/topics/latest.json";
+    public static final String API_LATEST = "/api/topics/latest.json";
+    public static final String API_HOT = "/api/topics/hot.json";
     public static final String API_ALL_NODES = "/nodes/all.json";
     public static final String API_REPLIES = "/replies/show.json";
     public static final String API_TOPIC = "/topics/show.json";
-    public static final String API_USER = "/members/show.json";
+    public static final String API_MEMBER = "/members/show.json";
     public static final String API_SIGNIN = "/signin";
     public static final String API_MY_NODES = "/my/nodes";
     public static final String API_USER_IDENTITY = "/api/members/show.json";
@@ -37,13 +42,16 @@ public class Api {
 
     static {
         API_URLS.put(API_LATEST, API_HOST_URL + API_LATEST);
+        API_URLS.put(API_HOT, API_HOST_URL + API_HOT);
         API_URLS.put(API_ALL_NODES, API_HOST_URL + API_ALL_NODES);
         API_URLS.put(API_REPLIES, API_HOST_URL + API_REPLIES);
         API_URLS.put(API_TOPIC, API_HOST_URL + API_TOPIC);
-        API_URLS.put(API_USER, API_HOST_URL + API_USER);
+        API_URLS.put(API_MEMBER, API_HOST_URL + API_MEMBER);
         API_URLS.put(API_SIGNIN, API_HOST_URL + API_SIGNIN);
         API_URLS.put(API_MY_NODES, API_HOST_URL + API_MY_NODES);
         API_URLS.put(API_USER_IDENTITY, API_HOST_URL + API_USER_IDENTITY);
     }
+
+    public abstract String sync();
 
 }

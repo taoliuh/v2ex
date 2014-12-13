@@ -19,12 +19,10 @@ package com.sonaive.v2ex.util;
 import android.app.Activity;
 import android.content.Context;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.sonaive.v2ex.Api;
+import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.sync.V2exDataHandler;
+import com.sonaive.v2ex.sync.api.UserIdentityApi;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -72,6 +70,8 @@ public class LoginHelper {
     // Are we in the started state? Started state is between onStart and onStop.
     boolean mStarted = false;
 
+    UserIdentityApi mUserIdentityApi;
+
     private OkHttpClient okHttpClient;
 
     public interface Callbacks {
@@ -82,12 +82,13 @@ public class LoginHelper {
     }
 
     public LoginHelper(Activity activity, Callbacks callbacks, String accountName, String password) {
-        LOGD(TAG, "Helper created. Account: " + mAccountName);
+        LOGD(TAG, "Helper created. Account: " + accountName);
         mActivityRef = new WeakReference<>(activity);
         mCallbacksRef = new WeakReference<>(callbacks);
         mAppContext = activity.getApplicationContext();
         mAccountName = accountName;
         mPassword = password;
+        mUserIdentityApi = new UserIdentityApi(mAppContext);
     }
 
     public boolean isStarted() {
@@ -125,7 +126,7 @@ public class LoginHelper {
             okHttpClient = new OkHttpClient();
         }
 
-        verifyUserIdentity();
+        mUserIdentityApi.verifyUserIdentity(mAccountName, mCallbacksRef);
     }
 
     /** Stop the helper. Call this from your Activity's onStop(). */
@@ -137,78 +138,6 @@ public class LoginHelper {
 
         LOGD(TAG, "Helper stopping.");
         mStarted = false;
-    }
-
-    private void verifyUserIdentity() {
-        Request request = new Request.Builder()
-                .url(Api.API_URLS.get(Api.API_USER_IDENTITY) + "?username=" + mAccountName)
-                .build();
-
-        okHttpClient.newCall(request).enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Request request, IOException e) {
-                JsonObject result = new JsonObject();
-                result.addProperty("result", "fail");
-                result.addProperty("err_msg", "IOException");
-                if (mCallbacksRef != null) {
-                    mCallbacksRef.get().onIdentityCheckedFailed(result);
-                }
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                JsonObject result = new JsonObject();
-                if (response.code() == 200) {
-                    String responseBody = response.body().string();
-                    try {
-                        JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
-                        String status = jsonObject.get("status").getAsString();
-                        if (status != null && status.equals("found")) {
-                            result.addProperty("result", "ok");
-                            LOGD(TAG, "userInfo: " + responseBody);
-                            AccountUtils.setActiveAccount(mAppContext, mAccountName);
-                            V2exDataHandler dataHandler = new V2exDataHandler(mAppContext);
-                            dataHandler.applyData(new String[]{responseBody}, V2exDataHandler.DATA_KEY_MEMBERS);
-                            if (mCallbacksRef != null) {
-                                mCallbacksRef.get().onIdentityCheckedSuccess(result);
-                            }
-                        } else if (status != null && status.equals("notfound")) {
-                            result.addProperty("result", "fail");
-                            result.addProperty("err_msg", mAppContext.getString(R.string.err_user_not_found));
-                            if (mCallbacksRef != null) {
-                                mCallbacksRef.get().onIdentityCheckedFailed(result);
-                            }
-                        } else {
-                            result.addProperty("result", "fail");
-                            result.addProperty("err_msg", mAppContext.getString(R.string.err_unknown_error));
-                            if (mCallbacksRef != null) {
-                                mCallbacksRef.get().onIdentityCheckedFailed(result);
-                            }
-                        }
-                    } catch (JsonSyntaxException e) {
-                        result.addProperty("result", "fail");
-                        result.addProperty("err_msg", "JsonSyntaxException");
-                        if (mCallbacksRef != null) {
-                            mCallbacksRef.get().onIdentityCheckedFailed(result);
-                        }
-                    } catch (UnsupportedOperationException e) {
-                        result.addProperty("result", "fail");
-                        result.addProperty("err_msg", "UnsupportedOperationException");
-                        if (mCallbacksRef != null) {
-                            mCallbacksRef.get().onIdentityCheckedFailed(result);
-                        }
-                    }
-                } else if (response.code() == 403) {
-                    result.addProperty("result", "fail");
-                    result.addProperty("err_msg", "403 Forbidden");
-                    if (mCallbacksRef != null) {
-                        mCallbacksRef.get().onIdentityCheckedFailed(result);
-                    }
-                }
-                LOGD(TAG, "responseCode: " + response.code() + ", result: " + result.get("result") + ", err_msg: " + result.get("err_msg"));
-            }
-        });
     }
 
     /** After spent hours digging, I give up */

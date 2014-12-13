@@ -19,11 +19,14 @@ import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.sonaive.v2ex.io.model.Member;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.api.Api;
+import com.sonaive.v2ex.sync.api.FeedsApi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +53,7 @@ public class MembersHandler extends JSONHandler {
     public void makeContentProviderOperations(ArrayList<ContentProviderOperation> list) {
         Uri uri = V2exContract.Members.CONTENT_URI;
         HashMap<String, String> memberHashcodes = loadMemberHashcodes();
-        HashSet<String> videosToKeep = new HashSet<>();
+        HashSet<String> membersToKeep = new HashSet<>();
         boolean isIncrementalUpdate = memberHashcodes != null && memberHashcodes.size() > 0;
 
         if (isIncrementalUpdate) {
@@ -63,7 +66,7 @@ public class MembersHandler extends JSONHandler {
         int updatedMembers = 0;
         for (Member member : mMembers.values()) {
             String hashCode = member.getImportHashcode();
-            videosToKeep.add(String.valueOf(member.id));
+            membersToKeep.add(String.valueOf(member.id));
 
             // add member, if necessary
             if (!isIncrementalUpdate || !memberHashcodes.containsKey(String.valueOf(member.id)) ||
@@ -77,7 +80,7 @@ public class MembersHandler extends JSONHandler {
         int deletedMembers = 0;
         if (isIncrementalUpdate) {
             for (String memberId : memberHashcodes.keySet()) {
-                if (!videosToKeep.contains(memberId)) {
+                if (!membersToKeep.contains(memberId)) {
                     buildDeleteOperation(memberId, list);
                     ++deletedMembers;
                 }
@@ -128,6 +131,14 @@ public class MembersHandler extends JSONHandler {
     public void process(JsonElement element) {
         Member member = new Gson().fromJson(element, Member.class);
         mMembers.put(String.valueOf(member.id), member);
+    }
+
+    @Override
+    public String getBody(Bundle data) {
+        if (data != null) {
+            return data.getString(Api.ARG_RESULT);
+        }
+        return "";
     }
 
     private HashMap<String, String> loadMemberHashcodes() {

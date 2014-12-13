@@ -45,6 +45,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
 
     interface Tables {
         String MEMBERS = "members";
+        String FEEDS = "feeds";
         String PICASA_IMAGES = "picasa_images";
         String MODI_DATE = "modi_date";
     }
@@ -75,6 +76,23 @@ public class V2exDatabase extends SQLiteOpenHelper {
                 + MemberColumns.MEMBER_CREATED + " TEXT NOT NULL,"
                 + MemberColumns.MEMBER_IMPORT_HASHCODE + " TEXT NOT NULL,"
                 + "UNIQUE (" + MemberColumns.MEMBER_ID + ") ON CONFLICT REPLACE)");
+
+        db.execSQL("CREATE TABLE " + Tables.FEEDS + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + FeedColumns.FEED_ID + " TEXT NOT NULL,"
+                + FeedColumns.FEED_TITLE + " TEXT NOT NULL,"
+                + FeedColumns.FEED_URL + " TEXT NOT NULL,"
+                + FeedColumns.FEED_CONTENT + " TEXT NOT NULL,"
+                + FeedColumns.FEED_CONTENT_RENDERED + " TEXT NOT NULL,"
+                + FeedColumns.FEED_REPLIES + " TEXT NOT NULL,"
+                + FeedColumns.FEED_MEMBER + " TEXT,"
+                + FeedColumns.FEED_NODE + " TEXT,"
+                + FeedColumns.FEED_CREATED + " TEXT NOT NULL,"
+                + FeedColumns.FEED_LAST_MODIFIED + " TEXT NOT NULL,"
+                + FeedColumns.FEED_LAST_TOUCHED + " TEXT NOT NULL,"
+                + FeedColumns.FEED_TYPE + " TEXT NOT NULL,"
+                + FeedColumns.FEED_IMPORT_HASHCODE + " TEXT NOT NULL,"
+                + "UNIQUE (" + FeedColumns.FEED_ID + ") ON CONFLICT REPLACE)");
 
         // Defines an SQLite statement that builds the Picasa picture URL table
         db.execSQL("CREATE TABLE " + Tables.PICASA_IMAGES + " ("
@@ -111,6 +129,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
         if (version != CUR_DATABASE_VERSION) {
             LOGW(TAG, "Upgrade unsuccessful -- destroying old data during upgrade");
             db.execSQL("DROP TABLE IF EXISTS " + Tables.MEMBERS);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.FEEDS);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.PICASA_IMAGES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.MODI_DATE);
             onCreate(db);
