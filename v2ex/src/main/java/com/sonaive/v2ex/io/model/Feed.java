@@ -17,8 +17,17 @@ package com.sonaive.v2ex.io.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
+import com.sonaive.v2ex.io.MemberSerializer;
+import com.sonaive.v2ex.io.NodeSerializer;
 import com.sonaive.v2ex.util.HashUtils;
 
+import java.io.StringReader;
+
+import static com.sonaive.v2ex.util.LogUtils.LOGE;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -37,7 +46,7 @@ public class Feed {
     public long last_modified;
     public long last_touched;
     public Member member;
-//    public String node;
+    public Node node;
 
     public String getImportHashcode() {
         StringBuilder sb = new StringBuilder();
@@ -48,7 +57,7 @@ public class Feed {
                 .append("content_rendered").append(content_rendered == null ? "" : content_rendered)
                 .append("replies").append(replies)
                 .append("member").append(member == null ? "" : serializeMember())
-//                .append("node").append(node == null ? "" : node)
+                .append("node").append(node == null ? "" : serializeNode())
                 .append("created").append(created)
                 .append("last_modified").append(last_modified)
                 .append("last_touched").append(last_touched);
@@ -64,20 +73,45 @@ public class Feed {
         }
     }
 
-//    public Member getAuthor() {
-//        Member result = null;
-//        try {
-//            JsonReader reader = new JsonReader(new StringReader(member));
-//            JsonParser parser = new JsonParser();
-//            result = new Gson().fromJson(parser.parse(reader), Member.class);
-//        } catch (NullPointerException e) {
-//            LOGE(TAG, "Member field is null, catch a NullPointerException");
-//        } catch (JsonIOException e) {
-//            LOGE(TAG, "Failed parsing JSON source: " + member + ", catch a JsonIOException");
-//        } catch (JsonSyntaxException e) {
-//            LOGE(TAG, "Failed parsing JSON source: " + member + ", catch a JsonSyntaxException");
-//        }
-//        return result;
-//    }
+    public String serializeNode() {
+        if (node != null) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Node.class, new NodeSerializer()).create();
+            return gson.toJson(node);
+        } else {
+            return "";
+        }
+    }
+
+    public static Member getAuthor(String json) {
+        Member result = null;
+        try {
+            JsonReader reader = new JsonReader(new StringReader(json));
+            JsonParser parser = new JsonParser();
+            result = new Gson().fromJson(parser.parse(reader), Member.class);
+        } catch (NullPointerException e) {
+            LOGE(TAG, "Failed parsing member, JSON source is null, catch a NullPointerException");
+        } catch (JsonIOException e) {
+            LOGE(TAG, "Failed parsing JSON source: " + json + ", catch a JsonIOException");
+        } catch (JsonSyntaxException e) {
+            LOGE(TAG, "Failed parsing JSON source: " + json + ", catch a JsonSyntaxException");
+        }
+        return result;
+    }
+
+    public static Node getNode(String json) {
+        Node result = null;
+        try {
+            JsonReader reader = new JsonReader(new StringReader(json));
+            JsonParser parser = new JsonParser();
+            result = new Gson().fromJson(parser.parse(reader), Node.class);
+        } catch (NullPointerException e) {
+            LOGE(TAG, "Failed parsing node, JSON source is null, catch a NullPointerException");
+        } catch (JsonIOException e) {
+            LOGE(TAG, "Failed parsing JSON source: " + json + ", catch a JsonIOException");
+        } catch (JsonSyntaxException e) {
+            LOGE(TAG, "Failed parsing JSON source: " + json + ", catch a JsonSyntaxException");
+        }
+        return result;
+    }
 
 }

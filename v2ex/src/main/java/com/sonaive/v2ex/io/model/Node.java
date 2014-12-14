@@ -13,48 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.sonaive.v2ex.io.model;
 
 import com.sonaive.v2ex.util.HashUtils;
 
 /**
- * Created by liutao on 12/9/14.
+ * Created by liutao on 12/14/14.
  */
-public class Member {
+public class Node {
+
     public int id;
+    public String name;
     public String url;
-    public String username;
-    public String website;
-    public String twitter;
-    public String psn;
-    public String github;
-    public String btc;
-    public String location;
-    public String tagline;
-    public String bio;
+    public String title;
+    public String title_alternative;
+    public int topics;
+    public String header;
+    public String footer;
+    public long created;
     public String avatar_mini;
     public String avatar_normal;
     public String avatar_large;
-    public long created;
 
     public String getImportHashcode() {
         StringBuilder sb = new StringBuilder();
         sb.append("id").append(id)
+                .append("name").append(name == null ? "" : name)
                 .append("url").append(url == null ? "" : url)
-                .append("username").append(username == null ? "" : username)
-                .append("website").append(website == null ? "" : website)
-                .append("twitter").append(twitter == null ? "" : twitter)
-                .append("psn").append(psn == null ? "" : psn)
-                .append("github").append(github == null ? "" : github)
-                .append("btc").append(btc == null ? "" : btc)
-                .append("location").append(location == null ? "" : location)
-                .append("tagline").append(tagline == null ? "" : tagline)
-                .append("bio").append(bio == null ? "" : bio)
+                .append("title").append(title == null ? "" : title)
+                .append("title_alternative").append(title_alternative == null ? "" : title_alternative)
+                .append("topics").append(topics)
+                .append("header").append(header == null ? "" : header)
+                .append("footer").append(footer == null ? "" : footer)
+                .append("created").append(created)
                 .append("avatar_mini").append(avatar_mini == null ? "" : avatar_mini)
                 .append("avatar_normal").append(avatar_normal == null ? "" : avatar_normal)
-                .append("avatar_large").append(avatar_large == null ? "" : avatar_large)
-                .append("created").append(created);
+                .append("avatar_large").append(avatar_large == null ? "" : avatar_large);
         return HashUtils.computeWeakHash(sb.toString());
     }
 }

@@ -60,6 +60,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.google.gson.JsonObject;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.SyncUtils;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;
 import com.sonaive.v2ex.ui.widgets.ScrimInsetsScrollView;
 import com.sonaive.v2ex.util.AccountUtils;
@@ -192,6 +193,7 @@ public class BaseActivity extends ActionBarActivity implements
         mThemedStatusBarColor = getResources().getColor(R.color.theme_primary_dark);
         mNormalStatusBarColor = mThemedStatusBarColor;
 
+        SyncUtils.createSyncAccount(this);
         getLoaderManager().restartLoader(0, buildLoaderArgs(), new AccountLoader());
     }
 

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 sonaive.com. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.sonaive.v2ex.io;
 
 import android.content.ContentProviderOperation;
@@ -44,7 +59,7 @@ public class FeedsHandler extends JSONHandler {
     public void makeContentProviderOperations(ArrayList<ContentProviderOperation> list) {
         Uri uri = V2exContract.Feeds.CONTENT_URI;
         HashMap<String, String> feedHashcodes = loadFeedsHashcodes();
-        HashSet<String> membersToKeep = new HashSet<>();
+        HashSet<String> feedsToKeep = new HashSet<>();
         boolean isIncrementalUpdate = feedHashcodes != null && feedHashcodes.size() > 0;
 
         if (isIncrementalUpdate) {
@@ -57,7 +72,7 @@ public class FeedsHandler extends JSONHandler {
         int updatedFeeds = 0;
         for (Feed feed : mFeeds.values()) {
             String hashCode = feed.getImportHashcode();
-            membersToKeep.add(String.valueOf(feed.id));
+            feedsToKeep.add(String.valueOf(feed.id));
 
             // add member, if necessary
             if (!isIncrementalUpdate || !feedHashcodes.containsKey(String.valueOf(feed.id)) ||
@@ -68,19 +83,8 @@ public class FeedsHandler extends JSONHandler {
             }
         }
 
-        int deletedFeeds = 0;
-        if (isIncrementalUpdate) {
-            for (String feedId : feedHashcodes.keySet()) {
-                if (!membersToKeep.contains(feedId)) {
-                    buildDeleteOperation(feedId, list);
-                    ++deletedFeeds;
-                }
-            }
-        }
-
         LOGD(TAG, "Feeds: " + (isIncrementalUpdate ? "INCREMENTAL" : "FULL") + " update. " +
-                updatedFeeds + " to update, " + deletedFeeds + " to delete. New total: " +
-                mFeeds.size());
+                updatedFeeds + " to update, New total: " + mFeeds.size());
     }
 
     @Override
@@ -125,7 +129,7 @@ public class FeedsHandler extends JSONHandler {
                 .withValue(V2exContract.Feeds.FEED_CONTENT_RENDERED, feed.content_rendered)
                 .withValue(V2exContract.Feeds.FEED_REPLIES, feed.replies)
                 .withValue(V2exContract.Feeds.FEED_MEMBER, feed.serializeMember())
-//                .withValue(V2exContract.Feeds.FEED_NODE, feed.node)
+                .withValue(V2exContract.Feeds.FEED_NODE, feed.serializeNode())
                 .withValue(V2exContract.Feeds.FEED_CREATED, feed.created)
                 .withValue(V2exContract.Feeds.FEED_LAST_MODIFIED, feed.last_modified)
                 .withValue(V2exContract.Feeds.FEED_LAST_TOUCHED, feed.last_touched)

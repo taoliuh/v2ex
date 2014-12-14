@@ -17,6 +17,7 @@
 package com.sonaive.v2ex.sync;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -80,7 +81,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 " manualSync=" + manualSync +
                 " remoteSync =" + remoteSync +
                 " initialize=" + initialize);
-
         // Sync from bootstrap and remote data, as needed
         new SyncHelper(mContext).performSync(syncResult, account, extras);
     }

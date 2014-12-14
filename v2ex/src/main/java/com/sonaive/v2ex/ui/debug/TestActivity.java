@@ -33,6 +33,7 @@ import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.AccountUtils;
 import com.sonaive.v2ex.util.UIUtils;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
@@ -105,7 +106,7 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
         super.requestDataRefresh();
         Bundle args = new Bundle();
         args.putString(Api.ARG_API_NAME, Api.API_LATEST);
-        SyncHelper.requestManualSync(this, AccountUtils.getActiveAccount(this), args);
+        SyncHelper.requestManualSync(this, args);
     }
 
     // Updates the Sessions fragment content top clearance to take our chrome into account
@@ -133,18 +134,31 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this, V2exContract.Feeds.CONTENT_URI,
-                PROJECTION, null, null, null);
+                PROJECTION, null, null, V2exContract.Feeds.FEED_ID + " DESC");
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        onRefreshingStateChanged(false);
         if (data != null) {
             data.moveToPosition(-1);
             if (data.moveToFirst()) {
                 String id = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_ID));
                 String feedTitle = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
                 String feedAuthor = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_MEMBER));
-                Toast.makeText(this, "feed_id=" + id + ", feedTitle=" + feedTitle + ", feedAuthor=" + feedAuthor, Toast.LENGTH_SHORT).show();
+                String feedNode = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_NODE));
+                int feedsCount = data.getCount();
+                Toast.makeText(this, "feed_id=" + id +
+                                ", feedTitle=" + feedTitle +
+                                ", feedAuthor=" + feedAuthor +
+                                ", feedNode=" + feedNode +
+                                ", feedCount=" + feedsCount,
+                                Toast.LENGTH_SHORT).show();
+                LOGD(TAG, "feed_id=" + id +
+                        ", feedTitle=" + feedTitle +
+                        ", feedAuthor=" + feedAuthor +
+                        ", feedNode=" + feedNode +
+                        ", feedCount=" + feedsCount);
             }
         }
     }
@@ -157,6 +171,7 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
     private static final String[] PROJECTION = {
             V2exContract.Feeds.FEED_ID,
             V2exContract.Feeds.FEED_TITLE,
-            V2exContract.Feeds.FEED_MEMBER
+            V2exContract.Feeds.FEED_MEMBER,
+            V2exContract.Feeds.FEED_NODE
     };
 }

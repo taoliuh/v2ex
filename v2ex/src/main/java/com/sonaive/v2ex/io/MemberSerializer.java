@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sonaive.v2ex.io.model;
+package com.sonaive.v2ex.io;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.sonaive.v2ex.io.model.Member;
 
 import java.lang.reflect.Type;
 

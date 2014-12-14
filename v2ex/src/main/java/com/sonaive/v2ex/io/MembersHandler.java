@@ -77,19 +77,8 @@ public class MembersHandler extends JSONHandler {
             }
         }
 
-        int deletedMembers = 0;
-        if (isIncrementalUpdate) {
-            for (String memberId : memberHashcodes.keySet()) {
-                if (!membersToKeep.contains(memberId)) {
-                    buildDeleteOperation(memberId, list);
-                    ++deletedMembers;
-                }
-            }
-        }
-
         LOGD(TAG, "Members: " + (isIncrementalUpdate ? "INCREMENTAL" : "FULL") + " update. " +
-                updatedMembers + " to update, " + deletedMembers + " to delete. New total: " +
-                mMembers.size());
+                updatedMembers + " to update, New total: " + mMembers.size());
     }
 
     private void buildMember(boolean isInsert, Member member,

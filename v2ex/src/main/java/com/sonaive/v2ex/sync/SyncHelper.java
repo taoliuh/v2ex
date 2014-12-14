@@ -28,6 +28,7 @@ import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.sync.api.FeedsApi;
 import com.sonaive.v2ex.sync.api.UserIdentityApi;
+import com.sonaive.v2ex.util.AccountUtils;
 
 import java.io.IOException;
 
@@ -62,28 +63,31 @@ public class SyncHelper {
         mHotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
     }
 
-    public static void requestManualSync(Context context, Account mChosenAccount, Bundle args) {
-        if (mChosenAccount != null) {
-            LOGD(TAG, "Requesting manual sync for account " + mChosenAccount.name
+    public static void requestManualSync(Context context, Bundle args) {
+        Account account = AccountUtils.getActiveAccount(context);
+        if (account != null) {
+            LOGD(TAG, "Requesting manual sync for account " + account.name
                     +" args=" + args.toString());
 
             args.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
             args.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            args.putBoolean(SyncAdapter.EXTRA_SYNC_REMOTE, false);
 
             AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-            accountManager.addAccountExplicitly(mChosenAccount, null, null);
+            accountManager.addAccountExplicitly(account, null, null);
 
             // Inform the system that this account is eligible for auto sync when the network is up
-            ContentResolver.setSyncAutomatically(mChosenAccount, V2exContract.CONTENT_AUTHORITY, true);
-            // Inform the system that this account supports sync
-            ContentResolver.setIsSyncable(mChosenAccount, V2exContract.CONTENT_AUTHORITY, 1);
+            ContentResolver.setSyncAutomatically(account, V2exContract.CONTENT_AUTHORITY, true);
 
-            boolean pending = ContentResolver.isSyncPending(mChosenAccount,
+            // Inform the system that this account supports sync
+            ContentResolver.setIsSyncable(account, V2exContract.CONTENT_AUTHORITY, 1);
+
+            boolean pending = ContentResolver.isSyncPending(account,
                     V2exContract.CONTENT_AUTHORITY);
             if (pending) {
                 LOGD(TAG, "Warning: sync is PENDING. Will cancel.");
             }
-            boolean active = ContentResolver.isSyncActive(mChosenAccount,
+            boolean active = ContentResolver.isSyncActive(account,
                     V2exContract.CONTENT_AUTHORITY);
             if (active) {
                 LOGD(TAG, "Warning: sync is ACTIVE. Will cancel.");
@@ -91,11 +95,11 @@ public class SyncHelper {
 
             if (pending || active) {
                 LOGD(TAG, "Cancelling previously pending/active sync.");
-                ContentResolver.cancelSync(mChosenAccount, V2exContract.CONTENT_AUTHORITY);
+                ContentResolver.cancelSync(account, V2exContract.CONTENT_AUTHORITY);
             }
 
             LOGD(TAG, "Requesting sync now.");
-            ContentResolver.requestSync(mChosenAccount, V2exContract.CONTENT_AUTHORITY, args);
+            ContentResolver.requestSync(account, V2exContract.CONTENT_AUTHORITY, args);
         } else {
             LOGD(TAG, "Can't request manual sync -- no chosen account.");
         }
@@ -110,7 +114,7 @@ public class SyncHelper {
      */
     public boolean performSync(SyncResult syncResult, Account account, Bundle extras) {
 
-        final boolean remoteSync = extras.getBoolean(SyncAdapter.EXTRA_SYNC_REMOTE, false);
+        final boolean remoteSync = extras.getBoolean(SyncAdapter.EXTRA_SYNC_REMOTE, true);
 
         // remote sync consists of these operations, which we try one by one (and tolerate
         // individual failures on each)
