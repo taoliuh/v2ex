@@ -26,7 +26,6 @@ import com.google.gson.JsonElement;
 import com.sonaive.v2ex.io.model.Member;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
-import com.sonaive.v2ex.sync.api.FeedsApi;
 
 import java.util.ArrayList;
 import java.util.HashMap;

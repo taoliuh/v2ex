@@ -88,6 +88,40 @@ public class V2exContract {
         String FEED_IMPORT_HASHCODE = "feed_import_hashcode";
     }
 
+    /**'
+     * public int id;
+     public String name;
+     public String url;
+     public String title;
+     public String title_alternative;
+     public int topics;
+     public String header;
+     public String footer;
+     public long created;
+     public String avatar_mini;
+     public String avatar_normal;
+     public String avatar_large;
+     */
+    interface NodeColumns {
+        String NODE_ID = "node_id";
+        String NODE_NAME = "node_name";
+        /** The web page url */
+        String NODE_URL = "node_url";
+        String NODE_TITLE = "node_title";
+        String NODE_TITLE_ALTERNATIVE = "node_title_alternative";
+        /** Topics number */
+        String NODE_TOPICS = "node_topics";
+        /** The description text about this node */
+        String NODE_HEADER = "node_header";
+        /** The description text about this node, it's on the web page's footer */
+        String NODE_FOOTER = "node_footer";
+        String NODE_CREATED = "node_created";
+        String NODE_AVATAR_MINI = "node_avatar_mini";
+        String NODE_AVATAR_NORMAL = "node_avatar_normal";
+        String NODE_AVATAR_LARGE = "node_avatar_large";
+        String NODE_IMPORT_HASHCODE = "node_import_hashcode";
+    }
+
     interface PicasaImageColumns {
         String PICASA_THUMB_URL = "picasa_thumb_url";
         String PICASA_THUMB_URL_NAME = "picasa_thumb_url_name";
@@ -105,12 +139,14 @@ public class V2exContract {
 
     private static final String PATH_MEMBERS = "members";
     private static final String PATH_FEEDS = "feeds";
+    private static final String PATH_NODES = "nodes";
     private static final String PATH_PICASA_IMAGES = "picasas";
     private static final String PATH_MODI_DATES = "dates";
 
     public static final String[] TOP_LEVEL_PATHS = {
             PATH_MEMBERS,
-            PATH_FEEDS
+            PATH_FEEDS,
+            PATH_NODES
     };
 
     public static class Members implements MemberColumns, BaseColumns {
@@ -144,13 +180,29 @@ public class V2exContract {
             return CONTENT_URI.buildUpon().appendPath(feedId).build();
         }
 
-        /** Return member USERNAME given URI. */
+        /** Return feed id for given URI. */
         public static String getFeedId(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }
 
+    public static class Nodes implements NodeColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_NODES).build();
 
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.nodes";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.nodes";
+
+        /** Build {@link Uri} for given node. */
+        public static Uri buildNodeUri(String nodeId) {
+            return CONTENT_URI.buildUpon().appendPath(nodeId).build();
+        }
+
+        /** Return node id for given URI. */
+        public static String getNodeId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+    }
 
     public static class PicasaImages implements PicasaImageColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()

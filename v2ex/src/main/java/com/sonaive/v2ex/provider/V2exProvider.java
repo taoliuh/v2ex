@@ -59,6 +59,9 @@ public class V2exProvider extends ContentProvider {
     private static final int FEEDS = 400;
     private static final int FEEDS_ID = 401;
 
+    private static final int NODES = 500;
+    private static final int NODES_ID = 501;
+
     private V2exDatabase mOpenHelper;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -76,6 +79,9 @@ public class V2exProvider extends ContentProvider {
 
         matcher.addURI(authority, "feeds", FEEDS);
         matcher.addURI(authority, "feeds/*", FEEDS_ID);
+
+        matcher.addURI(authority, "nodes", NODES);
+        matcher.addURI(authority, "nodes/*", NODES_ID);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -114,6 +120,12 @@ public class V2exProvider extends ContentProvider {
             }
             case FEEDS_ID: {
                 return Feeds.CONTENT_ITEM_TYPE;
+            }
+            case NODES: {
+                return Nodes.CONTENT_TYPE;
+            }
+            case NODES_ID: {
+                return Nodes.CONTENT_ITEM_TYPE;
             }
             case PICASAS: {
                 return PicasaImages.CONTENT_TYPE;
@@ -197,6 +209,11 @@ public class V2exProvider extends ContentProvider {
                 db.insertOrThrow(Tables.FEEDS, null, values);
                 notifyChange(uri);
                 return Feeds.buildFeedUri(values.getAsString(Feeds.FEED_ID));
+            }
+            case NODES: {
+                db.insertOrThrow(Tables.NODES, null, values);
+                notifyChange(uri);
+                return Nodes.buildNodeUri(values.getAsString(Nodes.NODE_ID));
             }
 
             default:
@@ -373,6 +390,13 @@ public class V2exProvider extends ContentProvider {
                 final String feedId = Feeds.getFeedId(uri);
                 return builder.table(Tables.FEEDS).where(Feeds.FEED_ID + "=?", feedId);
             }
+            case NODES: {
+                return builder.table(Tables.NODES);
+            }
+            case NODES_ID: {
+                final String nodeId = Nodes.getNodeId(uri);
+                return builder.table(Tables.NODES).where(Nodes.NODE_ID + "=?", nodeId);
+            }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);
             }
@@ -406,6 +430,13 @@ public class V2exProvider extends ContentProvider {
             case FEEDS_ID: {
                 final String feedId = Feeds.getFeedId(uri);
                 return builder.table(Tables.FEEDS).where(Feeds.FEED_ID + "=?", feedId);
+            }
+            case NODES: {
+                return builder.table(Tables.NODES);
+            }
+            case NODES_ID: {
+                final String nodeId = Nodes.getNodeId(uri);
+                return builder.table(Tables.NODES).where(Nodes.NODE_ID + "=?", nodeId);
             }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);

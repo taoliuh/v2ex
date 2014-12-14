@@ -28,6 +28,7 @@ import com.google.gson.stream.JsonReader;
 import com.sonaive.v2ex.io.FeedsHandler;
 import com.sonaive.v2ex.io.JSONHandler;
 import com.sonaive.v2ex.io.MembersHandler;
+import com.sonaive.v2ex.io.NodesHandler;
 import com.sonaive.v2ex.provider.V2exContract;
 
 import java.io.IOException;
@@ -49,10 +50,12 @@ public class V2exDataHandler {
 
     public static final String DATA_KEY_MEMBERS = "members";
     public static final String DATA_KEY_FEEDS = "feeds";
+    public static final String DATA_KEY_NODES = "nodes";
 
     private static final String[] DATA_KEYS_IN_ORDER = {
             DATA_KEY_MEMBERS,
-            DATA_KEY_FEEDS
+            DATA_KEY_FEEDS,
+            DATA_KEY_NODES
     };
 
     Context mContext = null;
@@ -60,6 +63,7 @@ public class V2exDataHandler {
     // Handlers for each entity type:
     MembersHandler mMembersHandler = null;
     FeedsHandler mFeedsHandler = null;
+    NodesHandler mNodesHandler = null;
 
     // Convenience map that maps the key name to its corresponding handler (e.g.
     // "blocks" to mBlocksHandler (to avoid very tedious if-elses)
@@ -85,6 +89,7 @@ public class V2exDataHandler {
         // create handlers for each data type
         mHandlerForKey.put(DATA_KEY_MEMBERS, mMembersHandler = new MembersHandler(mContext));
         mHandlerForKey.put(DATA_KEY_FEEDS, mFeedsHandler = new FeedsHandler(mContext));
+        mHandlerForKey.put(DATA_KEY_NODES, mNodesHandler = new NodesHandler(mContext));
 
         // process the jsons. This will call each of the handlers when appropriate to deal
         // with the objects we see in the data.

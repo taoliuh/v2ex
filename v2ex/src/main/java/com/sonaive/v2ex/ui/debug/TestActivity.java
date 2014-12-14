@@ -30,7 +30,6 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.BaseActivity;
 import com.sonaive.v2ex.ui.widgets.CollectionView;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
-import com.sonaive.v2ex.util.AccountUtils;
 import com.sonaive.v2ex.util.UIUtils;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
@@ -38,7 +37,7 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/1/14.
  */
-public class TestActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class TestActivity extends BaseActivity {
 
     private static final String TAG = makeLogTag(TestActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
@@ -55,7 +54,8 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         registerHideableHeaderView(findViewById(R.id.headerbar));
 
-        getLoaderManager().restartLoader(2, null, this);
+//        getLoaderManager().restartLoader(2, null, new FeedLoaderCallback());
+        getLoaderManager().restartLoader(3, null, new NodeLoaderCallback());
     }
 
     @Override
@@ -105,7 +105,8 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
     protected void requestDataRefresh() {
         super.requestDataRefresh();
         Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_LATEST);
+//        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
+        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
         SyncHelper.requestManualSync(this, args);
     }
 
@@ -131,41 +132,82 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
         mFrag.setContentTopClearance(actionBarClearance + butterBarClearance + gridPadding);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, V2exContract.Feeds.CONTENT_URI,
-                PROJECTION, null, null, V2exContract.Feeds.FEED_ID + " DESC");
-    }
+    class FeedLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        onRefreshingStateChanged(false);
-        if (data != null) {
-            data.moveToPosition(-1);
-            if (data.moveToFirst()) {
-                String id = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_ID));
-                String feedTitle = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
-                String feedAuthor = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_MEMBER));
-                String feedNode = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_NODE));
-                int feedsCount = data.getCount();
-                Toast.makeText(this, "feed_id=" + id +
-                                ", feedTitle=" + feedTitle +
-                                ", feedAuthor=" + feedAuthor +
-                                ", feedNode=" + feedNode +
-                                ", feedCount=" + feedsCount,
-                                Toast.LENGTH_SHORT).show();
-                LOGD(TAG, "feed_id=" + id +
-                        ", feedTitle=" + feedTitle +
-                        ", feedAuthor=" + feedAuthor +
-                        ", feedNode=" + feedNode +
-                        ", feedCount=" + feedsCount);
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(TestActivity.this, V2exContract.Feeds.CONTENT_URI,
+                    PROJECTION, null, null, V2exContract.Feeds.FEED_ID + " DESC");
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            onRefreshingStateChanged(false);
+            if (data != null) {
+                data.moveToPosition(-1);
+                if (data.moveToFirst()) {
+                    String id = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_ID));
+                    String feedTitle = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
+                    String feedAuthor = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_MEMBER));
+                    String feedNode = data.getString(data.getColumnIndex(V2exContract.Feeds.FEED_NODE));
+                    int feedsCount = data.getCount();
+                    Toast.makeText(TestActivity.this, "feed_id=" + id +
+                                    ", feedTitle=" + feedTitle +
+                                    ", feedAuthor=" + feedAuthor +
+                                    ", feedNode=" + feedNode +
+                                    ", feedCount=" + feedsCount,
+                            Toast.LENGTH_SHORT).show();
+                    LOGD(TAG, "feed_id=" + id +
+                            ", feedTitle=" + feedTitle +
+                            ", feedAuthor=" + feedAuthor +
+                            ", feedNode=" + feedNode +
+                            ", feedCount=" + feedsCount);
+                }
             }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            loader = null;
         }
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        loader = null;
+    class NodeLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(TestActivity.this, V2exContract.Nodes.CONTENT_URI,
+                    PROJECTION_NODES, null, null, V2exContract.Nodes.NODE_ID + " ASC");
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            onRefreshingStateChanged(false);
+            if (data != null) {
+                data.moveToPosition(-1);
+                if (data.moveToFirst()) {
+                    String id = data.getString(data.getColumnIndex(V2exContract.Nodes.NODE_ID));
+                    String name = data.getString(data.getColumnIndex(V2exContract.Nodes.NODE_NAME));
+                    String title = data.getString(data.getColumnIndex(V2exContract.Nodes.NODE_TITLE));
+                    int nodesCount = data.getCount();
+                    Toast.makeText(TestActivity.this, "node_id=" + id +
+                                    ", nodeTitle=" + title +
+                                    ", nodeName=" + name +
+                                    ", nodeCount=" + nodesCount,
+                            Toast.LENGTH_SHORT).show();
+                    LOGD(TAG, "node_id=" + id +
+                            ", nodeTitle=" + title +
+                            ", nodeName=" + name +
+                            ", nodeCount=" + nodesCount);
+
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            loader = null;
+        }
     }
 
     private static final String[] PROJECTION = {
@@ -173,5 +215,11 @@ public class TestActivity extends BaseActivity implements LoaderManager.LoaderCa
             V2exContract.Feeds.FEED_TITLE,
             V2exContract.Feeds.FEED_MEMBER,
             V2exContract.Feeds.FEED_NODE
+    };
+
+    private static final String [] PROJECTION_NODES = {
+            V2exContract.Nodes.NODE_ID,
+            V2exContract.Nodes.NODE_NAME,
+            V2exContract.Nodes.NODE_TITLE,
     };
 }

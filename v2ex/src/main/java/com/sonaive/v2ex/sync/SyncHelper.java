@@ -27,6 +27,7 @@ import android.os.Bundle;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.sync.api.FeedsApi;
+import com.sonaive.v2ex.sync.api.NodesApi;
 import com.sonaive.v2ex.sync.api.UserIdentityApi;
 import com.sonaive.v2ex.util.AccountUtils;
 
@@ -51,16 +52,9 @@ public class SyncHelper {
 
     private V2exDataHandler mDataHandler;
 
-    private UserIdentityApi mUserIdentityApi;
-    private FeedsApi mLatestFeedsApi;
-    private FeedsApi mHotFeedsApi;
-
     public SyncHelper(Context context) {
         mContext = context;
         mDataHandler = new V2exDataHandler(mContext);
-        mUserIdentityApi = new UserIdentityApi(mContext);
-        mLatestFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_LATEST);
-        mHotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
     }
 
     public static void requestManualSync(Context context, Bundle args) {
@@ -119,7 +113,7 @@ public class SyncHelper {
         // remote sync consists of these operations, which we try one by one (and tolerate
         // individual failures on each)
         String[] apisToPerform = remoteSync ?
-                new String[] { Api.API_LATEST, Api.API_HOT } :
+                new String[] { Api.API_TOPICS_LATEST, Api.API_TOPICS_HOT, Api.API_NODES_ALL} :
                 new String[] { extras.getString(Api.ARG_API_NAME)};
 
 
@@ -152,14 +146,16 @@ public class SyncHelper {
         }
         switch (api) {
             case Api.API_MEMBER: {
+                UserIdentityApi userIdentityApi = new UserIdentityApi(mContext);
                 String accountName = args.getString("accountName");
-                mUserIdentityApi.verifyUserIdentity(accountName);
+                userIdentityApi.verifyUserIdentity(accountName);
                 break;
             }
-            case Api.API_LATEST: {
-                String latestFeeds = mLatestFeedsApi.sync();
+            case Api.API_TOPICS_LATEST: {
+                FeedsApi latestFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_LATEST);
+                String latestFeeds = latestFeedsApi.sync();
                 Bundle latestFeedsBundle = new Bundle();
-                latestFeedsBundle.putInt(FeedsApi.ARG_TYPE, FeedsApi.TYPE_LATEST);
+                latestFeedsBundle.putInt(Api.ARG_TYPE, FeedsApi.TYPE_LATEST);
                 latestFeedsBundle.putString(Api.ARG_RESULT, latestFeeds);
                 latestFeedsBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
 
@@ -167,14 +163,24 @@ public class SyncHelper {
                 mDataHandler.applyData(new Bundle[] {latestFeedsBundle});
                 break;
             }
-            case Api.API_HOT: {
-                String hotFeeds = mHotFeedsApi.sync();
+            case Api.API_TOPICS_HOT: {
+                FeedsApi hotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
+                String hotFeeds = hotFeedsApi.sync();
                 Bundle hotFeedsBundle = new Bundle();
-                hotFeedsBundle.putInt(FeedsApi.ARG_TYPE, FeedsApi.TYPE_HOT);
+                hotFeedsBundle.putInt(Api.ARG_TYPE, FeedsApi.TYPE_HOT);
                 hotFeedsBundle.putString(Api.ARG_RESULT, hotFeeds);
                 hotFeedsBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
                 mDataHandler.applyData(new Bundle[] {hotFeedsBundle});
                 break;
+            }
+            case Api.API_NODES_ALL: {
+                NodesApi allNodesApi = new NodesApi(mContext, NodesApi.TYPE_ALL);
+                String allNodes = allNodesApi.sync();
+                Bundle allNodesBundle = new Bundle();
+                allNodesBundle.putInt(Api.ARG_TYPE, NodesApi.TYPE_ALL);
+                allNodesBundle.putString(Api.ARG_RESULT, allNodes);
+                allNodesBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_NODES);
+                mDataHandler.applyData(new Bundle[] {allNodesBundle});
             }
         }
 

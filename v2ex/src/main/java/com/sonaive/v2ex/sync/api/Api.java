@@ -16,23 +16,39 @@
 
 package com.sonaive.v2ex.sync.api;
 
+import android.content.Context;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
+import static com.sonaive.v2ex.util.LogUtils.LOGW;
+import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
  * Created by liutao on 12/6/14.
  */
 public abstract class Api {
 
+    private static final String TAG = makeLogTag(Api.class);
+
+    public static final String ARG_TYPE = "arg_type";
     public static final String ARG_RESULT = "arg_result";
+    public static final String ARG_API_PARAMS_ID = "arg_params_id";
     public static final String ARG_API_NAME = "arg_api_name";
 
     public static final String API_HOST_URL = "http://www.v2ex.com";
-    public static final String API_LATEST = "/api/topics/latest.json";
-    public static final String API_HOT = "/api/topics/hot.json";
-    public static final String API_ALL_NODES = "/nodes/all.json";
+    public static final String API_TOPICS_LATEST = "/api/topics/latest.json";
+    public static final String API_TOPICS_HOT = "/api/topics/hot.json";
+    public static final String API_TOPICS_SPECIFIC = "/api/topics/show.json";
+    public static final String API_NODES_ALL = "/api/nodes/all.json";
+    public static final String API_NODES_SPECIFIC = "/api/nodes/show.json";
     public static final String API_REPLIES = "/replies/show.json";
-    public static final String API_TOPIC = "/topics/show.json";
     public static final String API_MEMBER = "/members/show.json";
     public static final String API_SIGNIN = "/signin";
     public static final String API_MY_NODES = "/my/nodes";
@@ -41,17 +57,41 @@ public abstract class Api {
     public static Map<String, String> API_URLS = new HashMap<>();
 
     static {
-        API_URLS.put(API_LATEST, API_HOST_URL + API_LATEST);
-        API_URLS.put(API_HOT, API_HOST_URL + API_HOT);
-        API_URLS.put(API_ALL_NODES, API_HOST_URL + API_ALL_NODES);
+        API_URLS.put(API_TOPICS_LATEST, API_HOST_URL + API_TOPICS_LATEST);
+        API_URLS.put(API_TOPICS_HOT, API_HOST_URL + API_TOPICS_HOT);
+        API_URLS.put(API_TOPICS_SPECIFIC, API_HOST_URL + API_TOPICS_SPECIFIC);
+        API_URLS.put(API_NODES_ALL, API_HOST_URL + API_NODES_ALL);
+        API_URLS.put(API_NODES_SPECIFIC, API_HOST_URL + API_NODES_SPECIFIC);
         API_URLS.put(API_REPLIES, API_HOST_URL + API_REPLIES);
-        API_URLS.put(API_TOPIC, API_HOST_URL + API_TOPIC);
         API_URLS.put(API_MEMBER, API_HOST_URL + API_MEMBER);
         API_URLS.put(API_SIGNIN, API_HOST_URL + API_SIGNIN);
         API_URLS.put(API_MY_NODES, API_HOST_URL + API_MY_NODES);
         API_URLS.put(API_USER_IDENTITY, API_HOST_URL + API_USER_IDENTITY);
     }
 
-    public abstract String sync();
+    protected Context mContext;
+    protected String mUrl;
+
+    public String sync() {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(mUrl)
+                .build();
+
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            if (response != null && response.code() == 200) {
+                LOGD(TAG, "Request: " + mUrl + ", server returned HTTP_OK, so fetching was successful.");
+                return response.body().string();
+            } else if (response != null && response.code() == 403) {
+                LOGW(TAG, "Request: " + mUrl + ", Server returned 403, fetching was failed.");
+            } else {
+                LOGW(TAG, "Request: " + mUrl + ", Fetching was failed. Unknown reason");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

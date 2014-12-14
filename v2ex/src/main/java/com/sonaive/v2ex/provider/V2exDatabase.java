@@ -46,6 +46,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
     interface Tables {
         String MEMBERS = "members";
         String FEEDS = "feeds";
+        String NODES = "nodes";
         String PICASA_IMAGES = "picasa_images";
         String MODI_DATE = "modi_date";
     }
@@ -94,6 +95,23 @@ public class V2exDatabase extends SQLiteOpenHelper {
                 + FeedColumns.FEED_IMPORT_HASHCODE + " TEXT NOT NULL,"
                 + "UNIQUE (" + FeedColumns.FEED_ID + ") ON CONFLICT REPLACE)");
 
+        db.execSQL("CREATE TABLE " + Tables.NODES + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + NodeColumns.NODE_ID + " TEXT NOT NULL,"
+                + NodeColumns.NODE_NAME + " TEXT NOT NULL,"
+                + NodeColumns.NODE_URL + " TEXT NOT NULL,"
+                + NodeColumns.NODE_TITLE + " TEXT NOT NULL,"
+                + NodeColumns.NODE_TITLE_ALTERNATIVE + " TEXT,"
+                + NodeColumns.NODE_TOPICS + " TEXT NOT NULL,"
+                + NodeColumns.NODE_HEADER + " TEXT,"
+                + NodeColumns.NODE_FOOTER + " TEXT,"
+                + NodeColumns.NODE_CREATED + " TEXT NOT NULL,"
+                + NodeColumns.NODE_AVATAR_MINI + " TEXT,"
+                + NodeColumns.NODE_AVATAR_NORMAL + " TEXT,"
+                + NodeColumns.NODE_AVATAR_LARGE + " TEXT,"
+                + NodeColumns.NODE_IMPORT_HASHCODE + " TEXT NOT NULL,"
+                + "UNIQUE (" + NodeColumns.NODE_ID + ") ON CONFLICT REPLACE)");
+
         // Defines an SQLite statement that builds the Picasa picture URL table
         db.execSQL("CREATE TABLE " + Tables.PICASA_IMAGES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -130,6 +148,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
             LOGW(TAG, "Upgrade unsuccessful -- destroying old data during upgrade");
             db.execSQL("DROP TABLE IF EXISTS " + Tables.MEMBERS);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.FEEDS);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.NODES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.PICASA_IMAGES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.MODI_DATE);
             onCreate(db);

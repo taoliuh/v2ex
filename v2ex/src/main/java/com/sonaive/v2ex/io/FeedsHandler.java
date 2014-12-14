@@ -74,7 +74,7 @@ public class FeedsHandler extends JSONHandler {
             String hashCode = feed.getImportHashcode();
             feedsToKeep.add(String.valueOf(feed.id));
 
-            // add member, if necessary
+            // add feed, if necessary
             if (!isIncrementalUpdate || !feedHashcodes.containsKey(String.valueOf(feed.id)) ||
                     !feedHashcodes.get(String.valueOf(feed.id)).equals(hashCode)) {
                 ++updatedFeeds;
