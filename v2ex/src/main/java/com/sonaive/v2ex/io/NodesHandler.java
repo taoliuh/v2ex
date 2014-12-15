@@ -96,6 +96,7 @@ public class NodesHandler extends JSONHandler {
             Node node = new Gson().fromJson(element, Node.class);
             mNodes.put(String.valueOf(node.id), node);
         }
+
     }
 
     @Override

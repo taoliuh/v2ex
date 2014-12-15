@@ -28,6 +28,7 @@ import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.sync.api.FeedsApi;
 import com.sonaive.v2ex.sync.api.NodesApi;
+import com.sonaive.v2ex.sync.api.ReviewsApi;
 import com.sonaive.v2ex.sync.api.UserIdentityApi;
 import com.sonaive.v2ex.util.AccountUtils;
 
@@ -170,6 +171,11 @@ public class SyncHelper {
             case Api.API_NODES_SPECIFIC: {
                 NodesApi specificNodesApi = new NodesApi(mContext, NodesApi.TYPE_SPECIFIC, args);
                 mDataHandler.applyData(new Bundle[] {specificNodesApi.sync()});
+                break;
+            }
+            case Api.API_REVIEWS: {
+                ReviewsApi reviewsApi = new ReviewsApi(mContext, args);
+                mDataHandler.applyData(new Bundle[] {reviewsApi.sync()});
                 break;
             }
         }

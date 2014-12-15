@@ -88,20 +88,6 @@ public class V2exContract {
         String FEED_IMPORT_HASHCODE = "feed_import_hashcode";
     }
 
-    /**'
-     * public int id;
-     public String name;
-     public String url;
-     public String title;
-     public String title_alternative;
-     public int topics;
-     public String header;
-     public String footer;
-     public long created;
-     public String avatar_mini;
-     public String avatar_normal;
-     public String avatar_large;
-     */
     interface NodeColumns {
         String NODE_ID = "node_id";
         String NODE_NAME = "node_name";
@@ -122,6 +108,17 @@ public class V2exContract {
         String NODE_IMPORT_HASHCODE = "node_import_hashcode";
     }
 
+    interface ReviewColumns {
+        String REVIEW_ID = "review_id";
+        String REVIEW_THANKS = "review_thanks";
+        String REVIEW_CONTENT = "review_content";
+        String REVIEW_CONTENT_RENDERED = "review_content_rendered";
+        String REVIEW_MEMBER = "review_member";
+        String REVIEW_CREATED = "review_created";
+        String REVIEW_LAST_MODIFIED = "review_last_modified";
+        String REVIEW_IMPORT_HASHCODE = "review_import_hashcode";
+    }
+
     interface PicasaImageColumns {
         String PICASA_THUMB_URL = "picasa_thumb_url";
         String PICASA_THUMB_URL_NAME = "picasa_thumb_url_name";
@@ -140,13 +137,14 @@ public class V2exContract {
     private static final String PATH_MEMBERS = "members";
     private static final String PATH_FEEDS = "feeds";
     private static final String PATH_NODES = "nodes";
+    private static final String PATH_REVIEWS = "reviews";
     private static final String PATH_PICASA_IMAGES = "picasas";
     private static final String PATH_MODI_DATES = "dates";
 
     public static final String[] TOP_LEVEL_PATHS = {
-            PATH_MEMBERS,
             PATH_FEEDS,
-            PATH_NODES
+            PATH_NODES,
+            PATH_REVIEWS
     };
 
     public static class Members implements MemberColumns, BaseColumns {
@@ -200,6 +198,24 @@ public class V2exContract {
 
         /** Return node id for given URI. */
         public static String getNodeId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+    }
+
+    public static class Reviews implements ReviewColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_REVIEWS).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.reviews";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.reviews";
+
+        /** Build {@link Uri} for given review. */
+        public static Uri buildReviewUri(String reviewId) {
+            return CONTENT_URI.buildUpon().appendPath(reviewId).build();
+        }
+
+        /** Return review id for given URI. */
+        public static String getReviewId(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }

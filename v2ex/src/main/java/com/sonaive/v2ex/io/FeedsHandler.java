@@ -29,6 +29,7 @@ import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.sync.api.FeedsApi;
+import com.sonaive.v2ex.util.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,8 +129,8 @@ public class FeedsHandler extends JSONHandler {
                 .withValue(V2exContract.Feeds.FEED_CONTENT, feed.content)
                 .withValue(V2exContract.Feeds.FEED_CONTENT_RENDERED, feed.content_rendered)
                 .withValue(V2exContract.Feeds.FEED_REPLIES, feed.replies)
-                .withValue(V2exContract.Feeds.FEED_MEMBER, feed.serializeMember())
-                .withValue(V2exContract.Feeds.FEED_NODE, feed.serializeNode())
+                .withValue(V2exContract.Feeds.FEED_MEMBER, ModelUtils.serializeMember(feed.member))
+                .withValue(V2exContract.Feeds.FEED_NODE, ModelUtils.serializeNode(feed.node))
                 .withValue(V2exContract.Feeds.FEED_CREATED, feed.created)
                 .withValue(V2exContract.Feeds.FEED_LAST_MODIFIED, feed.last_modified)
                 .withValue(V2exContract.Feeds.FEED_LAST_TOUCHED, feed.last_touched)

@@ -62,6 +62,9 @@ public class V2exProvider extends ContentProvider {
     private static final int NODES = 500;
     private static final int NODES_ID = 501;
 
+    private static final int REVIEWS = 600;
+    private static final int REVIEWS_ID = 601;
+
     private V2exDatabase mOpenHelper;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -82,6 +85,9 @@ public class V2exProvider extends ContentProvider {
 
         matcher.addURI(authority, "nodes", NODES);
         matcher.addURI(authority, "nodes/*", NODES_ID);
+
+        matcher.addURI(authority, "reviews", REVIEWS);
+        matcher.addURI(authority, "reviews/*", REVIEWS_ID);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -126,6 +132,12 @@ public class V2exProvider extends ContentProvider {
             }
             case NODES_ID: {
                 return Nodes.CONTENT_ITEM_TYPE;
+            }
+            case REVIEWS: {
+                return Reviews.CONTENT_TYPE;
+            }
+            case REVIEWS_ID: {
+                return Reviews.CONTENT_ITEM_TYPE;
             }
             case PICASAS: {
                 return PicasaImages.CONTENT_TYPE;
@@ -214,6 +226,11 @@ public class V2exProvider extends ContentProvider {
                 db.insertOrThrow(Tables.NODES, null, values);
                 notifyChange(uri);
                 return Nodes.buildNodeUri(values.getAsString(Nodes.NODE_ID));
+            }
+            case REVIEWS: {
+                db.insertOrThrow(Tables.REVIEWS, null, values);
+                notifyChange(uri);
+                return Reviews.buildReviewUri(values.getAsString(Reviews.REVIEW_ID));
             }
 
             default:
@@ -397,6 +414,13 @@ public class V2exProvider extends ContentProvider {
                 final String nodeId = Nodes.getNodeId(uri);
                 return builder.table(Tables.NODES).where(Nodes.NODE_ID + "=?", nodeId);
             }
+            case REVIEWS: {
+                return builder.table(Tables.REVIEWS);
+            }
+            case REVIEWS_ID: {
+                final String reviewId = Reviews.getReviewId(uri);
+                return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_ID + "=?", reviewId);
+            }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);
             }
@@ -437,6 +461,13 @@ public class V2exProvider extends ContentProvider {
             case NODES_ID: {
                 final String nodeId = Nodes.getNodeId(uri);
                 return builder.table(Tables.NODES).where(Nodes.NODE_ID + "=?", nodeId);
+            }
+            case REVIEWS: {
+                return builder.table(Tables.REVIEWS);
+            }
+            case REVIEWS_ID: {
+                final String reviewId = Reviews.getReviewId(uri);
+                return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_ID + "=?", reviewId);
             }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);

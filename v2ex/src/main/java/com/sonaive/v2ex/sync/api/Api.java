@@ -48,7 +48,7 @@ public abstract class Api {
     public static final String API_TOPICS_SPECIFIC = "/api/topics/show.json";
     public static final String API_NODES_ALL = "/api/nodes/all.json";
     public static final String API_NODES_SPECIFIC = "/api/nodes/show.json";
-    public static final String API_REPLIES = "/replies/show.json";
+    public static final String API_REVIEWS = "/api/replies/show.json";
     public static final String API_MEMBER = "/members/show.json";
     public static final String API_SIGNIN = "/signin";
     public static final String API_MY_NODES = "/my/nodes";
@@ -62,7 +62,7 @@ public abstract class Api {
         API_URLS.put(API_TOPICS_SPECIFIC, API_HOST_URL + API_TOPICS_SPECIFIC);
         API_URLS.put(API_NODES_ALL, API_HOST_URL + API_NODES_ALL);
         API_URLS.put(API_NODES_SPECIFIC, API_HOST_URL + API_NODES_SPECIFIC);
-        API_URLS.put(API_REPLIES, API_HOST_URL + API_REPLIES);
+        API_URLS.put(API_REVIEWS, API_HOST_URL + API_REVIEWS);
         API_URLS.put(API_MEMBER, API_HOST_URL + API_MEMBER);
         API_URLS.put(API_SIGNIN, API_HOST_URL + API_SIGNIN);
         API_URLS.put(API_MY_NODES, API_HOST_URL + API_MY_NODES);

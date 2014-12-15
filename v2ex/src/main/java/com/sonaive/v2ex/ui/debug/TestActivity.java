@@ -55,7 +55,7 @@ public class TestActivity extends BaseActivity {
         registerHideableHeaderView(findViewById(R.id.headerbar));
 
 //        getLoaderManager().restartLoader(2, null, new FeedLoaderCallback());
-        getLoaderManager().restartLoader(3, null, new NodeLoaderCallback());
+        getLoaderManager().restartLoader(3, null, new ReviewLoaderCallback());
     }
 
     @Override
@@ -107,8 +107,10 @@ public class TestActivity extends BaseActivity {
         Bundle args = new Bundle();
 //        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
 //        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
-        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
-        args.putString(Api.ARG_API_PARAMS_ID, "2");
+//        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
+//        args.putString(Api.ARG_API_PARAMS_ID, "2");
+        args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
+        args.putString(Api.ARG_API_PARAMS_ID, "150242");
         SyncHelper.requestManualSync(this, args);
     }
 
@@ -212,6 +214,44 @@ public class TestActivity extends BaseActivity {
         }
     }
 
+    class ReviewLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(TestActivity.this, V2exContract.Reviews.CONTENT_URI,
+                    PROJECTION_REVIEWS, null, null, V2exContract.Reviews.REVIEW_CREATED + " ASC");
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            onRefreshingStateChanged(false);
+            if (data != null) {
+                data.moveToPosition(-1);
+                if (data.moveToFirst()) {
+                    String id = data.getString(data.getColumnIndex(V2exContract.Reviews.REVIEW_ID));
+                    String member = data.getString(data.getColumnIndex(V2exContract.Reviews.REVIEW_MEMBER));
+                    String content = data.getString(data.getColumnIndex(V2exContract.Reviews.REVIEW_CONTENT));
+                    int reviewCount = data.getCount();
+                    Toast.makeText(TestActivity.this, "review_id=" + id +
+                                    ", reviewMember=" + member +
+                                    ", reviewContent=" + content +
+                                    ", reviewCount=" + reviewCount,
+                            Toast.LENGTH_SHORT).show();
+                    LOGD(TAG, "review_id=" + id +
+                            ", reviewMember=" + member +
+                            ", reviewContent=" + content +
+                            ", reviewCount=" + reviewCount);
+
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            loader = null;
+        }
+    }
+
     private static final String[] PROJECTION = {
             V2exContract.Feeds.FEED_ID,
             V2exContract.Feeds.FEED_TITLE,
@@ -223,5 +263,11 @@ public class TestActivity extends BaseActivity {
             V2exContract.Nodes.NODE_ID,
             V2exContract.Nodes.NODE_NAME,
             V2exContract.Nodes.NODE_TITLE,
+    };
+
+    private static final String [] PROJECTION_REVIEWS = {
+            V2exContract.Reviews.REVIEW_ID,
+            V2exContract.Reviews.REVIEW_MEMBER,
+            V2exContract.Reviews.REVIEW_CONTENT,
     };
 }
