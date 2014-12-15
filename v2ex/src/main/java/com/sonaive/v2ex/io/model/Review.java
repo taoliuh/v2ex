@@ -19,36 +19,27 @@ import com.sonaive.v2ex.util.HashUtils;
 import com.sonaive.v2ex.util.ModelUtils;
 
 /**
- *
- * Created by liutao on 12/13/14.
+ * Created by liutao on 12/15/14.
  */
-public class Feed {
+public class Review {
 
     public int id;
-    public String title;
-    public String url;
+    public int thanks;
     public String content;
     public String content_rendered;
-    public int replies;
+    public Member member;
     public long created;
     public long last_modified;
-    public long last_touched;
-    public Member member;
-    public Node node;
 
     public String getImportHashcode() {
         StringBuilder sb = new StringBuilder();
         sb.append("id").append(id)
-                .append("title").append(title == null ? "" : title)
-                .append("url").append(url == null ? "" : url)
+                .append("thanks").append(thanks)
                 .append("content").append(content == null ? "" : content)
                 .append("content_rendered").append(content_rendered == null ? "" : content_rendered)
-                .append("replies").append(replies)
                 .append("member").append(member == null ? "" : ModelUtils.serializeMember(member))
-                .append("node").append(node == null ? "" : ModelUtils.serializeNode(node))
                 .append("created").append(created)
-                .append("last_modified").append(last_modified)
-                .append("last_touched").append(last_touched);
+                .append("last_modified").append(last_modified);
         return HashUtils.computeWeakHash(sb.toString());
     }
 }
