@@ -17,6 +17,7 @@
 package com.sonaive.v2ex.sync.api;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -71,8 +72,9 @@ public abstract class Api {
 
     protected Context mContext;
     protected String mUrl;
+    protected Bundle mArguments;
 
-    public String sync() {
+    public Bundle sync() {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(mUrl)
@@ -82,7 +84,8 @@ public abstract class Api {
             Response response = okHttpClient.newCall(request).execute();
             if (response != null && response.code() == 200) {
                 LOGD(TAG, "Request: " + mUrl + ", server returned HTTP_OK, so fetching was successful.");
-                return response.body().string();
+                mArguments.putString(Api.ARG_RESULT, response.body().string());
+                return mArguments;
             } else if (response != null && response.code() == 403) {
                 LOGW(TAG, "Request: " + mUrl + ", Server returned 403, fetching was failed.");
             } else {

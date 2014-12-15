@@ -88,7 +88,12 @@ public class NodesHandler extends JSONHandler {
 
     @Override
     public void process(JsonElement element) {
-        for (Node node : new Gson().fromJson(element, Node[].class)) {
+        if (element.isJsonArray()) {
+            for (Node node : new Gson().fromJson(element, Node[].class)) {
+                mNodes.put(String.valueOf(node.id), node);
+            }
+        } else {
+            Node node = new Gson().fromJson(element, Node.class);
             mNodes.put(String.valueOf(node.id), node);
         }
     }

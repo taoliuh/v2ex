@@ -106,7 +106,9 @@ public class TestActivity extends BaseActivity {
         super.requestDataRefresh();
         Bundle args = new Bundle();
 //        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
+//        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
+        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
+        args.putString(Api.ARG_API_PARAMS_ID, "2");
         SyncHelper.requestManualSync(this, args);
     }
 

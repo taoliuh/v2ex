@@ -153,34 +153,22 @@ public class SyncHelper {
             }
             case Api.API_TOPICS_LATEST: {
                 FeedsApi latestFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_LATEST);
-                String latestFeeds = latestFeedsApi.sync();
-                Bundle latestFeedsBundle = new Bundle();
-                latestFeedsBundle.putInt(Api.ARG_TYPE, FeedsApi.TYPE_LATEST);
-                latestFeedsBundle.putString(Api.ARG_RESULT, latestFeeds);
-                latestFeedsBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
-
                 // save the remote data to the database
-                mDataHandler.applyData(new Bundle[] {latestFeedsBundle});
+                mDataHandler.applyData(new Bundle[] {latestFeedsApi.sync()});
                 break;
             }
             case Api.API_TOPICS_HOT: {
                 FeedsApi hotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
-                String hotFeeds = hotFeedsApi.sync();
-                Bundle hotFeedsBundle = new Bundle();
-                hotFeedsBundle.putInt(Api.ARG_TYPE, FeedsApi.TYPE_HOT);
-                hotFeedsBundle.putString(Api.ARG_RESULT, hotFeeds);
-                hotFeedsBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
-                mDataHandler.applyData(new Bundle[] {hotFeedsBundle});
+                mDataHandler.applyData(new Bundle[] {hotFeedsApi.sync()});
                 break;
             }
             case Api.API_NODES_ALL: {
                 NodesApi allNodesApi = new NodesApi(mContext, NodesApi.TYPE_ALL);
-                String allNodes = allNodesApi.sync();
-                Bundle allNodesBundle = new Bundle();
-                allNodesBundle.putInt(Api.ARG_TYPE, NodesApi.TYPE_ALL);
-                allNodesBundle.putString(Api.ARG_RESULT, allNodes);
-                allNodesBundle.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_NODES);
-                mDataHandler.applyData(new Bundle[] {allNodesBundle});
+                mDataHandler.applyData(new Bundle[] {allNodesApi.sync()});
+            }
+            case Api.API_NODES_SPECIFIC: {
+                NodesApi specificNodesApi = new NodesApi(mContext, NodesApi.TYPE_SPECIFIC, args);
+                mDataHandler.applyData(new Bundle[] {specificNodesApi.sync()});
             }
         }
 
