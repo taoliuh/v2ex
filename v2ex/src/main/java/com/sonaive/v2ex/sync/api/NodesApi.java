@@ -37,27 +37,4 @@ public class NodesApi extends Api {
             mArguments.putInt(Api.ARG_TYPE, TYPE_SPECIFIC);
         }
     }
-
-//    @Override
-//    public String sync() {
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        Request request = new Request.Builder()
-//                .url(mUrl)
-//                .build();
-//
-//        try {
-//            Response response = okHttpClient.newCall(request).execute();
-//            if (response != null && response.code() == 200) {
-//                LOGD(TAG, "Server returned HTTP_OK, so fetching feeds was successful.");
-//                return response.body().string();
-//            } else if (response != null && response.code() == 403) {
-//                LOGW(TAG, "Server returned 403, fetching feeds was failed.");
-//            } else {
-//                LOGW(TAG, "Fetching feeds was failed. Unknown reason");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 }

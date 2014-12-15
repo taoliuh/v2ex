@@ -165,10 +165,12 @@ public class SyncHelper {
             case Api.API_NODES_ALL: {
                 NodesApi allNodesApi = new NodesApi(mContext, NodesApi.TYPE_ALL);
                 mDataHandler.applyData(new Bundle[] {allNodesApi.sync()});
+                break;
             }
             case Api.API_NODES_SPECIFIC: {
                 NodesApi specificNodesApi = new NodesApi(mContext, NodesApi.TYPE_SPECIFIC, args);
                 mDataHandler.applyData(new Bundle[] {specificNodesApi.sync()});
+                break;
             }
         }
 
