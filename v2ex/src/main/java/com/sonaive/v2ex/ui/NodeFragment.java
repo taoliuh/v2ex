@@ -74,7 +74,6 @@ public class NodeFragment extends Fragment {
 
     public void setContentTopClearance(int clearance) {
         if (mRecyclerView != null) {
-            mRecyclerView.setCursorAdapter(mAdapter);
             mRecyclerView.setContentTopClearance(clearance);
         }
     }

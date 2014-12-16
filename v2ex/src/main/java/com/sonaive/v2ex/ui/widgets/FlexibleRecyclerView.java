@@ -21,12 +21,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.widget.CursorAdapter;
 
-import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
+ * After hours of digging, finally get it through. "clipToPadding = false" works like a charm
+ * see @http://stackoverflow.com/questions/24914191/recyclerview-cliptopadding-false
+ * and see @http://stackoverflow.com/questions/25178329/recyclerview-and-swiperefreshlayout
  * Created by liutao on 12/16/14.
  */
 public class FlexibleRecyclerView extends RecyclerView {
@@ -34,8 +35,6 @@ public class FlexibleRecyclerView extends RecyclerView {
     private static final String TAG = makeLogTag(FlexibleRecyclerView.class);
 
     private int mContentTopClearance = 0;
-
-    private CursorAdapter mAdapter;
 
     public FlexibleRecyclerView(Context context) {
         this(context, null, 0);
@@ -56,41 +55,12 @@ public class FlexibleRecyclerView extends RecyclerView {
         }
     }
 
-    @Override
-    public boolean canScrollVertically(int direction) {
-        // check if scrolling up
-        boolean result;
-        if (direction < 0) {
-            boolean original = super.canScrollVertically(direction);
-            result = !original && getChildAt(0) != null && getChildAt(0).getTop() < 0 || original;
-            LOGD(TAG, "FlexibleRecyclerView canScrollVertically result: " + result);
-            return result;
-        }
-        result = super.canScrollVertically(direction);
-        LOGD(TAG, "FlexibleRecyclerView canScrollVertically result: " + result);
-        return result;
-
-    }
-
     public void setContentTopClearance(int clearance) {
         if (mContentTopClearance != clearance) {
             mContentTopClearance = clearance;
             setPadding(getPaddingLeft(), mContentTopClearance,
                     getPaddingRight(), getPaddingBottom());
-            notifyAdapterDataSetChanged();
+            getAdapter().notifyDataSetChanged();
         }
     }
-
-    public void setCursorAdapter(CursorAdapter adapter) {
-        mAdapter = adapter;
-    }
-
-    private void notifyAdapterDataSetChanged() {
-        // We have to set up a new adapter (as opposed to just calling notifyDataSetChanged()
-        // because we might need MORE view types than before, and ListView isn't prepared to
-        // handle the case where its existing adapter suddenly needs to increase the number of
-        // view types it needs.
-        setAdapter(mAdapter);
-    }
-
 }

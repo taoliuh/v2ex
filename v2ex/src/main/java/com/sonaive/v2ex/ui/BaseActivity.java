@@ -655,13 +655,12 @@ public class BaseActivity extends ActionBarActivity implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-//                onMainContentScrolled(currentY <= DELTA_THRESHOLD ? 0 : Integer.MAX_VALUE,
-//                        lastY - currentY > 500 ? Integer.MIN_VALUE :
-//                                lastY == currentY ? 0 : Integer.MAX_VALUE
-//                );
-//                currentY += dy;
-//                lastY = currentY;
-//
+                onMainContentScrolled(currentY <= DELTA_THRESHOLD ? 0 : Integer.MAX_VALUE,
+                        lastY - currentY > 500 ? Integer.MIN_VALUE :
+                                lastY == currentY ? 0 : Integer.MAX_VALUE
+                );
+                currentY += dy;
+                lastY = currentY;
 //                LOGD(TAG, "CurrentY=" + currentY + ", lastY=" + lastY + ", dy=" + dy);
             }
         });
