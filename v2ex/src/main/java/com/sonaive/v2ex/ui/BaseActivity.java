@@ -39,6 +39,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -250,14 +251,6 @@ public class BaseActivity extends ActionBarActivity implements
     }
 
     protected void requestDataRefresh() {
-//        Runnable fakeWorker = new Runnable() {
-//            @Override
-//            public void run() {
-//                onRefreshingStateChanged(false);
-//            }
-//        };
-//        Handler handler = new Handler();
-//        handler.postDelayed(fakeWorker, 3000);
     }
 
     private void updateSwipeRefreshProgressBarTop() {
@@ -643,6 +636,25 @@ public class BaseActivity extends ActionBarActivity implements
                                 lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE
                 );
                 lastFvi = firstVisibleItem;
+            }
+        });
+    }
+
+    protected void enableActionBarAutoHide(final RecyclerView recyclerView) {
+        initActionBarAutoHide();
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                onMainContentScrolled(firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
+//                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
+//                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE
+//                );
+//                lastFvi = firstVisibleItem;
             }
         });
     }

@@ -24,6 +24,10 @@
         <attr name="contentTopClearance" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="FlexibleRecyclerView">
+        <attr name="topClearance" format="dimension" />
+    </declare-styleable>
+
     <declare-styleable name="ScrimInsetsView">
         <attr name="insetForeground" format="reference|color" />
     </declare-styleable>

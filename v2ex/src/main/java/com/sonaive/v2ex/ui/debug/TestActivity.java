@@ -55,7 +55,7 @@ public class TestActivity extends BaseActivity {
         registerHideableHeaderView(findViewById(R.id.headerbar));
 
 //        getLoaderManager().restartLoader(2, null, new FeedLoaderCallback());
-        getLoaderManager().restartLoader(3, null, new ReviewLoaderCallback());
+        getLoaderManager().restartLoader(3, null, new NodeLoaderCallback());
     }
 
     @Override

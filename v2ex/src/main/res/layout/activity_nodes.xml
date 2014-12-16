@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ui.debug.TestActivity">
+    tools:context="ui.NodesActivity">
 
     <!-- Main layout -->
     <com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout
@@ -37,11 +37,11 @@
             android:layout_height="match_parent">
 
             <!-- Images fragment showing the image list -->
-            <fragment android:name="com.sonaive.v2ex.ui.debug.TestFragment"
-                android:id="@+id/images_fragment"
+            <fragment android:name="com.sonaive.v2ex.ui.NodeFragment"
+                android:id="@+id/node_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:layout="@layout/fragment_images" />
+                tools:layout="@layout/list_fragment_layout" />
         </com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout>
 
         <LinearLayout style="@style/HeaderBar"

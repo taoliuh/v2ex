@@ -54,7 +54,7 @@
                     android:id="@+id/profile_image"
                     android:layout_width="@dimen/navdrawer_profile_image_size"
                     android:layout_height="@dimen/navdrawer_profile_image_size"
-
+                    android:src="@drawable/person_image_empty"
                     android:scaleType="centerCrop"
                     app:maskDrawable="@drawable/circle_mask" />
 
