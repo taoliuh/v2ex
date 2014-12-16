@@ -40,6 +40,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -643,6 +644,9 @@ public class BaseActivity extends ActionBarActivity implements
     protected void enableActionBarAutoHide(final RecyclerView recyclerView) {
         initActionBarAutoHide();
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            final static int DELTA_THRESHOLD = 2000;
+            int currentY = 0;
+            int lastY = 0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -650,11 +654,15 @@ public class BaseActivity extends ActionBarActivity implements
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                onMainContentScrolled(firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
-//                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
-//                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE
+
+//                onMainContentScrolled(currentY <= DELTA_THRESHOLD ? 0 : Integer.MAX_VALUE,
+//                        lastY - currentY > 500 ? Integer.MIN_VALUE :
+//                                lastY == currentY ? 0 : Integer.MAX_VALUE
 //                );
-//                lastFvi = firstVisibleItem;
+//                currentY += dy;
+//                lastY = currentY;
+//
+//                LOGD(TAG, "CurrentY=" + currentY + ", lastY=" + lastY + ", dy=" + dy);
             }
         });
     }

@@ -36,9 +36,6 @@ import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
- * LoaderCallbacks.OnLoadFinished called twice after screen rotation changes.
- * see "http://stackoverflow.com/questions/11293441/android-loadercallbacks-onloadfinished-called-twice"
- * and i put initLoader in onResume function instead of onActivityCreated or onCreate.
  * Created by liutao on 12/15/14.
  */
 public class NodeFragment extends Fragment {
@@ -77,6 +74,7 @@ public class NodeFragment extends Fragment {
 
     public void setContentTopClearance(int clearance) {
         if (mRecyclerView != null) {
+            mRecyclerView.setCursorAdapter(mAdapter);
             mRecyclerView.setContentTopClearance(clearance);
         }
     }
