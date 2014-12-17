@@ -644,9 +644,8 @@ public class BaseActivity extends ActionBarActivity implements
     protected void enableActionBarAutoHide(final RecyclerView recyclerView) {
         initActionBarAutoHide();
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            final static int DELTA_THRESHOLD = 2000;
-            int currentY = 0;
-            int lastY = 0;
+            int firstFcvi = 0;
+            int lastFcvi = 0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -655,13 +654,22 @@ public class BaseActivity extends ActionBarActivity implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-                onMainContentScrolled(currentY <= DELTA_THRESHOLD ? 0 : Integer.MAX_VALUE,
-                        lastY - currentY > 500 ? Integer.MIN_VALUE :
-                                lastY == currentY ? 0 : Integer.MAX_VALUE
-                );
-                currentY += dy;
-                lastY = currentY;
-//                LOGD(TAG, "CurrentY=" + currentY + ", lastY=" + lastY + ", dy=" + dy);
+                int deltaThreshold = 3;
+
+                RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+
+                if (layoutManager instanceof StaggeredGridLayoutManager) {
+                    deltaThreshold *= ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
+                    int[] firstCompletelyVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstCompletelyVisibleItemPositions(null);
+                    if (firstCompletelyVisibleItemPositions != null) {
+                        firstFcvi = firstCompletelyVisibleItemPositions[0];
+                        onMainContentScrolled(firstFcvi <= deltaThreshold ? 0 : Integer.MAX_VALUE,
+                                lastFcvi - firstFcvi > 0 ? Integer.MIN_VALUE :
+                                        lastFcvi == firstFcvi ? 0 : Integer.MAX_VALUE
+                        );
+                        lastFcvi = firstFcvi;
+                    }
+                }
             }
         });
     }
