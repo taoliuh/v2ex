@@ -28,18 +28,18 @@ import com.sonaive.v2ex.util.UIUtils;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
- * Created by liutao on 12/15/14.
+ * Created by liutao on 12/18/14.
  */
-public class NodesActivity extends BaseActivity {
-    private static final String TAG = makeLogTag(NodesActivity.class);
+public class FeedsActivity extends BaseActivity {
+    private static final String TAG = makeLogTag(FeedsActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
-    private NodesFragment mFrag;
+    private FeedsFragment mFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nodes);
+        setContentView(R.layout.activity_feeds);
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
@@ -57,7 +57,7 @@ public class NodesActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
 
-        mFrag = (NodesFragment) getFragmentManager().findFragmentById(R.id.nodes_fragment);
+        mFrag = (FeedsFragment) getFragmentManager().findFragmentById(R.id.feeds_fragment);
         if (mFrag != null) {
             // configure images fragment's top clearance to take our overlaid controls (Action Bar
             // ) into account.
@@ -85,25 +85,21 @@ public class NodesActivity extends BaseActivity {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_NODES;
+        return NAVDRAWER_ITEM_FEEDS;
     }
 
     @Override
     protected void requestDataRefresh() {
         super.requestDataRefresh();
         Bundle args = new Bundle();
-//        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-//        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
-//        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
-//        args.putString(Api.ARG_API_PARAMS_ID, "2");
-        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
+        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
         SyncHelper.requestManualSync(this, args);
     }
 
     // Updates the Sessions fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
-        mFrag = (NodesFragment) getFragmentManager().findFragmentById(
-                R.id.nodes_fragment);
+        mFrag = (FeedsFragment) getFragmentManager().findFragmentById(
+                R.id.feeds_fragment);
         if (mFrag == null) {
             return;
         }

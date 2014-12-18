@@ -119,8 +119,7 @@ public class TestActivity extends BaseActivity {
             // ) into account.
             int actionBarSize = UIUtils.calculateActionBarSize(this);
             mDrawShadowFrameLayout.setShadowTopOffset(actionBarSize);
-            mFrag.setContentTopClearance(actionBarSize
-                    + getResources().getDimensionPixelSize(R.dimen.explore_grid_padding));
+            mFrag.setContentTopClearance(actionBarSize);
         }
         updateFragContentTopClearance();
 
@@ -175,11 +174,10 @@ public class TestActivity extends BaseActivity {
         int actionBarClearance = UIUtils.calculateActionBarSize(this);
         int butterBarClearance = butterBarVisible
                 ? getResources().getDimensionPixelSize(R.dimen.butter_bar_height) : 0;
-        int gridPadding = getResources().getDimensionPixelSize(R.dimen.explore_grid_padding);
 
         setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
-        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance + gridPadding);
+        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
     }
 
     class DownloadStateReceiver extends BroadcastReceiver {

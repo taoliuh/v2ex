@@ -19,10 +19,8 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
@@ -30,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.ui.widgets.CollectionView;
@@ -111,7 +108,7 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
     public View newCollectionItemView(Context context, int groupId, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
-        return inflater.inflate(R.layout.image_item, parent, false);
+        return inflater.inflate(R.layout.item_image, parent, false);
     }
 
     @Override

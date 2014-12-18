@@ -65,7 +65,6 @@
                     android:visibility="gone"
                     android:layout_marginLeft="16dp"
                     android:paddingBottom="16dp"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
                     android:scaleType="center"
                     android:src="@drawable/ic_drawer_accounts_expand" />

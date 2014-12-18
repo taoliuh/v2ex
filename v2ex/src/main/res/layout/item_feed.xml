@@ -1,0 +1,125 @@
+<!--
+  Copyright 2014 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applica`ble law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:background="#fff"
+    android:foreground="?android:selectableItemBackground"
+    android:orientation="horizontal"
+    card_view:cardCornerRadius="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="求起名：明年准备开个淘宝母婴店，希望能求到一个好店名"
+            android:textColor="@color/body_text_1"
+            android:textSize="@dimen/text_size_large" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="@dimen/line_spacing_extra"
+            android:maxLines="12"
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
+            android:text="最近在服务器上装了虚拟机，然后从bitnami直接下载了redmine的虚拟机文件，安装好了之后新建项目并添加svn，但一直不能读取（显示404，版本库中不存在该条目和（或）其修订版本）。\r\n\r\n-----------\r\nsvn服务器在另外一个机房，我在redmine的项目配置里直接添加版本库的svn地址：\r\nhttps://IP地址/svn/项目名称，不管用。但是通过web和eclipse都能正确打开svn地址。\r\n\r\n求教怎么回事。"
+            android:textSize="@dimen/text_size_medium"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.sonaive.v2ex.ui.widgets.BezelImageView
+                android:id="@+id/avatar"
+                android:layout_width="@dimen/avatar_normal"
+                android:layout_height="@dimen/avatar_normal"
+                android:scaleType="centerCrop"
+                android:src="@drawable/person_image_empty"
+                app:maskDrawable="@drawable/circle_mask" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/avatar"
+                android:text="sonaive"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/avatar"
+                android:layout_alignLeft="@+id/name"
+                android:text="Yesterday"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/replies"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/avatar"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/time"
+                android:text="9个回复"
+                android:textSize="@dimen/text_size_medium" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="5dp"
+        android:background="#fff"
+        android:foreground="?android:selectableItemBackground"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        card_view:cardCornerRadius="2dp">
+
+        <TextView
+            android:id="@+id/node_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="分享发现" />
+
+    </android.support.v7.widget.CardView>
+
+</android.support.v7.widget.CardView>
+

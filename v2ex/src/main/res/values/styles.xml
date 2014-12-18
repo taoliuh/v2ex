@@ -62,6 +62,8 @@
 
     <style name="Theme.V2ex.WithNavDrawer" parent="Theme.V2ex" />
 
+    <style name="Theme.V2ex.Feeds" parent="Theme.V2ex.WithNavDrawer" />
+
     <style name="Theme.V2ex.Nodes" parent="Theme.V2ex.WithNavDrawer" />
 
     <style name="Theme.V2ex.Images" parent="Theme.V2ex.WithNavDrawer" />

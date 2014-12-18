@@ -12,7 +12,9 @@
     <string name="err_unknown_error">未知错误</string>
     <string name="err_get_node_collections_failed">无法获取用户收藏的节点</string>
 
+    <string name="menu_latest_feeds">最新</string>
     <string name="menu_all_nodes">所有节点</string>
     <string name="menu_picasa">Picasa</string>
     <string name="menu_settings">设置</string>
+    <string name="noun_reply">个回复</string>
 </resources>

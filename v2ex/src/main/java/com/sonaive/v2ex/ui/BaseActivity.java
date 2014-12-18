@@ -39,6 +39,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -118,15 +119,17 @@ public class BaseActivity extends ActionBarActivity implements
     // symbols for navdrawer items (indices must correspond to array below). This is
     // not a list of items that are necessarily *present* in the Nav Drawer; rather,
     // it's a list of all possible items.
-    protected static final int NAVDRAWER_ITEM_NODES = 0;
-    protected static final int NAVDRAWER_ITEM_PICASAS = 1;
-    protected static final int NAVDRAWER_ITEM_SETTINGS = 2;
+    protected static final int NAVDRAWER_ITEM_FEEDS = 0;
+    protected static final int NAVDRAWER_ITEM_NODES = 1;
+    protected static final int NAVDRAWER_ITEM_PICASAS = 2;
+    protected static final int NAVDRAWER_ITEM_SETTINGS = 3;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
 
     // titles for navdrawer items (indices must correspond to the above)
     private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
+            R.string.menu_latest_feeds,
             R.string.menu_all_nodes,
             R.string.menu_picasa,
             R.string.menu_settings
@@ -134,6 +137,7 @@ public class BaseActivity extends ActionBarActivity implements
 
     // icons for navdrawer items (indices must correspond to above array)
     private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
+            R.drawable.ic_launcher,
             R.drawable.ic_launcher,
             R.drawable.ic_launcher,
             R.drawable.ic_launcher
@@ -423,7 +427,7 @@ public class BaseActivity extends ActionBarActivity implements
     /** Populates the navigation drawer with the appropriate items. */
     private void populateNavDrawer() {
         mNavDrawerItems.clear();
-
+        mNavDrawerItems.add(NAVDRAWER_ITEM_FEEDS);
         mNavDrawerItems.add(NAVDRAWER_ITEM_NODES);
         mNavDrawerItems.add(NAVDRAWER_ITEM_PICASAS);
 
@@ -662,8 +666,8 @@ public class BaseActivity extends ActionBarActivity implements
     protected void enableActionBarAutoHide(final RecyclerView recyclerView) {
         initActionBarAutoHide();
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            int firstFcvi = 0;
-            int lastFcvi = 0;
+            int firstFvi = 0;
+            int lastFvi = 0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -678,15 +682,22 @@ public class BaseActivity extends ActionBarActivity implements
 
                 if (layoutManager instanceof StaggeredGridLayoutManager) {
                     deltaThreshold *= ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
-                    int[] firstCompletelyVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstCompletelyVisibleItemPositions(null);
-                    if (firstCompletelyVisibleItemPositions != null) {
-                        firstFcvi = firstCompletelyVisibleItemPositions[0];
-                        onMainContentScrolled(firstFcvi <= deltaThreshold ? 0 : Integer.MAX_VALUE,
-                                lastFcvi - firstFcvi > 0 ? Integer.MIN_VALUE :
-                                        lastFcvi == firstFcvi ? 0 : Integer.MAX_VALUE
+                    int[] firstVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(null);
+                    if (firstVisibleItemPositions != null) {
+                        firstFvi = firstVisibleItemPositions[0];
+                        onMainContentScrolled(firstFvi <= deltaThreshold ? 0 : Integer.MAX_VALUE,
+                                lastFvi - firstFvi > 0 ? Integer.MIN_VALUE :
+                                        lastFvi == firstFvi ? 0 : Integer.MAX_VALUE
                         );
-                        lastFcvi = firstFcvi;
+                        lastFvi = firstFvi;
                     }
+                } else if (layoutManager instanceof LinearLayoutManager) {
+                    firstFvi = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+                    onMainContentScrolled(firstFvi <= deltaThreshold ? 0 : Integer.MAX_VALUE,
+                            lastFvi - firstFvi > 0 ? Integer.MIN_VALUE :
+                                    lastFvi == firstFvi ? 0 : Integer.MAX_VALUE
+                    );
+                    lastFvi = firstFvi;
                 }
             }
         });
@@ -867,6 +878,12 @@ public class BaseActivity extends ActionBarActivity implements
     private void goToNavDrawerItem(int item) {
         Intent intent;
         switch (item) {
+            case NAVDRAWER_ITEM_FEEDS: {
+                intent = new Intent(this, FeedsActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            }
             case NAVDRAWER_ITEM_NODES: {
                 intent = new Intent(this, NodesActivity.class);
                 startActivity(intent);

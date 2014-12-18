@@ -7,7 +7,7 @@
 
     <dimen name="navdrawer_chosen_account_height">140dp</dimen>
     <dimen name="navdrawer_width">260dp</dimen>
-    <dimen name="navdrawer_profile_image_size">40dp</dimen>
+    <dimen name="navdrawer_profile_image_size">48dp</dimen>
 
     <!-- Action Bar auto-hide-on-scroll behavior parameters -->
     <dimen name="action_bar_auto_hide_min_y">152dp</dimen>
@@ -34,4 +34,6 @@
 
     <dimen name="explore_grid_padding">4dp</dimen>
     <dimen name="explore_grid_padding_half">2dp</dimen>
+    <dimen name="avatar_normal">40dp</dimen>
+    <dimen name="line_spacing_extra">3dp</dimen>
 </resources>

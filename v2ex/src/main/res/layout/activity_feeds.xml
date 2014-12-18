@@ -37,8 +37,8 @@
             android:layout_height="match_parent">
 
             <!-- Images fragment showing the image list -->
-            <fragment android:name="com.sonaive.v2ex.ui.NodesFragment"
-                android:id="@+id/nodes_fragment"
+            <fragment android:name="com.sonaive.v2ex.ui.FeedsFragment"
+                android:id="@+id/feeds_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/list_fragment_layout" />
