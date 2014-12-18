@@ -11,4 +11,7 @@
     <string name="err_user_not_found">查无此人，请确认用户名是否正确</string>
     <string name="err_unknown_error">未知错误</string>
     <string name="err_get_node_collections_failed">无法获取用户收藏的节点</string>
+
+    <string name="menu_all_nodes">所有节点</string>
+    <string name="menu_picasa">Picasa</string>
 </resources>

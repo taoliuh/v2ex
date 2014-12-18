@@ -124,10 +124,13 @@ public class BaseActivity extends ActionBarActivity implements
 
     // titles for navdrawer items (indices must correspond to the above)
     private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
+            R.string.menu_all_nodes,
+            R.string.menu_picasa
     };
 
     // icons for navdrawer items (indices must correspond to above array)
     private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
+
     };
 
     // Helper methods for L APIs

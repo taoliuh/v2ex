@@ -91,7 +91,7 @@ public class NodesFragment extends Fragment {
                     PROJECTION,                                        // Projection to return
                     null,                                              // No selection clause
                     null,                                              // No selection arguments
-                    V2exContract.Nodes.NODE_CREATED + " ASC"           // Default sort order
+                    V2exContract.Nodes.NODE_ID + " ASC"                // Default sort order
             );
         }
 
