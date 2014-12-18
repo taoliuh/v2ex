@@ -38,9 +38,9 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/15/14.
  */
-public class NodeFragment extends Fragment {
+public class NodesFragment extends Fragment {
 
-    private static final String TAG = makeLogTag(NodeFragment.class);
+    private static final String TAG = makeLogTag(NodesFragment.class);
 
     FlexibleRecyclerView mRecyclerView = null;
     View mEmptyView = null;
@@ -91,7 +91,7 @@ public class NodeFragment extends Fragment {
                     PROJECTION,                                        // Projection to return
                     null,                                              // No selection clause
                     null,                                              // No selection arguments
-                    null                                               // Default sort order
+                    V2exContract.Nodes.NODE_CREATED + " ASC"           // Default sort order
             );
         }
 

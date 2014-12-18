@@ -34,7 +34,7 @@ public class NodesActivity extends BaseActivity {
     private static final String TAG = makeLogTag(NodesActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
-    private NodeFragment mFrag;
+    private NodesFragment mFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class NodesActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
 
-        mFrag = (NodeFragment) getFragmentManager().findFragmentById(R.id.node_fragment);
+        mFrag = (NodesFragment) getFragmentManager().findFragmentById(R.id.node_fragment);
         if (mFrag != null) {
             // configure images fragment's top clearance to take our overlaid controls (Action Bar
             // ) into account.
@@ -103,7 +103,7 @@ public class NodesActivity extends BaseActivity {
 
     // Updates the Sessions fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
-        mFrag = (NodeFragment) getFragmentManager().findFragmentById(
+        mFrag = (NodesFragment) getFragmentManager().findFragmentById(
                 R.id.node_fragment);
         if (mFrag == null) {
             return;
