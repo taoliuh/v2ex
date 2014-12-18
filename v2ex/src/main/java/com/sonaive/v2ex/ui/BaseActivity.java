@@ -63,6 +63,7 @@ import com.google.gson.JsonObject;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.SyncUtils;
+import com.sonaive.v2ex.ui.debug.TestActivity;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;
 import com.sonaive.v2ex.ui.widgets.ScrimInsetsScrollView;
 import com.sonaive.v2ex.util.AccountUtils;
@@ -109,7 +110,7 @@ public class BaseActivity extends ActionBarActivity implements
     private static final TypeEvaluator ARGB_EVALUATOR = new ArgbEvaluator();
 
     // list of navdrawer items that were actually added to the navdrawer, in order
-    private ArrayList<Integer> mNavDrawerItems = new ArrayList<Integer>();
+    private ArrayList<Integer> mNavDrawerItems = new ArrayList<>();
 
     // views that correspond to each navdrawer item, null if not yet created
     private View[] mNavDrawerItemViews = null;
@@ -117,7 +118,9 @@ public class BaseActivity extends ActionBarActivity implements
     // symbols for navdrawer items (indices must correspond to array below). This is
     // not a list of items that are necessarily *present* in the Nav Drawer; rather,
     // it's a list of all possible items.
-    protected static final int NAVDRAWER_ITEM_SETTINGS = 6;
+    protected static final int NAVDRAWER_ITEM_NODES = 0;
+    protected static final int NAVDRAWER_ITEM_PICASAS = 1;
+    protected static final int NAVDRAWER_ITEM_SETTINGS = 2;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
@@ -125,12 +128,15 @@ public class BaseActivity extends ActionBarActivity implements
     // titles for navdrawer items (indices must correspond to the above)
     private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
             R.string.menu_all_nodes,
-            R.string.menu_picasa
+            R.string.menu_picasa,
+            R.string.menu_settings
     };
 
     // icons for navdrawer items (indices must correspond to above array)
     private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
-
+            R.drawable.ic_launcher,
+            R.drawable.ic_launcher,
+            R.drawable.ic_launcher
     };
 
     // Helper methods for L APIs
@@ -417,6 +423,15 @@ public class BaseActivity extends ActionBarActivity implements
     /** Populates the navigation drawer with the appropriate items. */
     private void populateNavDrawer() {
         mNavDrawerItems.clear();
+
+        mNavDrawerItems.add(NAVDRAWER_ITEM_NODES);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_PICASAS);
+
+        // Other items that are always in the nav drawer irrespective of whether the
+        // attendee is on-site or remote:
+        mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR_SPECIAL);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
+
         createNavDrawerItems();
     }
 
@@ -849,7 +864,23 @@ public class BaseActivity extends ActionBarActivity implements
         mDrawerLayout.closeDrawer(Gravity.START);
     }
 
-    private void goToNavDrawerItem(int item) { }
+    private void goToNavDrawerItem(int item) {
+        Intent intent;
+        switch (item) {
+            case NAVDRAWER_ITEM_NODES: {
+                intent = new Intent(this, NodesActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            }
+            case NAVDRAWER_ITEM_PICASAS: {
+                intent = new Intent(this, TestActivity.class);
+                startActivity(intent);
+                finish();
+                break;
+            }
+        }
+    }
 
     protected void configureStandardMenuItems(Menu menu) {
     }

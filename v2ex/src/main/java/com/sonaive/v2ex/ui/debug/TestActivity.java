@@ -16,10 +16,16 @@
 package com.sonaive.v2ex.ui.debug;
 
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -40,9 +46,20 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class TestActivity extends BaseActivity {
 
     private static final String TAG = makeLogTag(TestActivity.class);
+
+    private static final String PICASA_RSS_URL =
+            "http://picasaweb.google.com/data/feed/base/featured?" +
+                    "alt=rss&kind=photo&access=public&slabel=featured&hl=en_US&imgmax=1600";
+
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
     private TestFragment mFrag;
+
+    // Intent for starting the IntentService that downloads the Picasa featured picture RSS feed
+    private Intent mServiceIntent;
+
+    // An instance of the status broadcast receiver
+    DownloadStateReceiver mDownloadStateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +69,37 @@ public class TestActivity extends BaseActivity {
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
 
+        overridePendingTransition(0, 0);
+
         registerHideableHeaderView(findViewById(R.id.headerbar));
 
 //        getLoaderManager().restartLoader(2, null, new FeedLoaderCallback());
-        getLoaderManager().restartLoader(3, null, new NodeLoaderCallback());
+//        getLoaderManager().restartLoader(3, null, new NodeLoaderCallback());
+
+        /*
+         * Creates a new Intent to send to the download IntentService. The Intent contains the
+         * URL of the Picasa feature picture RSS feed
+         */
+        mServiceIntent =
+                new Intent(this, RSSPullService.class)
+                        .setData(Uri.parse(PICASA_RSS_URL));
+
+        startService(mServiceIntent);
+
+
+        /*
+         * Creates an intent filter for DownloadStateReceiver that intercepts broadcast Intents
+         */
+
+        // The filter's action is BROADCAST_ACTION
+        IntentFilter statusIntentFilter = new IntentFilter(
+                Constants.BROADCAST_ACTION);
+
+        // Sets the filter's category to DEFAULT
+        statusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        mDownloadStateReceiver = new DownloadStateReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver, statusIntentFilter);
     }
 
     @Override
@@ -98,20 +142,22 @@ public class TestActivity extends BaseActivity {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_SETTINGS;
+        return NAVDRAWER_ITEM_PICASAS;
     }
 
     @Override
     protected void requestDataRefresh() {
         super.requestDataRefresh();
-        Bundle args = new Bundle();
+//        Bundle args = new Bundle();
 //        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
 //        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
 //        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
 //        args.putString(Api.ARG_API_PARAMS_ID, "2");
-        args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
-        args.putString(Api.ARG_API_PARAMS_ID, "150242");
-        SyncHelper.requestManualSync(this, args);
+//        args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
+//        args.putString(Api.ARG_API_PARAMS_ID, "150242");
+//        SyncHelper.requestManualSync(this, args);
+        startService(mServiceIntent);
+
     }
 
     // Updates the Sessions fragment content top clearance to take our chrome into account
@@ -134,6 +180,21 @@ public class TestActivity extends BaseActivity {
         setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
         mFrag.setContentTopClearance(actionBarClearance + butterBarClearance + gridPadding);
+    }
+
+    class DownloadStateReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getIntExtra(Constants.EXTENDED_DATA_STATUS,
+                    Constants.STATE_ACTION_COMPLETE)) {
+                case Constants.STATE_ACTION_COMPLETE: {
+                    // Rss has already stored. Hide the refresh progress bar.
+                    onRefreshingStateChanged(false);
+                    LOGD(TAG, "Rss has already stored. Hide the refresh progress bar.");
+                }
+            }
+        }
     }
 
     class FeedLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {

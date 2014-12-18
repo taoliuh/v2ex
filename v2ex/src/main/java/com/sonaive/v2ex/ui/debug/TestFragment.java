@@ -62,10 +62,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
 
     private static final int GROUP_ID_NORMAL = 1001;
 
-    private static final String PICASA_RSS_URL =
-            "http://picasaweb.google.com/data/feed/base/featured?" +
-                    "alt=rss&kind=photo&access=public&slabel=featured&hl=en_US&imgmax=1600";
-
     ImageLoader mImageLoader;
 
     CollectionView mCollectionView = null;
@@ -73,8 +69,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
 
     Cursor mCursor = null;
 
-    // Intent for starting the IntentService that downloads the Picasa featured picture RSS feed
-    private Intent mServiceIntent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,16 +82,6 @@ public class TestFragment extends Fragment implements CollectionViewCallbacks {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mImageLoader = new ImageLoader(getActivity(), android.R.color.transparent);
-
-        /*
-         * Creates a new Intent to send to the download IntentService. The Intent contains the
-         * URL of the Picasa feature picture RSS feed
-         */
-        mServiceIntent =
-                new Intent(getActivity(), RSSPullService.class)
-                        .setData(Uri.parse(PICASA_RSS_URL));
-
-        getActivity().startService(mServiceIntent);
     }
 
     @Override

@@ -28,13 +28,18 @@
 
         <activity android:name=".ui.NodesActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.V2ex.Images" >
+            android:theme="@style/Theme.V2ex.Nodes" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+
+        <activity android:name=".ui.debug.TestActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.V2ex.Images" >
         </activity>
 
         <service

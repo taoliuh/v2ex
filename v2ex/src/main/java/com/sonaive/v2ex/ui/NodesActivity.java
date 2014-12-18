@@ -42,7 +42,7 @@ public class NodesActivity extends BaseActivity {
         setContentView(R.layout.activity_nodes);
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
-
+        overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
     }
 
@@ -86,7 +86,7 @@ public class NodesActivity extends BaseActivity {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_SETTINGS;
+        return NAVDRAWER_ITEM_NODES;
     }
 
     @Override
