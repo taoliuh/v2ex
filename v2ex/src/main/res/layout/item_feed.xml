@@ -101,7 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="10dp"
         android:background="#fff"
         android:foreground="?android:selectableItemBackground"
         android:orientation="horizontal"

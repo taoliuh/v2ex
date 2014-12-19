@@ -32,12 +32,12 @@ import com.sonaive.v2ex.io.model.Node;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.ModelUtils;
-import com.sonaive.v2ex.widget.CursorAdapter;
+import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
 /**
  * Created by liutao on 12/18/14.
  */
-public class FeedCursorAdapter extends CursorAdapter<FeedCursorAdapter.ViewHolder> {
+public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter.ViewHolder> {
 
     Context mContext;
 

@@ -30,15 +30,20 @@ import android.view.ViewGroup;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.SyncHelper;
+import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.NodeCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.widget.LoadingState;
+import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
  * Created by liutao on 12/15/14.
  */
-public class NodesFragment extends Fragment {
+public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
 
     private static final String TAG = makeLogTag(NodesFragment.class);
 
@@ -52,6 +57,7 @@ public class NodesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new NodeCursorAdapter(getActivity(), null, 0);
+        mAdapter.setOnLoadMoreDataListener(this);
     }
 
     @Override
@@ -82,6 +88,15 @@ public class NodesFragment extends Fragment {
         return ViewCompat.canScrollVertically(mRecyclerView, -1);
     }
 
+    @Override
+    public void onLoadMoreData() {
+        mAdapter.setLoadingState(LoadingState.LOADING);
+//        Bundle args = new Bundle();
+//        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
+//        SyncHelper.requestManualSync(getActivity(), args);
+        LOGD(TAG, "Load more nodes, loading state is: " + LoadingState.LOADING);
+    }
+
     class NodesLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -97,6 +112,8 @@ public class NodesFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            LOGD(TAG, "Nodes count is: " + (data == null ? 0 : data.getCount()));
+            mAdapter.setLoadingState(LoadingState.FINISH);
             ((NodesActivity) getActivity()).onRefreshingStateChanged(false);
             mAdapter.swapCursor(data);
         }

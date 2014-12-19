@@ -28,11 +28,12 @@ import android.widget.TextView;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.widget.CursorAdapter;
+import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
 /**
  * Created by liutao on 12/15/14.
  */
-public class NodeCursorAdapter extends CursorAdapter<NodeCursorAdapter.ViewHolder> {
+public class NodeCursorAdapter extends PaginationCursorAdapter<NodeCursorAdapter.ViewHolder> {
 
     /**
      * Recommended constructor.

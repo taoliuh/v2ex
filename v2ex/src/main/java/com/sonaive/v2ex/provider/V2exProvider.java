@@ -38,6 +38,7 @@ import java.util.Arrays;
 
 import com.sonaive.v2ex.provider.V2exDatabase.*;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.LOGV;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
@@ -175,9 +176,21 @@ public class V2exProvider extends ContentProvider {
                 boolean distinct = !TextUtils.isEmpty(
                         uri.getQueryParameter(V2exContract.QUERY_PARAMETER_DISTINCT));
 
+                String limit = uri.getQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT);
+                String offset = uri.getQueryParameter(V2exContract.QUERY_PARAMETER_OFFSET);
+
+                String limitClause = null;
+                if (limit != null) {
+                    if (offset == null) {
+                        limitClause = limit;
+                    } else {
+                        limitClause = offset + "," + limit;
+                    }
+                }
+                LOGD(TAG, "limit clause is: " + limitClause);
                 Cursor cursor = builder
                         .where(selection, selectionArgs)
-                        .query(db, distinct, projection, sortOrder, null);
+                        .query(db, distinct, projection, sortOrder, limitClause);
                 Context context = getContext();
                 if (null != context) {
                     cursor.setNotificationUri(context.getContentResolver(), uri);

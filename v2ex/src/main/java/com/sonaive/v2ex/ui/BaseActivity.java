@@ -72,6 +72,7 @@ import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.LUtils;
 import com.sonaive.v2ex.util.LoginHelper;
 import com.sonaive.v2ex.util.UIUtils;
+import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.InputStream;
@@ -691,6 +692,7 @@ public class BaseActivity extends ActionBarActivity implements
                         );
                         lastFvi = firstFvi;
                     }
+
                 } else if (layoutManager instanceof LinearLayoutManager) {
                     firstFvi = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
                     onMainContentScrolled(firstFvi <= deltaThreshold ? 0 : Integer.MAX_VALUE,

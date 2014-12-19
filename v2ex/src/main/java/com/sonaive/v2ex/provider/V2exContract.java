@@ -40,6 +40,8 @@ public class V2exContract {
      */
     public static final String QUERY_PARAMETER_DISTINCT = "distinct";
     public static final String OVERRIDE_ACCOUNTNAME_PARAMETER = "overrideAccount";
+    public static final String QUERY_PARAMETER_LIMIT = "limit";
+    public static final String QUERY_PARAMETER_OFFSET = "offset";
 
     interface MemberColumns {
         String MEMBER_ID = "member_id";
@@ -173,7 +175,7 @@ public class V2exContract {
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.feeds";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.feeds";
 
-        /** Build {@link Uri} for given member. */
+        /** Build {@link Uri} for given feed. */
         public static Uri buildFeedUri(String feedId) {
             return CONTENT_URI.buildUpon().appendPath(feedId).build();
         }

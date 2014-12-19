@@ -1,0 +1,86 @@
+<!--
+  Copyright 2014 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    app:shadowDrawable="@drawable/header_shadow">
+
+    <com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Images fragment showing the image list -->
+        <fragment
+            android:id="@+id/feeds_fragment"
+            android:name="com.sonaive.v2ex.ui.FeedsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/list_fragment_layout" />
+    </com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/headerbar"
+        style="@style/HeaderBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar_actionbar" />
+        <!-- placeholder, empty except on L -->
+
+        <!-- Spinners for additional filters -->
+        <LinearLayout
+            android:id="@+id/filters_box"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/filterbar_height"
+            android:orientation="horizontal"
+            android:paddingLeft="?spinnerBarInsetStart"
+            android:visibility="gone">
+
+            <Spinner
+                android:id="@+id/secondary_filter_spinner_1"
+                style="@style/Widget.V2ex.HeaderBar.Spinner"
+                android:layout_width="@dimen/filter_spinner_width"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/filter_spinner_weight" />
+
+            <Spinner
+                android:id="@+id/secondary_filter_spinner_2"
+                style="@style/Widget.V2ex.HeaderBar.Spinner"
+                android:layout_width="@dimen/filter_spinner_width"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/filter_spinner_weight" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Butter bar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="?actionBarSize">
+
+        <include layout="@layout/include_butter_bar" />
+    </FrameLayout>
+</com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout>
