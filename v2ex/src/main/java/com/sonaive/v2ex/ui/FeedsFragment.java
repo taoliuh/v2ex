@@ -101,10 +101,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     @Override
     public void onLoadMoreData() {
         mAdapter.setLoadingState(LoadingState.LOADING);
-        Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-//        SyncHelper.requestManualSync(getActivity(), args);
-
 
         int actionBarClearance = UIUtils.calculateActionBarSize(getActivity());
         ((BaseActivity) getActivity()).setProgressBarTopWhenActionBarShown(actionBarClearance);
@@ -146,7 +142,9 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+                    if (getActivity() != null) {
+                        ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+                    }
                 }
             }, 2000);
             mAdapter.swapCursor(data);

@@ -41,9 +41,11 @@ public class FeedsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feeds);
         mButterBar = findViewById(R.id.butter_bar);
+        mButterBar.setVisibility(View.VISIBLE);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
+        registerHideableHeaderView(mButterBar);
     }
 
     @Override
@@ -58,13 +60,7 @@ public class FeedsActivity extends BaseActivity {
         invalidateOptionsMenu();
 
         mFrag = (FeedsFragment) getFragmentManager().findFragmentById(R.id.feeds_fragment);
-        if (mFrag != null) {
-            // configure images fragment's top clearance to take our overlaid controls (Action Bar
-            // ) into account.
-            int actionBarSize = UIUtils.calculateActionBarSize(this);
-            mDrawShadowFrameLayout.setShadowTopOffset(actionBarSize);
-            mFrag.setContentTopClearance(actionBarSize);
-        }
+        checkShowNoNetworkButterBar();
         updateFragContentTopClearance();
         enableDisableSwipeRefresh(true);
     }
@@ -96,8 +92,8 @@ public class FeedsActivity extends BaseActivity {
         SyncHelper.requestManualSync(this, args);
     }
 
-    // Updates the Sessions fragment content top clearance to take our chrome into account
-    private void updateFragContentTopClearance() {
+    // Updates the Feeds fragment content top clearance to take our chrome into account
+    public void updateFragContentTopClearance() {
         mFrag = (FeedsFragment) getFragmentManager().findFragmentById(
                 R.id.feeds_fragment);
         if (mFrag == null) {
@@ -115,5 +111,18 @@ public class FeedsActivity extends BaseActivity {
         setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
         mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
+    }
+
+    private void checkShowNoNetworkButterBar() {
+
+        UIUtils.setUpButterBar(mButterBar, "没有网络",
+                "刷新", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mButterBar.setVisibility(View.GONE);
+                        updateFragContentTopClearance();
+                    }
+                }
+        );
     }
 }
