@@ -25,12 +25,14 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -423,6 +425,14 @@ public class BaseActivity extends ActionBarActivity implements
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(Gravity.START);
         }
+    }
+
+    // Returns whether we are connected to the internet.
+    protected boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
     /** Populates the navigation drawer with the appropriate items. */

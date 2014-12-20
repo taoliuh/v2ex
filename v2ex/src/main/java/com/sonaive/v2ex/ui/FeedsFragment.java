@@ -33,8 +33,6 @@ import android.view.ViewGroup;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
-import com.sonaive.v2ex.sync.SyncHelper;
-import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.util.UIUtils;
@@ -84,7 +82,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         super.onResume();
         // Initializes the CursorLoader, the loader id must starts from 1, because
         // The BaseActivity already takes 0 loader id.
-
         getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
@@ -102,9 +99,8 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     public void onLoadMoreData() {
         mAdapter.setLoadingState(LoadingState.LOADING);
 
-        int actionBarClearance = UIUtils.calculateActionBarSize(getActivity());
-        ((BaseActivity) getActivity()).setProgressBarTopWhenActionBarShown(actionBarClearance);
-        ((FeedsActivity) getActivity()).onRefreshingStateChanged(true);
+        ((BaseActivity) getActivity()).setProgressBarTopWhenActionBarShown(0);
+        ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
 
         getLoaderManager().restartLoader(1, buildQueryParameter(), new FeedLoaderCallback());
 
@@ -121,7 +117,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             LOGD(TAG, "Feeds limit is: " + limit + ", offset is: " + offset);
             Uri uri = V2exContract.Feeds.CONTENT_URI.buildUpon().
                     appendQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT, String.valueOf(limit)).
-//                    appendQueryParameter(V2exContract.QUERY_PARAMETER_OFFSET, String.valueOf(offset)).
                     build();
             return new CursorLoader(getActivity(), uri,
                     PROJECTION, null, null, V2exContract.Feeds.FEED_ID + " DESC");
@@ -158,7 +153,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     private Bundle buildQueryParameter() {
         loaderArgs.putInt("limit", (mAdapter.getLoadedPage() + 1) * PaginationCursorAdapter.pageSize);
-//        loaderArgs.putInt("offset", mAdapter.getLoadedPage() * PaginationCursorAdapter.pageSize);
         return loaderArgs;
     }
 

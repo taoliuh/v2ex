@@ -25,6 +25,7 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.UIUtils;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -93,13 +94,12 @@ public class FeedsActivity extends BaseActivity {
     }
 
     // Updates the Feeds fragment content top clearance to take our chrome into account
-    public void updateFragContentTopClearance() {
+    private void updateFragContentTopClearance() {
         mFrag = (FeedsFragment) getFragmentManager().findFragmentById(
                 R.id.feeds_fragment);
         if (mFrag == null) {
             return;
         }
-
 
         final boolean butterBarVisible = mButterBar != null
                 && mButterBar.getVisibility() == View.VISIBLE;
@@ -115,14 +115,17 @@ public class FeedsActivity extends BaseActivity {
 
     private void checkShowNoNetworkButterBar() {
 
-        UIUtils.setUpButterBar(mButterBar, "没有网络",
-                "刷新", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mButterBar.setVisibility(View.GONE);
-                        updateFragContentTopClearance();
+        if (!isOnline()) {
+            UIUtils.setUpButterBar(mButterBar, getString(R.string.error_network_unavailable),
+                    getString(R.string.close), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mButterBar.setVisibility(View.GONE);
+                            updateFragContentTopClearance();
+                        }
                     }
-                }
-        );
+            );
+        }
+
     }
 }

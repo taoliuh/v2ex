@@ -17,4 +17,6 @@
     <string name="menu_picasa">Picasa</string>
     <string name="menu_settings">设置</string>
     <string name="noun_reply">个回复</string>
+    <string name="error_network_unavailable">网络不可用</string>
+    <string name="close">关闭</string>
 </resources>
