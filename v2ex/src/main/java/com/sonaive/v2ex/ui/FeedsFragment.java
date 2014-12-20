@@ -85,9 +85,11 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
-    public void setContentTopClearance(int clearance) {
+    public void setContentTopClearance(final int clearance) {
         if (mRecyclerView != null) {
             mRecyclerView.setContentTopClearance(clearance);
+            // In case butter bar shows, the recycler view should scroll down.
+            mRecyclerView.smoothScrollBy(0, -clearance);
         }
     }
 
@@ -99,7 +101,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     public void onLoadMoreData() {
         mAdapter.setLoadingState(LoadingState.LOADING);
 
-        ((BaseActivity) getActivity()).setProgressBarTopWhenActionBarShown(0);
+        ((FeedsActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
         ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
 
         getLoaderManager().restartLoader(1, buildQueryParameter(), new FeedLoaderCallback());
@@ -133,15 +135,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 LOGD(TAG, "Feeds count is: " + (data.getCount()) + ", loading state is: " + LoadingState.FINISH);
             }
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (getActivity() != null) {
-                        ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
-                    }
-                }
-            }, 2000);
+            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
             mAdapter.swapCursor(data);
         }
 

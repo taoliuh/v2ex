@@ -25,9 +25,11 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -119,6 +121,9 @@ public class BaseActivity extends ActionBarActivity implements
     // views that correspond to each navdrawer item, null if not yet created
     private View[] mNavDrawerItemViews = null;
 
+    // Broadcast receiver receive broadcast when network changes.
+    private NetworkChangeReceiver mReceiver;
+
     // symbols for navdrawer items (indices must correspond to array below). This is
     // not a list of items that are necessarily *present* in the Nav Drawer; rather,
     // it's a list of all possible items.
@@ -202,6 +207,10 @@ public class BaseActivity extends ActionBarActivity implements
         mHandler = new Handler();
         imageLoader = new ImageLoader(this);
 
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mReceiver = new NetworkChangeReceiver();
+        registerReceiver(mReceiver, filter);
+
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
@@ -226,6 +235,7 @@ public class BaseActivity extends ActionBarActivity implements
     public void onStop() {
         LOGD(TAG, "onStop");
         super.onStop();
+        unregisterReceiver(mReceiver);
         if (mLoginHelper != null) {
             mLoginHelper.stop();
         }
@@ -999,12 +1009,24 @@ public class BaseActivity extends ActionBarActivity implements
         }
     }
 
+    protected void onNetworkChange() {
+
+    }
+
     class UpdateUiEvent {
 
         public String url;
 
         public UpdateUiEvent(String url) {
             this.url = url;
+        }
+    }
+
+    class NetworkChangeReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            onNetworkChange();
         }
     }
 
@@ -1046,7 +1068,7 @@ public class BaseActivity extends ActionBarActivity implements
                         avatarNormal = (url == null) ? "" : url;
                     }
                     EventBus.getDefault().postSticky(new UpdateUiEvent(avatarNormal));
-                    Toast.makeText(BaseActivity.this, "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(BaseActivity.this, "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
                 }
             }
         }

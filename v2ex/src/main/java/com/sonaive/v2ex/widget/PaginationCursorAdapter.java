@@ -30,7 +30,7 @@ public abstract class PaginationCursorAdapter<VH extends RecyclerView.ViewHolder
     private static final String TAG = makeLogTag(PaginationCursorAdapter.class);
 
     /** The page size of data set. */
-    public static final int pageSize = 15;
+    public static final int pageSize = 50;
 
     private static final int THRESHOLD = 1;
 
@@ -71,7 +71,6 @@ public abstract class PaginationCursorAdapter<VH extends RecyclerView.ViewHolder
             }
 
         }
-//        LOGD(TAG, "The last visible item position: " + position + ", total item count: " + getItemCount());
     }
 
     public void setOnLoadMoreDataListener(OnLoadMoreDataListener listener) {

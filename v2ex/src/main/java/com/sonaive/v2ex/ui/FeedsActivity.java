@@ -42,7 +42,6 @@ public class FeedsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feeds);
         mButterBar = findViewById(R.id.butter_bar);
-        mButterBar.setVisibility(View.VISIBLE);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
@@ -88,9 +87,30 @@ public class FeedsActivity extends BaseActivity {
     @Override
     protected void requestDataRefresh() {
         super.requestDataRefresh();
-        Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-        SyncHelper.requestManualSync(this, args);
+        if (!checkShowNoNetworkButterBar()) {
+            Bundle args = new Bundle();
+            args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
+            SyncHelper.requestManualSync(this, args);
+        } else {
+            onRefreshingStateChanged(false);
+        }
+
+    }
+
+    @Override
+    protected void onNetworkChange() {
+        checkShowNoNetworkButterBar();
+    }
+
+    public void updateSwipeRefreshProgressbarTopClearence() {
+        final boolean butterBarVisible = mButterBar != null
+                && mButterBar.getVisibility() == View.VISIBLE;
+
+        int actionBarClearance = UIUtils.calculateActionBarSize(this);
+        int butterBarClearance = butterBarVisible
+                ? getResources().getDimensionPixelSize(R.dimen.butter_bar_height) : 0;
+
+        setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
     }
 
     // Updates the Feeds fragment content top clearance to take our chrome into account
@@ -113,7 +133,7 @@ public class FeedsActivity extends BaseActivity {
         mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
     }
 
-    private void checkShowNoNetworkButterBar() {
+    private boolean checkShowNoNetworkButterBar() {
 
         if (!isOnline()) {
             UIUtils.setUpButterBar(mButterBar, getString(R.string.error_network_unavailable),
@@ -125,7 +145,14 @@ public class FeedsActivity extends BaseActivity {
                         }
                     }
             );
+            updateFragContentTopClearance();
+            return true;
+        } else {
+            if (mButterBar.getVisibility() == View.VISIBLE) {
+                mButterBar.setVisibility(View.GONE);
+                updateFragContentTopClearance();
+            }
+            return false;
         }
-
     }
 }
