@@ -116,6 +116,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Tables.REVIEWS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + ReviewColumns.REVIEW_ID + " TEXT NOT NULL,"
+                + ReviewColumns.REVIEW_TOPIC_ID + " TEXT NOT NULL,"
                 + ReviewColumns.REVIEW_THANKS + " TEXT,"
                 + ReviewColumns.REVIEW_CONTENT + " TEXT NOT NULL,"
                 + ReviewColumns.REVIEW_CONTENT_RENDERED + " TEXT,"

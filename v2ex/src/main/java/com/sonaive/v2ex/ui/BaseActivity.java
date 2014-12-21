@@ -490,6 +490,11 @@ public class BaseActivity extends ActionBarActivity implements
 
     private void setUpAccount() {
         profileImage = (ImageView) findViewById(R.id.profile_image);
+
+        if (profileImage == null) {
+            return;
+        }
+
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -926,7 +931,7 @@ public class BaseActivity extends ActionBarActivity implements
                 break;
             }
             case NAVDRAWER_ITEM_PICASAS: {
-                intent = new Intent(this, TestActivity.class);
+                intent = new Intent(this, FeedDetailActivity.class);
                 startActivity(intent);
                 finish();
                 break;

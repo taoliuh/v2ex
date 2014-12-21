@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 Google Inc. All rights reserved.
+  Copyright 2014 sonaive.com. All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@
 
         <!-- Images fragment showing the image list -->
         <fragment
-            android:id="@+id/feeds_fragment"
-            android:name="com.sonaive.v2ex.ui.FeedsFragment"
+            android:id="@+id/reviews_fragment"
+            android:name="com.sonaive.v2ex.ui.ReviewsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@layout/list_fragment_layout" />

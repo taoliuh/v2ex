@@ -112,6 +112,7 @@ public class V2exContract {
 
     interface ReviewColumns {
         String REVIEW_ID = "review_id";
+        String REVIEW_TOPIC_ID = "review_topic_id";
         String REVIEW_THANKS = "review_thanks";
         String REVIEW_CONTENT = "review_content";
         String REVIEW_CONTENT_RENDERED = "review_content_rendered";
