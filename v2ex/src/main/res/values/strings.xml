@@ -20,4 +20,9 @@
     <string name="error_network_unavailable">网络不可用</string>
     <string name="close">关闭</string>
     <string name="no_data">数据列表为空</string>
+
+    <!-- Menu item that allows the user to start a search for a session by name. After clicking,
+    they type in their search query. -->
+    <string name="description_search">搜索</string>
+    <string name="description_refreshing">刷新中</string>
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:v2ex="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/description_search"
+        android:orderInCategory="1"
+        v2ex:showAsAction="always" />
+
+    <item android:id="@+id/menu_refresh"
+        android:title="@string/description_refreshing"
+        android:visible="false"
+        v2ex:showAsAction="always" />
+
+</menu>

@@ -730,6 +730,14 @@ public class BaseActivity extends ActionBarActivity implements
         });
     }
 
+    protected boolean isRefreshing() {
+        if (mSwipeRefreshLayout != null) {
+            return mSwipeRefreshLayout.isRefreshing();
+        } else {
+            return false;
+        }
+    }
+
     protected void onRefreshingStateChanged(boolean refreshing) {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setRefreshing(refreshing);

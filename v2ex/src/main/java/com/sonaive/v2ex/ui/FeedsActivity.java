@@ -15,8 +15,12 @@
  */
 package com.sonaive.v2ex.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.sonaive.v2ex.R;
@@ -66,6 +70,20 @@ public class FeedsActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.feeds, menu);
+
+        MenuItem refreshMenu = menu.findItem(R.id.menu_refresh);
+        if (isRefreshing()) {
+            refreshMenu.setVisible(true);
+            refreshMenu.setActionView(R.layout.progress_bar);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean canSwipeRefreshChildScrollUp() {
         if (mFrag != null) {
             return mFrag.canRecyclerViewScrollUp();
@@ -87,6 +105,7 @@ public class FeedsActivity extends BaseActivity {
     @Override
     protected void requestDataRefresh() {
         super.requestDataRefresh();
+        invalidateOptionsMenu();
         if (!checkShowNoNetworkButterBar()) {
             Bundle args = new Bundle();
             args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);

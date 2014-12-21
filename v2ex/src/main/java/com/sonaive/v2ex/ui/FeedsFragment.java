@@ -128,6 +128,8 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
+            getActivity().invalidateOptionsMenu();
+
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
 
                 mAdapter.setLoadingState(LoadingState.NO_MORE_DATA);
