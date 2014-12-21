@@ -144,6 +144,7 @@ public class ReviewsHandler extends JSONHandler {
         }
         if (cursor.getCount() < 1) {
             LOGE(TAG, "Error querying REVIEW hashcodes (no records returned)");
+            cursor.close();
             return null;
         }
         HashMap<String, String> result = new HashMap<>();

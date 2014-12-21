@@ -139,6 +139,7 @@ public class MembersHandler extends JSONHandler {
         }
         if (cursor.getCount() < 1) {
             LOGE(TAG, "Error querying member hashcodes (no records returned)");
+            cursor.close();
             return null;
         }
         HashMap<String, String> result = new HashMap<String, String>();

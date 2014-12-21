@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
@@ -49,7 +50,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     private static final String TAG = makeLogTag(FeedsFragment.class);
 
     FlexibleRecyclerView mRecyclerView = null;
-    View mEmptyView = null;
+    TextView mEmptyView = null;
 
     FeedCursorAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
@@ -71,7 +72,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mEmptyView = root.findViewById(android.R.id.empty);
+        mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
     }
 
@@ -128,11 +129,19 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
+
                 mAdapter.setLoadingState(LoadingState.NO_MORE_DATA);
                 LOGD(TAG, "Feeds count is: " + (data == null ? 0 : data.getCount()) + ", loading state is: " + LoadingState.NO_MORE_DATA);
             } else {
                 mAdapter.setLoadingState(LoadingState.FINISH);
                 LOGD(TAG, "Feeds count is: " + (data.getCount()) + ", loading state is: " + LoadingState.FINISH);
+            }
+
+            if (data == null || data.getCount() == 0) {
+                mEmptyView.setVisibility(View.VISIBLE);
+                mEmptyView.setText(getActivity().getString(R.string.no_data));
+            } else {
+                mEmptyView.setVisibility(View.GONE);
             }
 
             ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);

@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ui.NodesActivity">
+    tools:context="ui.FeedsActivity">
 
     <!-- Main layout -->
     <com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout
