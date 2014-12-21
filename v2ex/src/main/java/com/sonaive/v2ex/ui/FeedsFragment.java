@@ -26,6 +26,7 @@ import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.util.UIUtils;
+import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
 import com.sonaive.v2ex.widget.LoadingState;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -69,7 +72,11 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        if (UIUtils.isTablet(getActivity())) {
+            mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(R.integer.feeds_columns), StaggeredGridLayoutManager.VERTICAL);
+        } else {
+            mLayoutManager = new LinearLayoutManager(getActivity());
+        }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);

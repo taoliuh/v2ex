@@ -15,10 +15,8 @@
  */
 package com.sonaive.v2ex.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +27,6 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.UIUtils;
 
-import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
