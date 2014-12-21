@@ -130,7 +130,7 @@ public class FeedsActivity extends BaseActivity {
 
         setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
-        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
+        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance, isActionBarShown());
     }
 
     private boolean checkShowNoNetworkButterBar() {

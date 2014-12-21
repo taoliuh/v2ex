@@ -22,7 +22,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,7 +34,6 @@ import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
-import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.LoadingState;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -85,11 +83,13 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
-    public void setContentTopClearance(final int clearance) {
+    public void setContentTopClearance(final int clearance, final boolean isActionbarShown) {
         if (mRecyclerView != null) {
             mRecyclerView.setContentTopClearance(clearance);
             // In case butter bar shows, the recycler view should scroll down.
-            mRecyclerView.smoothScrollBy(0, -clearance);
+            if (isActionbarShown) {
+                mRecyclerView.smoothScrollBy(0, -clearance);
+            }
         }
     }
 

@@ -207,10 +207,6 @@ public class BaseActivity extends ActionBarActivity implements
         mHandler = new Handler();
         imageLoader = new ImageLoader(this);
 
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        mReceiver = new NetworkChangeReceiver();
-        registerReceiver(mReceiver, filter);
-
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
@@ -227,6 +223,11 @@ public class BaseActivity extends ActionBarActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mReceiver = new NetworkChangeReceiver();
+        registerReceiver(mReceiver, filter);
+
         startLoginProcess();
         EventBus.getDefault().registerSticky(this);
     }
@@ -661,6 +662,10 @@ public class BaseActivity extends ActionBarActivity implements
 
         mActionBarShown = show;
         onActionBarAutoShowOrHide(show);
+    }
+
+    protected boolean isActionBarShown() {
+        return mActionBarShown;
     }
 
     protected void enableActionBarAutoHide(final ListView listView) {

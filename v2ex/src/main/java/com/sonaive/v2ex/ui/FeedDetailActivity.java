@@ -63,7 +63,7 @@ public class FeedDetailActivity extends BaseActivity {
             // ) into account.
             int actionBarSize = UIUtils.calculateActionBarSize(this);
             mDrawShadowFrameLayout.setShadowTopOffset(actionBarSize);
-            mFrag.setContentTopClearance(actionBarSize);
+//            mFrag.setContentTopClearance(actionBarSize);
         }
         updateFragContentTopClearance();
         enableDisableSwipeRefresh(true);
@@ -114,6 +114,6 @@ public class FeedDetailActivity extends BaseActivity {
 
         setProgressBarTopWhenActionBarShown(actionBarClearance + butterBarClearance);
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
-        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
+//        mFrag.setContentTopClearance(actionBarClearance + butterBarClearance);
     }
 }
