@@ -33,9 +33,9 @@ public class ReviewsApi extends Api {
             mArguments = new Bundle();
         }
         mArguments.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_REVIEWS);
-        String topicId = null;
+        int topicId = -1;
         if (params != null) {
-            topicId = params.getString(Api.ARG_API_PARAMS_ID, null);
+            topicId = params.getInt(Api.ARG_API_PARAMS_ID, -1);
         }
         mUrl = Api.API_URLS.get(Api.API_REVIEWS).concat("?topic_id=" + topicId);
     }

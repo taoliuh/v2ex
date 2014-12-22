@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
@@ -59,6 +60,8 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
     Bundle loaderArgs;
 
+    Feed mFeed;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,10 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
+        View header = inflater.inflate(R.layout.item_feed, container, false);
+        Bundle args = getArguments();
+        mFeed = args.getParcelable("feed");
+        LOGD(TAG, "feed_id: " + mFeed.id + ", feed_member: " + mFeed.member.username + ", feed_node: " + mFeed.node.title);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -84,7 +91,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         if (!((FeedDetailActivity) getActivity()).checkShowNoNetworkButterBar()) {
             Bundle args = new Bundle();
             args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
-            args.putString(Api.ARG_API_PARAMS_ID, "150242");
+            args.putInt(Api.ARG_API_PARAMS_ID, mFeed.id);
             SyncHelper.requestManualSync(getActivity(), args);
             // Set progress bar refreshing.
             ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
@@ -126,6 +133,10 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         LOGD(TAG, "Load more reviews, loading state is: " + LoadingState.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
     }
 
+    private void initHeader() {
+
+    }
+
     class ReviewsLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
 
         @Override
@@ -134,7 +145,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             int limit = args.getInt("limit");
             int offset = args.getInt("offset");
             LOGD(TAG, "Reviews limit is: " + limit + ", offset is: " + offset);
-            Uri uri = V2exContract.Reviews.CONTENT_URI.buildUpon().
+            Uri uri = V2exContract.Reviews.buildReviewTopicUri(String.valueOf(mFeed.id)).buildUpon().
                     appendQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT, String.valueOf(limit)).
                     build();
             return new CursorLoader(getActivity(), uri,

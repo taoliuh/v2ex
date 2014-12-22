@@ -213,12 +213,12 @@ public class V2exContract {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.reviews";
 
         /** Build {@link Uri} for given review. */
-        public static Uri buildReviewUri(String reviewId) {
-            return CONTENT_URI.buildUpon().appendPath(reviewId).build();
+        public static Uri buildReviewTopicUri(String reviewTopicId) {
+            return CONTENT_URI.buildUpon().appendPath(reviewTopicId).build();
         }
 
-        /** Return review id for given URI. */
-        public static String getReviewId(Uri uri) {
+        /** Return review topic id for given URI. */
+        public static String getReviewTopicId(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }

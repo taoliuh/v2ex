@@ -28,13 +28,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Images fragment showing the image list -->
-        <fragment
-            android:id="@+id/reviews_fragment"
-            android:name="com.sonaive.v2ex.ui.ReviewsFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/list_fragment_layout" />
+        <!--&lt;!&ndash; Images fragment showing the image list &ndash;&gt;-->
+        <!--<fragment-->
+            <!--android:id="@+id/reviews_fragment"-->
+            <!--android:name="com.sonaive.v2ex.ui.ReviewsFragment"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--tools:layout="@layout/list_fragment_layout" />-->
     </com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout>
 
     <LinearLayout

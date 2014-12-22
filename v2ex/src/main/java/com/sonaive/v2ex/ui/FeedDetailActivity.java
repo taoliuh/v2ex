@@ -33,10 +33,12 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
  * Created by liutao on 12/21/14.
  */
 public class FeedDetailActivity extends BaseActivity {
+
     private static final String TAG = makeLogTag(FeedDetailActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
     private ReviewsFragment mFrag;
+    private Bundle args;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,13 @@ public class FeedDetailActivity extends BaseActivity {
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
         registerHideableHeaderView(mButterBar);
+
+        if (getIntent() != null) {
+            args = getIntent().getBundleExtra("bundle");
+        }
+        mFrag = new ReviewsFragment();
+        mFrag.setArguments(args);
+        getFragmentManager().beginTransaction().add(R.id.swipe_refresh_layout, mFrag, "reviews_fragment").commit();
     }
 
     @Override
@@ -60,7 +69,8 @@ public class FeedDetailActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
 
-        mFrag = (ReviewsFragment) getFragmentManager().findFragmentById(R.id.reviews_fragment);
+        mFrag = (ReviewsFragment) getFragmentManager().findFragmentByTag("reviews_fragment");
+
         checkShowNoNetworkButterBar();
         updateFragContentTopClearance();
         enableDisableSwipeRefresh(false);
@@ -131,8 +141,8 @@ public class FeedDetailActivity extends BaseActivity {
 
     // Updates the Feeds fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
-        mFrag = (ReviewsFragment) getFragmentManager().findFragmentById(
-                R.id.reviews_fragment);
+
+        mFrag = (ReviewsFragment) getFragmentManager().findFragmentByTag("reviews_fragment");
         if (mFrag == null) {
             return;
         }

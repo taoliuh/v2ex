@@ -48,6 +48,8 @@ public class ReviewsHandler extends JSONHandler {
 
     private HashMap<String, Review> mReviews = new HashMap<>();
 
+    private int topicId;
+
     public ReviewsHandler(Context context) {
         super(context);
     }
@@ -96,6 +98,7 @@ public class ReviewsHandler extends JSONHandler {
     @Override
     public String getBody(Bundle data) {
         if (data != null) {
+            topicId = data.getInt(Api.ARG_API_PARAMS_ID);
             return data.getString(Api.ARG_RESULT);
         }
         return "";
@@ -104,7 +107,7 @@ public class ReviewsHandler extends JSONHandler {
     private void buildReview(boolean isInsert, Review review,
                              ArrayList<ContentProviderOperation> list) {
         Uri allReviewsUri = V2exContract.Reviews.CONTENT_URI;
-        Uri thisReviewUri = V2exContract.Reviews.buildReviewUri(String.valueOf(review.id));
+        Uri thisReviewUri = V2exContract.Reviews.buildReviewTopicUri(String.valueOf(review.id));
 
         ContentProviderOperation.Builder builder;
         if (isInsert) {
@@ -119,6 +122,7 @@ public class ReviewsHandler extends JSONHandler {
         }
 
         list.add(builder.withValue(V2exContract.Reviews.REVIEW_ID, review.id)
+                .withValue(V2exContract.Reviews.REVIEW_TOPIC_ID, topicId)
                 .withValue(V2exContract.Reviews.REVIEW_THANKS, review.thanks)
                 .withValue(V2exContract.Reviews.REVIEW_CONTENT, review.content)
                 .withValue(V2exContract.Reviews.REVIEW_CONTENT_RENDERED, review.content_rendered)
@@ -130,7 +134,7 @@ public class ReviewsHandler extends JSONHandler {
     }
 
     private void buildDeleteOperation(String reviewId, ArrayList<ContentProviderOperation> list) {
-        Uri uri = V2exContract.Reviews.buildReviewUri(reviewId);
+        Uri uri = V2exContract.Reviews.buildReviewTopicUri(reviewId);
         list.add(ContentProviderOperation.newDelete(uri).build());
     }
 

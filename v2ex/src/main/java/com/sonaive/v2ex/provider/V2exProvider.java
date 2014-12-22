@@ -64,7 +64,7 @@ public class V2exProvider extends ContentProvider {
     private static final int NODES_ID = 501;
 
     private static final int REVIEWS = 600;
-    private static final int REVIEWS_ID = 601;
+    private static final int REVIEWS_TOPIC_ID = 601;
 
     private V2exDatabase mOpenHelper;
 
@@ -88,7 +88,7 @@ public class V2exProvider extends ContentProvider {
         matcher.addURI(authority, "nodes/*", NODES_ID);
 
         matcher.addURI(authority, "reviews", REVIEWS);
-        matcher.addURI(authority, "reviews/*", REVIEWS_ID);
+        matcher.addURI(authority, "reviews/*", REVIEWS_TOPIC_ID);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -137,7 +137,7 @@ public class V2exProvider extends ContentProvider {
             case REVIEWS: {
                 return Reviews.CONTENT_TYPE;
             }
-            case REVIEWS_ID: {
+            case REVIEWS_TOPIC_ID: {
                 return Reviews.CONTENT_ITEM_TYPE;
             }
             case PICASAS: {
@@ -243,7 +243,7 @@ public class V2exProvider extends ContentProvider {
             case REVIEWS: {
                 db.insertOrThrow(Tables.REVIEWS, null, values);
                 notifyChange(uri);
-                return Reviews.buildReviewUri(values.getAsString(Reviews.REVIEW_ID));
+                return Reviews.buildReviewTopicUri(values.getAsString(Reviews.REVIEW_ID));
             }
 
             default:
@@ -430,8 +430,8 @@ public class V2exProvider extends ContentProvider {
             case REVIEWS: {
                 return builder.table(Tables.REVIEWS);
             }
-            case REVIEWS_ID: {
-                final String reviewId = Reviews.getReviewId(uri);
+            case REVIEWS_TOPIC_ID: {
+                final String reviewId = Reviews.getReviewTopicId(uri);
                 return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_ID + "=?", reviewId);
             }
             case PICASAS: {
@@ -478,9 +478,9 @@ public class V2exProvider extends ContentProvider {
             case REVIEWS: {
                 return builder.table(Tables.REVIEWS);
             }
-            case REVIEWS_ID: {
-                final String reviewId = Reviews.getReviewId(uri);
-                return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_ID + "=?", reviewId);
+            case REVIEWS_TOPIC_ID: {
+                final String topicId = Reviews.getReviewTopicId(uri);
+                return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_TOPIC_ID + "=?", topicId);
             }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);

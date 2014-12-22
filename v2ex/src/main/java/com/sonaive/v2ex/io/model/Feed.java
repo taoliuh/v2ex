@@ -15,6 +15,9 @@
  */
 package com.sonaive.v2ex.io.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.sonaive.v2ex.util.HashUtils;
 import com.sonaive.v2ex.util.ModelUtils;
 
@@ -22,7 +25,7 @@ import com.sonaive.v2ex.util.ModelUtils;
  *
  * Created by liutao on 12/13/14.
  */
-public class Feed {
+public class Feed implements Parcelable {
 
     public int id;
     public String title;
@@ -33,8 +36,10 @@ public class Feed {
     public long created;
     public long last_modified;
     public long last_touched;
-    public Member member;
-    public Node node;
+    public Member member = new Member();
+    public Node node = new Node();
+
+    public Feed() {}
 
     public String getImportHashcode() {
         StringBuilder sb = new StringBuilder();
@@ -51,4 +56,52 @@ public class Feed {
                 .append("last_touched").append(last_touched);
         return HashUtils.computeWeakHash(sb.toString());
     }
+
+    protected Feed(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        url = in.readString();
+        content = in.readString();
+        content_rendered = in.readString();
+        replies = in.readInt();
+        created = in.readLong();
+        last_modified = in.readLong();
+        last_touched = in.readLong();
+        member = in.readParcelable(Member.class.getClassLoader());
+        node = in.readParcelable(Node.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(url);
+        dest.writeString(content);
+        dest.writeString(content_rendered);
+        dest.writeInt(replies);
+        dest.writeLong(created);
+        dest.writeLong(last_modified);
+        dest.writeLong(last_touched);
+        dest.writeParcelable(member, flags);
+        dest.writeParcelable(node, flags);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Feed> CREATOR = new Parcelable.Creator<Feed>() {
+        @Override
+        public Feed createFromParcel(Parcel in) {
+            return new Feed(in);
+        }
+
+        @Override
+        public Feed[] newArray(int size) {
+            return new Feed[size];
+        }
+    };
+
 }
