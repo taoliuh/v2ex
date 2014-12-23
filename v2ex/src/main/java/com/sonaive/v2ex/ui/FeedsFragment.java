@@ -42,7 +42,6 @@ import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.util.UIUtils;
-import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
 import com.sonaive.v2ex.widget.LoadingState;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -88,10 +87,10 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             @Override
             public void onItemClick(View view, int position) {
                 Cursor cursor = mAdapter.getCursor();
-                if (cursor != null && cursor.move(position)) {
-                    Parcelable feed = cursor2Parcelable(cursor);
+                if (cursor != null && cursor.moveToPosition(position)) {
                     Intent intent = new Intent(getActivity(), FeedDetailActivity.class);
                     Bundle bundle = new Bundle();
+                    Parcelable feed = cursor2Parcelable(cursor);
                     bundle.putParcelable("feed", feed);
                     intent.putExtra("bundle", bundle);
                     startActivity(intent);
