@@ -15,8 +15,11 @@
  */
 package com.sonaive.v2ex.ui;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +47,18 @@ public class FeedDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_detail);
+
+        Toolbar toolbar = getActionBarToolbar();
+        toolbar.setNavigationIcon(R.drawable.ic_up);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navigateUpToFromChild(FeedDetailActivity.this,
+                        IntentCompat.makeMainActivity(new ComponentName(FeedDetailActivity.this,
+                                FeedsActivity.class)));
+            }
+        });
+
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);

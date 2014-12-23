@@ -1077,7 +1077,6 @@ public class BaseActivity extends ActionBarActivity implements
                 data.moveToPosition(-1);
                 if (data.moveToFirst()) {
                     final String avatarNormal;
-                    String id = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_ID));
                     String userName = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_USERNAME));
                     String url = data.getString(data.getColumnIndex(V2exContract.Members.MEMBER_AVATAR_NORMAL));
                     if (url != null && !url.contains("http:")) {
@@ -1086,7 +1085,6 @@ public class BaseActivity extends ActionBarActivity implements
                         avatarNormal = (url == null) ? "" : url;
                     }
                     EventBus.getDefault().postSticky(new UpdateUiEvent(avatarNormal));
-//                    Toast.makeText(BaseActivity.this, "id=" + id + ", userName=" + userName + ", avatarNormal=" + avatarNormal, Toast.LENGTH_SHORT).show();
                 }
             }
         }
