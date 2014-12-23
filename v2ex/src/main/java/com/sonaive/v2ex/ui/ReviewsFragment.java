@@ -112,7 +112,14 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             mRecyclerView.setContentTopClearance(clearance);
             // In case butter bar shows, the recycler view should scroll down.
             if (isActionbarShown) {
-                mRecyclerView.smoothScrollBy(0, -clearance);
+
+                RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                if (layoutManager instanceof LinearLayoutManager) {
+                    int index = ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+                    if (index == 0) {
+                        mRecyclerView.smoothScrollBy(0, -clearance);
+                    }
+                }
             }
         }
     }

@@ -115,7 +115,20 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             mRecyclerView.setContentTopClearance(clearance);
             // In case butter bar shows, the recycler view should scroll down.
             if (isActionbarShown) {
-                mRecyclerView.smoothScrollBy(0, -clearance);
+                RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                if (layoutManager instanceof LinearLayoutManager) {
+                    int index = ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+                    LOGD(TAG, "LinearLayoutManager, first complete visible item position is: " + index);
+                    if (index == -1) {
+                        mRecyclerView.smoothScrollBy(0, -clearance);
+                    }
+                } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+                    int[] firstCompletelyVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstCompletelyVisibleItemPositions(null);
+                    LOGD(TAG, "StaggeredGridLayoutManager, first complete visible item position is: " + firstCompletelyVisibleItemPositions[0]);
+                    if (firstCompletelyVisibleItemPositions[0] == -1) {
+                        mRecyclerView.smoothScrollBy(0, -clearance);
+                    }
+                }
             }
         }
     }
