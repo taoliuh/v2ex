@@ -42,6 +42,7 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.util.ImageLoader;
+import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
 import com.sonaive.v2ex.widget.LoadingState;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
@@ -84,6 +85,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
         View header = inflater.inflate(R.layout.item_feed_detail, container, false);
         footer = inflater.inflate(R.layout.item_footer, container, false);
+
         Bundle args = getArguments();
         mFeed = args.getParcelable("feed");
         initHeader(header);
@@ -211,15 +213,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             LOGD(TAG, "onLoadFinished HIT COUNT: " + hit++);
 
-            if (data == null || data.getCount() == 0) {
-                if (mAdapter.getLoadingState() == LoadingState.LOADING) {
-                    footer.findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
-                } else {
-                    footer.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                }
-            } else {
-                footer.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-            }
+            UIUtils.invalidateFooterState(getActivity().getApplicationContext(), footer, mAdapter.getLoadingState());
 
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
 
