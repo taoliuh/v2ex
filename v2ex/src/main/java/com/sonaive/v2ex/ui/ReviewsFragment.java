@@ -20,6 +20,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -41,6 +42,7 @@ import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.ui.widgets.URLImageParser;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
@@ -173,7 +175,8 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             title.setText(mFeed.title);
             content.setVisibility(View.VISIBLE);
-            content.setText(Html.fromHtml(mFeed.content_rendered));
+            URLImageParser urlImageParser = new URLImageParser(content);
+            content.setText(Html.fromHtml(mFeed.content_rendered, urlImageParser, null));
             if (mFeed.member != null) {
                 String avatarUrl = mFeed.member.avatar_large;
                 if (avatarUrl != null) {
@@ -192,6 +195,12 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             replies.setText(mFeed.replies + getString(R.string.noun_reply));
         }
     }
+
+//    @Override
+//    public Drawable getDrawable(String source) {
+//        LOGD(TAG, "Img source: " + source);
+//        return null;
+//    }
 
     class ReviewsLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
 
