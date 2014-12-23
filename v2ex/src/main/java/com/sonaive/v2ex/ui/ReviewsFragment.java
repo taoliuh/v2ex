@@ -26,9 +26,12 @@ import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
@@ -38,6 +41,8 @@ import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.util.ImageLoader;
+import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
 import com.sonaive.v2ex.widget.LoadingState;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -73,14 +78,18 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
-        View header = inflater.inflate(R.layout.item_feed, container, false);
+
+        View header = inflater.inflate(R.layout.item_feed_detail, null);
         Bundle args = getArguments();
         mFeed = args.getParcelable("feed");
-        LOGD(TAG, "feed_id: " + mFeed.id + ", feed_member: " + mFeed.member.username + ", feed_node: " + mFeed.node.title);
+        initHeader(header);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
+
+        HeaderViewRecyclerAdapter headerAdapter = new HeaderViewRecyclerAdapter(mAdapter);
+        headerAdapter.addHeaderView(header);
+        mRecyclerView.setAdapter(headerAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
     }
@@ -140,8 +149,37 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         LOGD(TAG, "Load more reviews, loading state is: " + LoadingState.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
     }
 
-    private void initHeader() {
+    private void initHeader(View header) {
+        if (mFeed != null) {
+            ImageLoader imageLoader = new ImageLoader(getActivity(), R.drawable.person_image_empty);
+            TextView title = (TextView) header.findViewById(R.id.title);
+            TextView content = (TextView) header.findViewById(R.id.content);
+            ImageView avatar = (ImageView) header.findViewById(R.id.avatar);
+            TextView name = (TextView) header.findViewById(R.id.name);
+            TextView time = (TextView) header.findViewById(R.id.time);
+            TextView replies = (TextView) header.findViewById(R.id.replies);
+            TextView nodeTitle = (TextView) header.findViewById(R.id.node_title);
 
+            title.setText(mFeed.title);
+            content.setVisibility(View.VISIBLE);
+            content.setText(Html.fromHtml(mFeed.content_rendered));
+            if (mFeed.member != null) {
+                String avatarUrl = mFeed.member.avatar_large;
+                if (avatarUrl != null) {
+                    avatarUrl = avatarUrl.startsWith("http:") ? avatarUrl : "http:" + avatarUrl;
+                } else {
+                    avatarUrl = "";
+                }
+                imageLoader.loadImage(avatarUrl, avatar);
+                name.setText(mFeed.member.username);
+            }
+
+            if (mFeed.member != null) {
+                nodeTitle.setText(mFeed.node.title);
+            }
+            time.setText(DateUtils.getRelativeTimeSpanString(mFeed.created * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
+            replies.setText(mFeed.replies + getString(R.string.noun_reply));
+        }
     }
 
     class ReviewsLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
