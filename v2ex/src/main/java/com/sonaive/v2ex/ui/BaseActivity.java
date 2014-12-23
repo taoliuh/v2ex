@@ -931,7 +931,7 @@ public class BaseActivity extends ActionBarActivity implements
                 break;
             }
             case NAVDRAWER_ITEM_PICASAS: {
-                intent = new Intent(this, FeedDetailActivity.class);
+                intent = new Intent(this, TestActivity.class);
                 startActivity(intent);
                 finish();
                 break;

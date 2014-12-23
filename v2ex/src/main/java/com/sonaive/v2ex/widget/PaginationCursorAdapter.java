@@ -93,6 +93,16 @@ public abstract class PaginationCursorAdapter<VH extends RecyclerView.ViewHolder
         }
     }
 
+    public LoadingState getLoadingState() {
+        if (!mIsLoading && moreDataToLoad) {
+            return LoadingState.FINISH;
+        } else if (!mIsLoading) {
+            return LoadingState.NO_MORE_DATA;
+        } else {
+            return LoadingState.LOADING;
+        }
+    }
+
     public int getLoadedPage() {
         return mLoadedPage;
     }

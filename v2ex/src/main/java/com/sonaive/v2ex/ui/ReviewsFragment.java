@@ -59,13 +59,17 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
     FlexibleRecyclerView mRecyclerView = null;
     TextView mEmptyView = null;
+    View footer;
 
     ReviewCursorAdapter mAdapter;
+    HeaderViewRecyclerAdapter headerAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
     Bundle loaderArgs;
 
     Feed mFeed;
+
+    int hit = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,8 +82,8 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
-
-        View header = inflater.inflate(R.layout.item_feed_detail, null);
+        View header = inflater.inflate(R.layout.item_feed_detail, container, false);
+        footer = inflater.inflate(R.layout.item_footer, container, false);
         Bundle args = getArguments();
         mFeed = args.getParcelable("feed");
         initHeader(header);
@@ -87,8 +91,9 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        HeaderViewRecyclerAdapter headerAdapter = new HeaderViewRecyclerAdapter(mAdapter);
+        headerAdapter = new HeaderViewRecyclerAdapter(mAdapter);
         headerAdapter.addHeaderView(header);
+        headerAdapter.addFooterView(footer);
         mRecyclerView.setAdapter(headerAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
@@ -98,13 +103,17 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (!((FeedDetailActivity) getActivity()).checkShowNoNetworkButterBar()) {
+
+            // Set progress bar refreshing.
+            ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
+            ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
+            mAdapter.setLoadingState(LoadingState.LOADING);
+
             Bundle args = new Bundle();
             args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
             args.putInt(Api.ARG_API_PARAMS_ID, mFeed.id);
             SyncHelper.requestManualSync(getActivity(), args);
-            // Set progress bar refreshing.
-            ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
-            ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
+
         }
     }
 
@@ -200,7 +209,17 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-            getActivity().invalidateOptionsMenu();
+            LOGD(TAG, "onLoadFinished HIT COUNT: " + hit++);
+
+            if (data == null || data.getCount() == 0) {
+                if (mAdapter.getLoadingState() == LoadingState.LOADING) {
+                    footer.findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+                } else {
+                    footer.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                }
+            } else {
+                footer.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+            }
 
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
 
@@ -209,13 +228,6 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             } else {
                 mAdapter.setLoadingState(LoadingState.FINISH);
                 LOGD(TAG, "Reviews count is: " + (data.getCount()) + ", loading state is: " + LoadingState.FINISH);
-            }
-
-            if (data == null || data.getCount() == 0) {
-                mEmptyView.setVisibility(View.VISIBLE);
-                mEmptyView.setText(getActivity().getString(R.string.no_data));
-            } else {
-                mEmptyView.setVisibility(View.GONE);
             }
 
             ((FeedDetailActivity) getActivity()).onRefreshingStateChanged(false);
