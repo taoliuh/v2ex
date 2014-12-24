@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 sonaive.com. All rights reserved.
+ * Copyright (C) 2013 Antarix Tandon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sonaive.v2ex.ui.widgets;
+
+package com.sonaive.v2ex.ui.widgets.html;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.text.Html;
+import android.text.Html.ImageGetter;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -32,41 +34,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
-/**
- * Created by liutao on 12/24/14.
- */
-public class URLImageParser2 implements Html.ImageGetter {
-    Context context;
-    TextView container;
+public class UrlImageGetter implements ImageGetter {
+    Context c;
+    View container;
 
-    /***
+    /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
-     * @param context
-     * @param container
+     *
+     * @param t
+     * @param c
      */
-    public URLImageParser2(Context context, TextView container) {
-        this.context = context;
-        this.container = container;
+    public UrlImageGetter(View t, Context c) {
+        this.c = c;
+        this.container = t;
     }
 
     public Drawable getDrawable(String source) {
-        URLDrawable2 urlDrawable = new URLDrawable2();
+        UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
-        ImageGetterAsyncTask asyncTask =
-                new ImageGetterAsyncTask(urlDrawable);
+        ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable);
 
         asyncTask.execute(source);
 
-        // return reference to URLDrawable where I will change with actual image from
-        // the src tag
+        // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
     }
 
     public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
-        URLDrawable2 urlDrawable;
+        UrlDrawable urlDrawable;
 
-        public ImageGetterAsyncTask(URLDrawable2 d) {
+        public ImageGetterAsyncTask(UrlDrawable d) {
             this.urlDrawable = d;
         }
 
@@ -79,43 +77,28 @@ public class URLImageParser2 implements Html.ImageGetter {
         @Override
         protected void onPostExecute(Drawable result) {
             // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0
-                    + result.getIntrinsicHeight());
+            urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0 + result.getIntrinsicHeight());
 
-            // change the reference of the current drawable to the result
-            // from the HTTP call
+            // change the reference of the current drawable to the result from the HTTP call
             urlDrawable.drawable = result;
 
             // redraw the image by invalidating the container
-            URLImageParser2.this.container.invalidate();
-
-            // For ICS
-            URLImageParser2.this.container.setHeight((URLImageParser2.this.container.getHeight()
-                    + result.getIntrinsicHeight()));
-
-            // Pre ICS
-            URLImageParser2.this.container.setEllipsize(null);
-
-            container.setText(container.getText());
-
+            UrlImageGetter.this.container.invalidate();
         }
 
-        /***
+        /**
          * Get the Drawable from URL
+         *
          * @param urlString
          * @return
          */
         public Drawable fetchDrawable(String urlString) {
-
-            DisplayMetrics metrics = new DisplayMetrics();
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
-            final float dpi = (int) metrics.density;
             try {
                 InputStream is = fetch(urlString);
                 Drawable drawable = Drawable.createFromStream(is, "src");
 
-                int width = (int) (drawable.getIntrinsicWidth() * dpi);
-                int height = (int) (drawable.getIntrinsicHeight() * dpi);
+                int width = drawable.getIntrinsicWidth();
+                int height = drawable.getIntrinsicHeight();
 
                 int scaledWidth = width;
                 int scaledHeight = height;
@@ -141,4 +124,17 @@ public class URLImageParser2 implements Html.ImageGetter {
             return response.getEntity().getContent();
         }
     }
-}
+
+    @SuppressWarnings("deprecation")
+    public class UrlDrawable extends BitmapDrawable {
+        protected Drawable drawable;
+
+        @Override
+        public void draw(Canvas canvas) {
+            // override the draw to facilitate refresh function later
+            if (drawable != null) {
+                drawable.draw(canvas);
+            }
+        }
+    }
+} 

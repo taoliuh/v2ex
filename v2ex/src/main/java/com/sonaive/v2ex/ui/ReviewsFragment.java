@@ -20,7 +20,6 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -43,7 +42,7 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.ui.widgets.URLImageParser;
-import com.sonaive.v2ex.ui.widgets.URLImageParser2;
+import com.sonaive.v2ex.ui.widgets.html.HtmlTextView;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
@@ -167,7 +166,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         if (mFeed != null) {
             ImageLoader imageLoader = new ImageLoader(getActivity(), R.drawable.person_image_empty);
             TextView title = (TextView) header.findViewById(R.id.title);
-            TextView content = (TextView) header.findViewById(R.id.content);
+            HtmlTextView content = (HtmlTextView) header.findViewById(R.id.content);
             ImageView avatar = (ImageView) header.findViewById(R.id.avatar);
             TextView name = (TextView) header.findViewById(R.id.name);
             TextView time = (TextView) header.findViewById(R.id.time);
@@ -176,8 +175,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             title.setText(mFeed.title);
             content.setVisibility(View.VISIBLE);
-            URLImageParser urlImageParser = new URLImageParser(content);
-            content.setText(Html.fromHtml(mFeed.content_rendered, urlImageParser, null));
+            content.setText(Html.fromHtml(mFeed.content_rendered, new URLImageParser(getActivity(), content), null));
             if (mFeed.member != null) {
                 String avatarUrl = mFeed.member.avatar_large;
                 if (avatarUrl != null) {

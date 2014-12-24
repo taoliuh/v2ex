@@ -1,89 +1,37 @@
+/*
+ * Copyright 2014 sonaive.com. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.sonaive.v2ex.ui.widgets;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-
-
-public class UrlDrawable extends Drawable implements Drawable.Callback {
-    private GlideDrawable drawable;
-
-    public UrlDrawable() {
-        super();
-    }
-
-    @Override
-    public void setAlpha(int alpha) {
-        if (drawable != null) {
-            drawable.setAlpha(alpha);
-        }
-    }
-
-    public void setDrawable(GlideDrawable drawable) {
-        if (this.drawable != null) {
-            this.drawable.setCallback(null);
-        }
-        drawable.setCallback(this);
-        this.drawable = drawable;
-
-    }
-
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-        if (drawable != null) {
-            drawable.setColorFilter(cf);
-        }
-    }
-
-    @Override
-    public int getOpacity() {
-        if (drawable != null) {
-            return drawable.getOpacity();
-        }
-        return 0;
-    }
-
+/**
+ * Created by liutao on 12/24/14.
+ */
+public class URLDrawable extends BitmapDrawable {
+    // the drawable that you need to set, you could set the initial drawing
+    // with the loading image if you need to
+    protected Drawable drawable;
 
     @Override
     public void draw(Canvas canvas) {
         // override the draw to facilitate refresh function later
-        if (drawable != null) {
-            Paint p = new Paint();
-            p.setColor(Color.GREEN);
-            canvas.drawRect(drawable.getBounds(), p);
+        if(drawable != null) {
             drawable.draw(canvas);
-
-            if (!drawable.isRunning()) {
-                drawable.start();
-            }
         }
-    }
-
-    @Override
-    public void invalidateDrawable(Drawable drawable) {
-        if (getCallback() == null) {
-            return;
-        }
-        getCallback().invalidateDrawable(drawable);
-    }
-
-    @Override
-    public void scheduleDrawable(Drawable drawable, Runnable runnable, long l) {
-        if (getCallback() == null) {
-            return;
-        }
-        getCallback().scheduleDrawable(drawable, runnable, l);
-    }
-
-    @Override
-    public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
-        if (getCallback() == null) {
-            return;
-        }
-        getCallback().unscheduleDrawable(drawable, runnable);
     }
 }

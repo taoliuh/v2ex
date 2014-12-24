@@ -44,7 +44,7 @@
                 android:textColor="@color/body_text_1"
                 android:textSize="@dimen/text_size_large" />
 
-            <TextView
+            <com.sonaive.v2ex.ui.widgets.html.HtmlTextView
                 android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
