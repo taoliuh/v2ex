@@ -43,6 +43,7 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.ui.widgets.URLImageParser;
+import com.sonaive.v2ex.ui.widgets.URLImageParser2;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
@@ -195,12 +196,6 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             replies.setText(mFeed.replies + getString(R.string.noun_reply));
         }
     }
-
-//    @Override
-//    public Drawable getDrawable(String source) {
-//        LOGD(TAG, "Img source: " + source);
-//        return null;
-//    }
 
     class ReviewsLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
 

@@ -58,7 +58,7 @@ public class URLImageParser implements Html.ImageGetter {
         container.setTag(container.getId(), callback);
 
         Glide.with(container.getContext()).load(source)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String s, Target<GlideDrawable> glideDrawableTarget, boolean b) {
