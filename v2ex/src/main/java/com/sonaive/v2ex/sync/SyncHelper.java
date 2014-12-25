@@ -24,6 +24,7 @@ import android.content.SyncResult;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.sync.api.FeedsApi;
@@ -33,6 +34,9 @@ import com.sonaive.v2ex.sync.api.UserIdentityApi;
 import com.sonaive.v2ex.util.AccountUtils;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
+
+import de.greenrobot.event.EventBus;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.LOGE;
@@ -123,6 +127,7 @@ public class SyncHelper {
                 sync(api, extras);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
+                EventBus.getDefault().postSticky(new ExceptionEvent(mContext.getString(R.string.err_io)));
                 LOGE(TAG, "Error performing remote sync.");
                 increaseIoExceptions(syncResult);
             }

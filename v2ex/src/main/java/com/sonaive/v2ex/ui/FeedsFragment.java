@@ -116,15 +116,15 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             if (isActionbarShown) {
                 RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
                 if (layoutManager instanceof LinearLayoutManager) {
-                    int index = ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+                    int index = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
                     LOGD(TAG, "LinearLayoutManager, first complete visible item position is: " + index);
-                    if (index == -1) {
+                    if (index == 0) {
                         mRecyclerView.smoothScrollBy(0, -clearance);
                     }
                 } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                    int[] firstCompletelyVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstCompletelyVisibleItemPositions(null);
-                    LOGD(TAG, "StaggeredGridLayoutManager, first complete visible item position is: " + firstCompletelyVisibleItemPositions[0]);
-                    if (firstCompletelyVisibleItemPositions[0] == -1) {
+                    int[] findFirstVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(null);
+                    LOGD(TAG, "StaggeredGridLayoutManager, first complete visible item position is: " + findFirstVisibleItemPositions[0]);
+                    if (findFirstVisibleItemPositions[0] == 0) {
                         mRecyclerView.smoothScrollBy(0, -clearance);
                     }
                 }

@@ -16,12 +16,14 @@
 package com.sonaive.v2ex.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.sync.ExceptionEvent;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
@@ -118,6 +120,10 @@ public class FeedsActivity extends BaseActivity {
         checkShowNoNetworkButterBar();
     }
 
+    public void onEventMainThread(ExceptionEvent event) {
+        showExceptionButterBar(event);
+    }
+
     public void updateSwipeRefreshProgressbarTopClearence() {
         final boolean butterBarVisible = mButterBar != null
                 && mButterBar.getVisibility() == View.VISIBLE;
@@ -170,5 +176,31 @@ public class FeedsActivity extends BaseActivity {
             }
             return false;
         }
+    }
+
+    private void showExceptionButterBar(ExceptionEvent event) {
+        UIUtils.setUpButterBar(mButterBar, event.errMessage,
+                getString(R.string.close), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mButterBar.setVisibility(View.GONE);
+                        updateFragContentTopClearance();
+                    }
+                }
+        );
+        invalidateOptionsMenu();
+        onRefreshingStateChanged(false);
+        updateFragContentTopClearance();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mButterBar.getVisibility() == View.VISIBLE) {
+                    mButterBar.setVisibility(View.GONE);
+                    updateFragContentTopClearance();
+                }
+            }
+        }, 3000);
     }
 }

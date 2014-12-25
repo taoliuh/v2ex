@@ -62,7 +62,6 @@
         -->
         <service
             android:name=".sync.SyncService"
-            android:process=":sync"
             android:exported="true">
 
             <!--

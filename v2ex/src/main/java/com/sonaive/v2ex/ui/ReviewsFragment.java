@@ -41,7 +41,7 @@ import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.ReviewCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
-import com.sonaive.v2ex.ui.widgets.UrlImageParser;
+import com.sonaive.v2ex.ui.widgets.URLImageParser;
 import com.sonaive.v2ex.ui.widgets.html.HtmlTextView;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.UIUtils;
@@ -137,7 +137,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
                 RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
                 if (layoutManager instanceof LinearLayoutManager) {
-                    int index = ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+                    int index = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
                     if (index == 0) {
                         mRecyclerView.smoothScrollBy(0, -clearance);
                     }
@@ -175,7 +175,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             title.setText(mFeed.title);
             content.setVisibility(View.VISIBLE);
-            content.setText(Html.fromHtml(mFeed.content_rendered, new UrlImageParser(getActivity(), content), null));
+            content.setText(Html.fromHtml(mFeed.content_rendered, new URLImageParser(getActivity(), content), null));
             if (mFeed.member != null) {
                 String avatarUrl = mFeed.member.avatar_large;
                 if (avatarUrl != null) {

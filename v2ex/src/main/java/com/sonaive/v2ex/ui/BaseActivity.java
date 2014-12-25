@@ -67,6 +67,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.google.gson.JsonObject;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.ExceptionEvent;
 import com.sonaive.v2ex.sync.SyncUtils;
 import com.sonaive.v2ex.ui.debug.TestActivity;
 import com.sonaive.v2ex.ui.widgets.MultiSwipeRefreshLayout;

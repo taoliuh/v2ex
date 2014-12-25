@@ -34,7 +34,7 @@ import java.net.MalformedURLException;
 /**
  * Created by liutao on 12/24/14.
  */
-public class UrlImageParser implements Html.ImageGetter {
+public class URLImageParser implements Html.ImageGetter {
     Context context;
     TextView container;
 
@@ -43,7 +43,7 @@ public class UrlImageParser implements Html.ImageGetter {
      * @param context
      * @param container
      */
-    public UrlImageParser(Context context, TextView container) {
+    public URLImageParser(Context context, TextView container) {
         this.context = context;
         this.container = container;
     }
@@ -88,14 +88,14 @@ public class UrlImageParser implements Html.ImageGetter {
             urlDrawable.drawable = result;
 
             // redraw the image by invalidating the container
-            UrlImageParser.this.container.invalidate();
+            container.invalidate();
 
             // For ICS
-            UrlImageParser.this.container.setHeight((UrlImageParser.this.container.getHeight()
-                    + result.getIntrinsicHeight()));
+            container.setHeight(container.getHeight()
+                    + result.getIntrinsicHeight());
 
             // Pre ICS
-            UrlImageParser.this.container.setEllipsize(null);
+            container.setEllipsize(null);
 
             container.setText(container.getText());
 

@@ -26,4 +26,5 @@
     <string name="description_search">搜索</string>
     <string name="description_refreshing">刷新中</string>
     <string name="no_more_data">没有更多数据了</string>
+    <string name="err_io">数据读写异常,请确认网络连接是否正常</string>
 </resources>
