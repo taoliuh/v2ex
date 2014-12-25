@@ -34,7 +34,7 @@ import java.net.MalformedURLException;
 /**
  * Created by liutao on 12/24/14.
  */
-public class URLImageParser implements Html.ImageGetter {
+public class UrlImageParser implements Html.ImageGetter {
     Context context;
     TextView container;
 
@@ -43,13 +43,13 @@ public class URLImageParser implements Html.ImageGetter {
      * @param context
      * @param container
      */
-    public URLImageParser(Context context, TextView container) {
+    public UrlImageParser(Context context, TextView container) {
         this.context = context;
         this.container = container;
     }
 
     public Drawable getDrawable(String source) {
-        URLDrawable urlDrawable = new URLDrawable();
+        UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
         ImageGetterAsyncTask asyncTask =
@@ -57,15 +57,15 @@ public class URLImageParser implements Html.ImageGetter {
 
         asyncTask.execute(source);
 
-        // return reference to URLDrawable where I will change with actual image from
+        // return reference to UrlDrawable where I will change with actual image from
         // the src tag
         return urlDrawable;
     }
 
     public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
-        URLDrawable urlDrawable;
+        UrlDrawable urlDrawable;
 
-        public ImageGetterAsyncTask(URLDrawable d) {
+        public ImageGetterAsyncTask(UrlDrawable d) {
             this.urlDrawable = d;
         }
 
@@ -77,23 +77,25 @@ public class URLImageParser implements Html.ImageGetter {
 
         @Override
         protected void onPostExecute(Drawable result) {
+            if (result == null) {
+                return;
+            }
             // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0
-                    + result.getIntrinsicHeight());
+            urlDrawable.setBounds(0, 0, result.getIntrinsicWidth(), result.getIntrinsicHeight());
 
             // change the reference of the current drawable to the result
             // from the HTTP call
             urlDrawable.drawable = result;
 
             // redraw the image by invalidating the container
-            URLImageParser.this.container.invalidate();
+            UrlImageParser.this.container.invalidate();
 
             // For ICS
-            URLImageParser.this.container.setHeight((URLImageParser.this.container.getHeight()
+            UrlImageParser.this.container.setHeight((UrlImageParser.this.container.getHeight()
                     + result.getIntrinsicHeight()));
 
             // Pre ICS
-            URLImageParser.this.container.setEllipsize(null);
+            UrlImageParser.this.container.setEllipsize(null);
 
             container.setText(container.getText());
 

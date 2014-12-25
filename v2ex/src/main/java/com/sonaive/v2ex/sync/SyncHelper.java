@@ -155,27 +155,27 @@ public class SyncHelper {
             case Api.API_TOPICS_LATEST: {
                 FeedsApi latestFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_LATEST);
                 // save the remote data to the database
-                mDataHandler.applyData(new Bundle[] {latestFeedsApi.sync()});
+                mDataHandler.applyData(new Bundle[] {latestFeedsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_TOPICS_HOT: {
                 FeedsApi hotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
-                mDataHandler.applyData(new Bundle[] {hotFeedsApi.sync()});
+                mDataHandler.applyData(new Bundle[] {hotFeedsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_NODES_ALL: {
                 NodesApi allNodesApi = new NodesApi(mContext, NodesApi.TYPE_ALL);
-                mDataHandler.applyData(new Bundle[] {allNodesApi.sync()});
+                mDataHandler.applyData(new Bundle[] {allNodesApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_NODES_SPECIFIC: {
                 NodesApi specificNodesApi = new NodesApi(mContext, NodesApi.TYPE_SPECIFIC, args);
-                mDataHandler.applyData(new Bundle[] {specificNodesApi.sync()});
+                mDataHandler.applyData(new Bundle[] {specificNodesApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_REVIEWS: {
                 ReviewsApi reviewsApi = new ReviewsApi(mContext, args);
-                mDataHandler.applyData(new Bundle[] {reviewsApi.sync()});
+                mDataHandler.applyData(new Bundle[] {reviewsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
         }

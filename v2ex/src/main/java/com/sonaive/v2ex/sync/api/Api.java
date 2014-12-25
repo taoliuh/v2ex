@@ -18,9 +18,15 @@ package com.sonaive.v2ex.sync.api;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.gson.Gson;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.internal.http.HttpMethod;
+
+import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,6 +47,7 @@ public abstract class Api {
     public static final String ARG_RESULT = "arg_result";
     public static final String ARG_API_PARAMS_ID = "arg_params_id";
     public static final String ARG_API_NAME = "arg_api_name";
+    public static final String ARG_API_PARAMS = "arg_params";
 
     public static final String API_HOST_URL = "http://www.v2ex.com";
     public static final String API_TOPICS_LATEST = "/api/topics/latest.json";
@@ -73,11 +80,31 @@ public abstract class Api {
     protected String mUrl;
     protected Bundle mArguments;
 
-    public Bundle sync() {
+    public enum HttpMethod {
+        GET, POST
+    }
+
+    public Bundle sync(HttpMethod httpMethod) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(mUrl)
-                .build();
+        Request request = null;
+
+        if (httpMethod == HttpMethod.GET) {
+            request = new Request.Builder()
+                    .url(mUrl)
+                    .build();
+        } else {
+            String json = mArguments.getString(ARG_API_PARAMS);
+            HashMap params = new Gson().fromJson(json, HashMap.class);
+            FormEncodingBuilder formBodyBuilder = new FormEncodingBuilder();
+            for (Map.Entry<String, String> entry : ((HashMap<String, String>) params).entrySet()) {
+                formBodyBuilder.add(entry.getKey(), entry.getValue());
+            }
+            RequestBody formBody = formBodyBuilder.build();
+            request = new Request.Builder()
+                    .url(mUrl)
+                    .post(formBody)
+                    .build();
+        }
 
         try {
             Response response = okHttpClient.newCall(request).execute();
