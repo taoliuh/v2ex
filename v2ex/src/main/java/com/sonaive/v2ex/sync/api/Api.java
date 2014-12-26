@@ -31,6 +31,7 @@ import org.apache.http.protocol.HTTP;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.LOGW;
@@ -86,6 +87,8 @@ public abstract class Api {
 
     public Bundle sync(HttpMethod httpMethod) {
         OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
+        okHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         Request request = null;
 
         if (httpMethod == HttpMethod.GET) {

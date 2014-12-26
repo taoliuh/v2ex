@@ -29,6 +29,8 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.UIUtils;
 
+import de.greenrobot.event.EventBus;
+
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -121,6 +123,7 @@ public class FeedsActivity extends BaseActivity {
     }
 
     public void onEventMainThread(ExceptionEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
         showExceptionButterBar(event);
     }
 
