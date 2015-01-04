@@ -12,8 +12,8 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginEnd="60dp"
         android:singleLine="true"
         android:ems="10"
         android:hint="Search Email"
@@ -25,12 +25,10 @@
 
     <ImageButton
         android:id="@+id/clearButton"
+        style="?android:attr/actionButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/transparent"
         android:src="@drawable/ic_navigation_cancel" />
 
 </merge>
