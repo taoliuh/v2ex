@@ -18,15 +18,19 @@ package com.sonaive.v2ex.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.sync.ExceptionEvent;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
+import com.sonaive.v2ex.ui.widgets.OnQueryListener;
+import com.sonaive.v2ex.ui.widgets.SimpleSearchView;
 import com.sonaive.v2ex.util.UIUtils;
 
 import de.greenrobot.event.EventBus;
@@ -36,7 +40,7 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/18/14.
  */
-public class FeedsActivity extends BaseActivity {
+public class FeedsActivity extends BaseActivity implements OnQueryListener {
     private static final String TAG = makeLogTag(FeedsActivity.class);
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
@@ -57,6 +61,16 @@ public class FeedsActivity extends BaseActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         enableActionBarAutoHide((RecyclerView) findViewById(R.id.recycler_view));
+    }
+
+    @Override
+    protected Toolbar getActionBarToolbar() {
+        Toolbar actionBarToolbar = super.getActionBarToolbar();
+        SimpleSearchView searchView = (SimpleSearchView) actionBarToolbar.findViewById(R.id.search_view);
+        if (searchView != null) {
+            searchView.setOnQueryListener(this);
+        }
+        return actionBarToolbar;
     }
 
     @Override
@@ -205,5 +219,20 @@ public class FeedsActivity extends BaseActivity {
                 }
             }
         }, 3000);
+    }
+
+    @Override
+    public void onSubmit(String s) {
+        Toast.makeText(this, "onSubmit, text is: " + s, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClear() {
+        Toast.makeText(this, "onClear", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onQueryTextChange(String s) {
+        Toast.makeText(this, "onQueryTextChange, text is: " + s, Toast.LENGTH_SHORT).show();
     }
 }

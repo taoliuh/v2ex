@@ -23,4 +23,11 @@
     v2ex:titleTextAppearance="@style/ActionBar.TitleText"
     v2ex:contentInsetStart="?actionBarInsetStart"
     android:layout_width="match_parent"
-    android:layout_height="?actionBarSize" />
+    android:layout_height="?actionBarSize" >
+
+    <com.sonaive.v2ex.ui.widgets.SimpleSearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</android.support.v7.widget.Toolbar>

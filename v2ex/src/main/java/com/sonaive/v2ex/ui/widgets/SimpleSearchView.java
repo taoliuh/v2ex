@@ -34,6 +34,8 @@ import com.sonaive.v2ex.R;
  */
 public class SimpleSearchView extends FrameLayout {
 
+    private OnQueryListener mListener;
+
     EditText searchBox;
     ImageButton clearButton;
 
@@ -60,6 +62,9 @@ public class SimpleSearchView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 searchBox.setText("");
+                if (mListener != null) {
+                    mListener.onClear();
+                }
             }
         });
 
@@ -82,6 +87,9 @@ public class SimpleSearchView extends FrameLayout {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (mListener != null) {
+                    mListener.onQueryTextChange(s.toString().trim());
+                }
             }
         });
         searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -89,10 +97,17 @@ public class SimpleSearchView extends FrameLayout {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (mListener != null) {
+                        mListener.onSubmit(v.getText().toString().trim());
+                    }
                     return true;
                 }
                 return false;
             }
         });
+    }
+
+    public void setOnQueryListener(OnQueryListener listener) {
+        mListener = listener;
     }
 }
