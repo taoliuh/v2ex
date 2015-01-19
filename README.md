@@ -16,11 +16,11 @@ Secondly, we all know not to block main ui.
 
 But how to do it? One of the best practices is: CursorLoader + ContentProvider + SyncAdapter.
 
-{% https://github.com/taoliuh/v2ex/blob/wip/doc/option-c.png [Use contentProvider and syncAdapter api design pattern] %}
+{% img https://github.com/taoliuh/v2ex/blob/wip/doc/option-c.png [Use contentProvider and syncAdapter api design pattern] %}
 
 And this is the incorrect way to implement REST methods.
 
-{% https://github.com/taoliuh/v2ex/blob/wip/doc/incorrect_way_to_implement_rest_methods.png [The Incorrect Implementation of REST Methods] %}
+{% img https://github.com/taoliuh/v2ex/blob/wip/doc/incorrect_way_to_implement_rest_methods.png [The Incorrect Implementation of REST Methods] %}
 
 #Features
 
