@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sonaive.v2ex;
+package com.sonaive.v2ex.ui.event;
+
+import com.sonaive.v2ex.widget.LoadingStatus;
 
 /**
- * Created by liutao on 11/29/14.
+ * Created by liutao on 1/13/15.
  */
-public class Config {
-    /** Load data count each time. */
-    public static final int PAGE_SIZE = 100;
-    /** Max row count to limit cache size. */
-    public static final int THRESHOLD = 500;
+public class UpdateLoadingStateEvent {
+    public LoadingStatus loadingStatus;
+
+    public UpdateLoadingStateEvent(LoadingStatus loadingStatus) {
+        this.loadingStatus = loadingStatus;
+    }
 }

@@ -48,6 +48,8 @@ public class ReviewsHandler extends JSONHandler {
 
     private HashMap<String, Review> mReviews = new HashMap<>();
 
+    private int page = 1;
+
     private int topicId;
 
     public ReviewsHandler(Context context) {
@@ -82,8 +84,17 @@ public class ReviewsHandler extends JSONHandler {
             }
         }
 
+        int deletedReviews = 0;
+        if (isIncrementalUpdate) {
+            for (String posterId : reviewHashcodes.keySet()) {
+                if (!reviewsToKeep.contains(posterId)) {
+                    buildDeleteOperation(posterId, list);
+                    ++deletedReviews;
+                }
+            }
+        }
         LOGD(TAG, "Reviews: " + (isIncrementalUpdate ? "INCREMENTAL" : "FULL") + " update. " +
-                updatedReviews + " to update, New total: " + mReviews.size());
+                updatedReviews + " to update, " + deletedReviews + " to delete, New total: " + mReviews.size());
     }
 
     @Override
@@ -93,6 +104,12 @@ public class ReviewsHandler extends JSONHandler {
                 mReviews.put(String.valueOf(review.id), review);
             }
         }
+        // Due to api hasn't supported pagination.The following code will be commented.
+//        if (mReviews.size() > 0) {
+//            EventBus.getDefault().postSticky(new UpdateLoadingStateEvent(LoadingStatus.FINISH));
+//        } else {
+//            EventBus.getDefault().postSticky(new UpdateLoadingStateEvent(LoadingStatus.NO_MORE_DATA));
+//        }
     }
 
     @Override
@@ -139,9 +156,13 @@ public class ReviewsHandler extends JSONHandler {
     }
 
     private HashMap<String, String> loadReviewHashcodes() {
+//        int limit = page * Config.PAGE_SIZE;
+//        int offset = (page - 1) * Config.PAGE_SIZE;
+//        // Put the limit clause as a query parameter using the syntax 'limit = offset, limit'
+//        Uri uri = V2exContract.Reviews.CONTENT_URI.buildUpon().encodedQuery("limit=" + offset + "," + limit).build();
         Uri uri = V2exContract.Reviews.CONTENT_URI;
         Cursor cursor = mContext.getContentResolver().query(uri, ReviewHashcodeQuery.PROJECTION,
-                null, null, null);
+                "review_topic_id = ?", new String[] {String.valueOf(topicId)}, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " DESC");
         if (cursor == null) {
             LOGE(TAG, "Error querying REVIEW hashcodes (got null cursor)");
             return null;

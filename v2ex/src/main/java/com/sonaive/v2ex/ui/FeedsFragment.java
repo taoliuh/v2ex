@@ -42,7 +42,7 @@ import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.util.UIUtils;
-import com.sonaive.v2ex.widget.LoadingState;
+import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
@@ -138,14 +138,14 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     @Override
     public void onLoadMoreData() {
-        mAdapter.setLoadingState(LoadingState.LOADING);
+        mAdapter.setLoadingState(LoadingStatus.LOADING);
 
         ((FeedsActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
         ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
 
         getLoaderManager().restartLoader(1, buildQueryParameter(), new FeedLoaderCallback());
 
-        LOGD(TAG, "Load more nodes, loading state is: " + LoadingState.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
+        LOGD(TAG, "Load more nodes, loading state is: " + LoadingStatus.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
     }
 
     class FeedLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -170,11 +170,11 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
 
-                mAdapter.setLoadingState(LoadingState.NO_MORE_DATA);
-                LOGD(TAG, "Feeds count is: " + (data == null ? 0 : data.getCount()) + ", loading state is: " + LoadingState.NO_MORE_DATA);
+                mAdapter.setLoadingState(LoadingStatus.NO_MORE_DATA);
+                LOGD(TAG, "Feeds count is: " + (data == null ? 0 : data.getCount()) + ", loading state is: " + LoadingStatus.NO_MORE_DATA);
             } else {
-                mAdapter.setLoadingState(LoadingState.FINISH);
-                LOGD(TAG, "Feeds count is: " + (data.getCount()) + ", loading state is: " + LoadingState.FINISH);
+                mAdapter.setLoadingState(LoadingStatus.FINISH);
+                LOGD(TAG, "Feeds count is: " + (data.getCount()) + ", loading state is: " + LoadingStatus.FINISH);
             }
 
             if (data == null || data.getCount() == 0) {

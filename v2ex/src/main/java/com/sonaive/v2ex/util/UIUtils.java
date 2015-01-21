@@ -43,7 +43,7 @@ import android.widget.TextView;
 
 import com.sonaive.v2ex.BuildConfig;
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.widget.LoadingState;
+import com.sonaive.v2ex.widget.LoadingStatus;
 
 import java.util.regex.Pattern;
 
@@ -322,16 +322,16 @@ public class UIUtils {
         butterBar.setVisibility(View.VISIBLE);
     }
 
-    public static void invalidateFooterState(Context context, View footer, LoadingState loadingState) {
+    public static void invalidateFooterState(Context context, View footer, LoadingStatus loadingState) {
         TextView emptyTextView = (TextView) footer.findViewById(android.R.id.empty);
         View progressBar = footer.findViewById(R.id.progress_bar);
-        if (loadingState == LoadingState.LOADING) {
+        if (loadingState == LoadingStatus.LOADING) {
             emptyTextView.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
-        } else if (loadingState == LoadingState.FINISH) {
+        } else if (loadingState == LoadingStatus.FINISH) {
             emptyTextView.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
-        } else if (loadingState == LoadingState.NO_MORE_DATA) {
+        } else if (loadingState == LoadingStatus.NO_MORE_DATA) {
             emptyTextView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             emptyTextView.setText(context.getString(R.string.no_more_data));

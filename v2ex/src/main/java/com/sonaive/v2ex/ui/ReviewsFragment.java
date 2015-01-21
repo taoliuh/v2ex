@@ -46,7 +46,7 @@ import com.sonaive.v2ex.ui.widgets.html.HtmlTextView;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
-import com.sonaive.v2ex.widget.LoadingState;
+import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
@@ -111,7 +111,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             // Set progress bar refreshing.
             ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
             ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
-            mAdapter.setLoadingState(LoadingState.LOADING);
+            mAdapter.setLoadingState(LoadingStatus.LOADING);
 
             Bundle args = new Bundle();
             args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
@@ -152,14 +152,14 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
     @Override
     public void onLoadMoreData() {
-        mAdapter.setLoadingState(LoadingState.LOADING);
+        mAdapter.setLoadingState(LoadingStatus.LOADING);
 
         ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
         ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
 
         getLoaderManager().restartLoader(1, buildQueryParameter(), new ReviewsLoaderCallback());
 
-        LOGD(TAG, "Load more reviews, loading state is: " + LoadingState.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
+        LOGD(TAG, "Load more reviews, loading state is: " + LoadingStatus.LOADING + ", preparing to load page " + mAdapter.getLoadedPage());
     }
 
     private void initHeader(View header) {
@@ -207,7 +207,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
                     appendQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT, String.valueOf(limit)).
                     build();
             return new CursorLoader(getActivity(), uri,
-                    PROJECTION, null, null, V2exContract.Reviews.REVIEW_CREATED + " ASC");
+                    PROJECTION, null, null, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " DESC");
         }
 
         @Override
@@ -219,11 +219,11 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             if (data == null || data.getCount() % PaginationCursorAdapter.pageSize > 0) {
 
-                mAdapter.setLoadingState(LoadingState.NO_MORE_DATA);
-                LOGD(TAG, "Reviews count is: " + (data == null ? 0 : data.getCount()) + ", loading state is: " + LoadingState.NO_MORE_DATA);
+                mAdapter.setLoadingState(LoadingStatus.NO_MORE_DATA);
+                LOGD(TAG, "Reviews count is: " + (data == null ? 0 : data.getCount()) + ", loading state is: " + LoadingStatus.NO_MORE_DATA);
             } else {
-                mAdapter.setLoadingState(LoadingState.FINISH);
-                LOGD(TAG, "Reviews count is: " + (data.getCount()) + ", loading state is: " + LoadingState.FINISH);
+                mAdapter.setLoadingState(LoadingStatus.FINISH);
+                LOGD(TAG, "Reviews count is: " + (data.getCount()) + ", loading state is: " + LoadingStatus.FINISH);
             }
 
             ((FeedDetailActivity) getActivity()).onRefreshingStateChanged(false);

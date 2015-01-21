@@ -30,11 +30,9 @@ import android.view.ViewGroup;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
-import com.sonaive.v2ex.sync.SyncHelper;
-import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.NodeCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
-import com.sonaive.v2ex.widget.LoadingState;
+import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
@@ -90,11 +88,11 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
 
     @Override
     public void onLoadMoreData() {
-        mAdapter.setLoadingState(LoadingState.LOADING);
+        mAdapter.setLoadingState(LoadingStatus.LOADING);
 //        Bundle args = new Bundle();
 //        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
 //        SyncHelper.requestManualSync(getActivity(), args);
-        LOGD(TAG, "Load more nodes, loading state is: " + LoadingState.LOADING);
+        LOGD(TAG, "Load more nodes, loading state is: " + LoadingStatus.LOADING);
     }
 
     class NodesLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -113,7 +111,7 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             LOGD(TAG, "Nodes count is: " + (data == null ? 0 : data.getCount()));
-            mAdapter.setLoadingState(LoadingState.FINISH);
+            mAdapter.setLoadingState(LoadingStatus.FINISH);
             ((NodesActivity) getActivity()).onRefreshingStateChanged(false);
             mAdapter.swapCursor(data);
         }

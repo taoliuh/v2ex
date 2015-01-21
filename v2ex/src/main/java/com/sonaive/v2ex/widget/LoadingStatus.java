@@ -18,6 +18,6 @@ package com.sonaive.v2ex.widget;
 /**
  * Created by liutao on 12/19/14.
  */
-public enum LoadingState {
+public enum LoadingStatus {
     LOADING, FINISH, NO_MORE_DATA, LOAD_FAILED
 }

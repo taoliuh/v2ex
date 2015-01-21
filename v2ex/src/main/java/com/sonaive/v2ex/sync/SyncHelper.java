@@ -118,7 +118,7 @@ public class SyncHelper {
         // remote sync consists of these operations, which we try one by one (and tolerate
         // individual failures on each)
         String[] apisToPerform = remoteSync ?
-                new String[] { Api.API_TOPICS_LATEST, Api.API_TOPICS_HOT, Api.API_NODES_ALL} :
+                new String[] { Api.API_TOPICS_LATEST, Api.API_TOPICS_HOT} :
                 new String[] { extras.getString(Api.ARG_API_NAME)};
 
 
