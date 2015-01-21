@@ -83,20 +83,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Cursor cursor = mAdapter.getCursor();
-                if (cursor != null && cursor.moveToPosition(position)) {
-                    Intent intent = new Intent(getActivity(), FeedDetailActivity.class);
-                    Bundle bundle = new Bundle();
-                    Parcelable feed = cursor2Parcelable(cursor);
-                    bundle.putParcelable("feed", feed);
-                    intent.putExtra("bundle", bundle);
-                    startActivity(intent);
-                }
-            }
-        }));
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
     }
@@ -199,29 +185,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         return loaderArgs;
     }
 
-    private Parcelable cursor2Parcelable(Cursor cursor) {
-        int feedId = cursor.getInt(FeedsQuery.FEED_ID);
-        String feedTitle = cursor.getString(FeedsQuery.FEED_TITLE);
-        String feedContent = cursor.getString(FeedsQuery.FEED_CONTENT);
-        String feedContentRendered = cursor.getString(FeedsQuery.FEED_CONTENT_RENDERED);
-        String feedMember = cursor.getString(FeedsQuery.FEED_MEMBER);
-        String feedNode = cursor.getString(FeedsQuery.FEED_NODE);
-        int feedReplies = cursor.getInt(FeedsQuery.FEED_REPLIES);
-        long feedCreated = cursor.getLong(FeedsQuery.FEED_CREATED);
-
-        Feed feed = new Feed();
-        feed.id = feedId;
-        feed.title = feedTitle;
-        feed.content = feedContent;
-        feed.content_rendered = feedContentRendered;
-        feed.member = ModelUtils.getAuthor(feedMember);
-        feed.node = ModelUtils.getNode(feedNode);
-        feed.replies = feedReplies;
-        feed.created = feedCreated;
-
-        return feed;
-    }
-
     private interface FeedsQuery {
         String[] PROJECTION = {
                 BaseColumns._ID,
@@ -236,13 +199,5 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         };
 
         int _ID = 0;
-        int FEED_ID = 1;
-        int FEED_TITLE = 2;
-        int FEED_CONTENT = 3;
-        int FEED_CONTENT_RENDERED = 4;
-        int FEED_MEMBER = 5;
-        int FEED_NODE = 6;
-        int FEED_REPLIES = 7;
-        int FEED_CREATED = 8;
     }
 }

@@ -16,8 +16,13 @@
 package com.sonaive.v2ex.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.BaseColumns;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -27,9 +32,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.io.model.Member;
 import com.sonaive.v2ex.io.model.Node;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.ui.FeedDetailActivity;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -58,7 +65,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public void onBindViewHolder(ViewHolder holder, final Cursor cursor) {
         if (cursor != null) {
             String title = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
             String content = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_CONTENT));
@@ -69,7 +76,17 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
 
             Member member = ModelUtils.getAuthor(memberJson);
             Node node = ModelUtils.getNode(nodeJson);
-
+            holder.card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, FeedDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    Parcelable feed = cursor2Parcelable(cursor);
+                    bundle.putParcelable("feed", feed);
+                    intent.putExtra("bundle", bundle);
+                    mContext.startActivity(intent);
+                }
+            });
             holder.title.setText(title);
             if (content != null) {
                 holder.content.setVisibility(View.VISIBLE);
@@ -114,6 +131,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        public CardView card;
         public TextView title;
         public TextView content;
         public ImageView avatar;
@@ -123,6 +141,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
         public TextView nodeTitle;
         public ViewHolder(View view) {
             super(view);
+            card = (CardView) view.findViewById(R.id.card_container);
             title = (TextView) view.findViewById(R.id.title);
             content = (TextView) view.findViewById(R.id.content);
             avatar = (ImageView) view.findViewById(R.id.avatar);
@@ -131,5 +150,52 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
             replies = (TextView) view.findViewById(R.id.replies);
             nodeTitle = (TextView) view.findViewById(R.id.node_title);
         }
+    }
+
+    private Parcelable cursor2Parcelable(Cursor cursor) {
+        int feedId = cursor.getInt(FeedsQuery.FEED_ID);
+        String feedTitle = cursor.getString(FeedsQuery.FEED_TITLE);
+        String feedContent = cursor.getString(FeedsQuery.FEED_CONTENT);
+        String feedContentRendered = cursor.getString(FeedsQuery.FEED_CONTENT_RENDERED);
+        String feedMember = cursor.getString(FeedsQuery.FEED_MEMBER);
+        String feedNode = cursor.getString(FeedsQuery.FEED_NODE);
+        int feedReplies = cursor.getInt(FeedsQuery.FEED_REPLIES);
+        long feedCreated = cursor.getLong(FeedsQuery.FEED_CREATED);
+
+        Feed feed = new Feed();
+        feed.id = feedId;
+        feed.title = feedTitle;
+        feed.content = feedContent;
+        feed.content_rendered = feedContentRendered;
+        feed.member = ModelUtils.getAuthor(feedMember);
+        feed.node = ModelUtils.getNode(feedNode);
+        feed.replies = feedReplies;
+        feed.created = feedCreated;
+
+        return feed;
+    }
+
+    private interface FeedsQuery {
+        String[] PROJECTION = {
+                BaseColumns._ID,
+                V2exContract.Feeds.FEED_ID,
+                V2exContract.Feeds.FEED_TITLE,
+                V2exContract.Feeds.FEED_CONTENT,
+                V2exContract.Feeds.FEED_CONTENT_RENDERED,
+                V2exContract.Feeds.FEED_MEMBER,
+                V2exContract.Feeds.FEED_NODE,
+                V2exContract.Feeds.FEED_REPLIES,
+                V2exContract.Feeds.FEED_CREATED
+        };
+
+        int _ID = 0;
+        int FEED_ID = 1;
+        int FEED_TITLE = 2;
+        int FEED_CONTENT = 3;
+        int FEED_CONTENT_RENDERED = 4;
+        int FEED_MEMBER = 5;
+        int FEED_NODE = 6;
+        int FEED_REPLIES = 7;
+        int FEED_CREATED = 8;
     }
 }

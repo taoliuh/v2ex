@@ -15,9 +15,7 @@
  */
 package com.sonaive.v2ex.ui;
 
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.support.v4.content.IntentCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -53,9 +51,7 @@ public class FeedDetailActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigateUpToFromChild(FeedDetailActivity.this,
-                        IntentCompat.makeMainActivity(new ComponentName(FeedDetailActivity.this,
-                                FeedsActivity.class)));
+                finish();
             }
         });
 
