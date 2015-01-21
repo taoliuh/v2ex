@@ -19,6 +19,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 
+import com.sonaive.v2ex.Config;
+
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
@@ -30,7 +32,7 @@ public abstract class PaginationCursorAdapter<VH extends RecyclerView.ViewHolder
     private static final String TAG = makeLogTag(PaginationCursorAdapter.class);
 
     /** The page size of data set. */
-    public static final int pageSize = 50;
+    public static final int pageSize = Config.PAGE_SIZE;
 
     private static final int THRESHOLD = 1;
 

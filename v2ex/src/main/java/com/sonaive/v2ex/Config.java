@@ -19,4 +19,6 @@ package com.sonaive.v2ex;
  * Created by liutao on 11/29/14.
  */
 public class Config {
+    public static final int PAGE_SIZE = 50;
+    public static final int THRESHOLD = 300;
 }

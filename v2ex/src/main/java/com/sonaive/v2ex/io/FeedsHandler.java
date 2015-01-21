@@ -25,6 +25,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.sonaive.v2ex.Config;
 import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
@@ -84,8 +85,21 @@ public class FeedsHandler extends JSONHandler {
             }
         }
 
+        // Since the api only provide one page of newest feeds. We just insert
+        // or update feed to local database. Once the rows of feeds table exceed the threshold
+        // let's say 2000 rows, it's time to clean up. Delete all older rows.
+        int deletedFeeds = 0;
+        if (feedHashcodes != null && feedHashcodes.size() >= Config.THRESHOLD) {
+            for (String feedId : feedHashcodes.keySet()) {
+                if (!feedsToKeep.contains(feedId)) {
+                    buildDeleteOperation(feedId, list);
+                    ++deletedFeeds;
+                }
+            }
+        }
+
         LOGD(TAG, "Feeds: " + (isIncrementalUpdate ? "INCREMENTAL" : "FULL") + " update. " +
-                updatedFeeds + " to update, New total: " + mFeeds.size());
+                updatedFeeds + " to update, " + deletedFeeds + " to delete, New total: " + mFeeds.size());
     }
 
     @Override

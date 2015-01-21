@@ -54,13 +54,6 @@ public class V2exDataHandler {
     public static final String DATA_KEY_NODES = "nodes";
     public static final String DATA_KEY_REVIEWS = "reviews";
 
-    private static final String[] DATA_KEYS_IN_ORDER = {
-            DATA_KEY_MEMBERS,
-            DATA_KEY_FEEDS,
-            DATA_KEY_NODES,
-            DATA_KEY_REVIEWS
-    };
-
     Context mContext = null;
 
     // Handlers for each entity type:
