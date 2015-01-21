@@ -107,11 +107,13 @@ public class V2exDataHandler {
 
         // produce the necessary content provider operations
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
-        for (String dataKey : DATA_KEYS_IN_ORDER) {
-            LOGD(TAG, "Building content provider operations for: " + dataKey);
-            mHandlerForKey.get(dataKey).makeContentProviderOperations(batch);
+        for (Bundle dataBody : dataBodies) {
+            String key = dataBody.getString(V2exDataHandler.ARG_DATA_KEY);
+            LOGD(TAG, "Building content provider operations for: " + key);
+            mHandlerForKey.get(key).makeContentProviderOperations(batch);
             LOGD(TAG, "Content provider operations so far: " + batch.size());
         }
+
         LOGD(TAG, "Total content provider operations: " + batch.size());
 
         // finally, push the changes into the Content Provider
