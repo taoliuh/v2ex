@@ -18,12 +18,12 @@ package com.sonaive.v2ex.ui;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,12 +35,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
-import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
-import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
@@ -55,6 +52,12 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     private static final String TAG = makeLogTag(FeedsFragment.class);
+    private static final String ARG_KEYWORD = "keyword";
+
+    /** The handler message for updating the search query. */
+    private static final int MESSAGE_QUERY_UPDATE = 1;
+    /** The delay before actual requerying in millisecs. */
+    private static final int QUERY_UPDATE_DELAY_MILLIS = 100;
 
     FlexibleRecyclerView mRecyclerView = null;
     TextView mEmptyView = null;
@@ -63,6 +66,19 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     RecyclerView.LayoutManager mLayoutManager;
 
     Bundle loaderArgs;
+    String keyword;
+
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MESSAGE_QUERY_UPDATE) {
+                Bundle args = (Bundle) msg.obj;
+                keyword = args.getString("keyword");
+                reloadFromArguments(keyword);
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +86,9 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         mAdapter = new FeedCursorAdapter(getActivity(), null, 0);
         mAdapter.setOnLoadMoreDataListener(this);
         loaderArgs = new Bundle();
+        // Initializes the CursorLoader, the loader id must starts from 1, because
+        // The BaseActivity already takes 0 loader id.
+        getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
     @Override
@@ -85,14 +104,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         mRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Initializes the CursorLoader, the loader id must starts from 1, because
-        // The BaseActivity already takes 0 loader id.
-        getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
     public void setContentTopClearance(final int clearance, final boolean isActionbarShown) {
@@ -116,6 +127,16 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 }
             }
         }
+    }
+
+    public void reloadFromArguments(String keyword) {
+        getLoaderManager().restartLoader(1, buildQueryParameter(keyword), new FeedLoaderCallback());
+    }
+
+    public void requestQueryUpdate(Bundle arguments) {
+        mHandler.removeMessages(MESSAGE_QUERY_UPDATE);
+        mHandler.sendMessageDelayed(Message.obtain(mHandler, MESSAGE_QUERY_UPDATE, arguments),
+                QUERY_UPDATE_DELAY_MILLIS);
     }
 
     public boolean canRecyclerViewScrollUp() {
@@ -170,7 +191,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 mEmptyView.setVisibility(View.GONE);
             }
 
-            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+//            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
             mAdapter.swapCursor(data);
         }
 
@@ -182,6 +203,12 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     private Bundle buildQueryParameter() {
         loaderArgs.putInt("limit", (mAdapter.getLoadedPage() + 1) * PaginationCursorAdapter.pageSize);
+        return loaderArgs;
+    }
+
+    private Bundle buildQueryParameter(String keyword) {
+        loaderArgs.putInt("limit", (mAdapter.getLoadedPage() + 1) * PaginationCursorAdapter.pageSize);
+        loaderArgs.putString("keyword", keyword == null ? "" : keyword);
         return loaderArgs;
     }
 

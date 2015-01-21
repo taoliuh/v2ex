@@ -122,6 +122,11 @@ public class V2exContract {
         String REVIEW_IMPORT_HASHCODE = "review_import_hashcode";
     }
 
+    interface SearchColumns {
+        String SEARCH_KEYWORD = "search_keyword";
+        String SEARCH_UPDATE_TIME = "search_update_time";
+    }
+
     interface PicasaImageColumns {
         String PICASA_THUMB_URL = "picasa_thumb_url";
         String PICASA_THUMB_URL_NAME = "picasa_thumb_url_name";
@@ -143,11 +148,13 @@ public class V2exContract {
     private static final String PATH_REVIEWS = "reviews";
     private static final String PATH_PICASA_IMAGES = "picasas";
     private static final String PATH_MODI_DATES = "dates";
+    private static final String PATH_SEARCH = "search";
 
     public static final String[] TOP_LEVEL_PATHS = {
             PATH_FEEDS,
             PATH_NODES,
-            PATH_REVIEWS
+            PATH_REVIEWS,
+            PATH_SEARCH
     };
 
     public static class Members implements MemberColumns, BaseColumns {
@@ -221,6 +228,25 @@ public class V2exContract {
         public static String getReviewTopicId(Uri uri) {
             return uri.getPathSegments().get(1);
         }
+    }
+
+    public static class Search implements SearchColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_SEARCH).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.v2ex.search";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.v2ex.search";
+
+        /** Build {@link android.net.Uri} for given search item. */
+        public static Uri buildSearchUri(String searchId) {
+            return CONTENT_URI.buildUpon().appendPath(searchId).build();
+        }
+
+        /** Return search item id given URI. */
+        public static String getSearchId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
     }
 
     public static class PicasaImages implements PicasaImageColumns, BaseColumns {

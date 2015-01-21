@@ -110,4 +110,24 @@ public class SimpleSearchView extends FrameLayout {
     public void setOnQueryListener(OnQueryListener listener) {
         mListener = listener;
     }
+
+    public void setHint(int hintResId) {
+        if (searchBox != null) {
+            searchBox.setHint(hintResId);
+        }
+    }
+
+    public void setText(String text) {
+        if (searchBox != null) {
+            searchBox.setText(text);
+        }
+    }
+
+    public String getText() {
+        if (searchBox != null) {
+            return searchBox.getText().toString().trim();
+        } else {
+            return "";
+        }
+    }
 }

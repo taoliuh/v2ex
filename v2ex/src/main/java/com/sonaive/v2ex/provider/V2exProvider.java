@@ -66,6 +66,9 @@ public class V2exProvider extends ContentProvider {
     private static final int REVIEWS = 600;
     private static final int REVIEWS_TOPIC_ID = 601;
 
+    private static final int SEARCH = 700;
+    private static final int SEARCH_ID = 701;
+
     private V2exDatabase mOpenHelper;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -89,6 +92,9 @@ public class V2exProvider extends ContentProvider {
 
         matcher.addURI(authority, "reviews", REVIEWS);
         matcher.addURI(authority, "reviews/*", REVIEWS_TOPIC_ID);
+
+        matcher.addURI(authority, "search", SEARCH);
+        matcher.addURI(authority, "search/*", SEARCH_ID);
 
         matcher.addURI(authority, "picasas", PICASAS);
         matcher.addURI(authority, "picasas/*", PICASAS_ID);
@@ -139,6 +145,12 @@ public class V2exProvider extends ContentProvider {
             }
             case REVIEWS_TOPIC_ID: {
                 return Reviews.CONTENT_ITEM_TYPE;
+            }
+            case SEARCH: {
+                return Search.CONTENT_TYPE;
+            }
+            case SEARCH_ID: {
+                return Search.CONTENT_ITEM_TYPE;
             }
             case PICASAS: {
                 return PicasaImages.CONTENT_TYPE;
@@ -245,7 +257,11 @@ public class V2exProvider extends ContentProvider {
                 notifyChange(uri);
                 return Reviews.buildReviewTopicUri(values.getAsString(Reviews.REVIEW_ID));
             }
-
+            case SEARCH: {
+                db.insertOrThrow(Tables.SEARCH, null, values);
+                notifyChange(uri);
+                return Search.buildSearchUri(values.getAsString(Search._ID));
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -434,6 +450,13 @@ public class V2exProvider extends ContentProvider {
                 final String reviewId = Reviews.getReviewTopicId(uri);
                 return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_ID + "=?", reviewId);
             }
+            case SEARCH: {
+                return builder.table(Tables.SEARCH);
+            }
+            case SEARCH_ID: {
+                final String searchId = Search.getSearchId(uri);
+                return builder.table(Tables.SEARCH).where(Search._ID + "=?", searchId);
+            }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);
             }
@@ -481,6 +504,13 @@ public class V2exProvider extends ContentProvider {
             case REVIEWS_TOPIC_ID: {
                 final String topicId = Reviews.getReviewTopicId(uri);
                 return builder.table(Tables.REVIEWS).where(Reviews.REVIEW_TOPIC_ID + "=?", topicId);
+            }
+            case SEARCH: {
+                return builder.table(Tables.SEARCH);
+            }
+            case SEARCH_ID: {
+                final String searchId = Search.getSearchId(uri);
+                return builder.table(Tables.SEARCH).where(Search._ID + "=?", searchId);
             }
             case PICASAS: {
                 return builder.table(Tables.PICASA_IMAGES);

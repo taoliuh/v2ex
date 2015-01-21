@@ -48,6 +48,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
         String FEEDS = "feeds";
         String NODES = "nodes";
         String REVIEWS = "reviews";
+        String SEARCH = "search";
         String PICASA_IMAGES = "picasa_images";
         String MODI_DATE = "modi_date";
     }
@@ -126,6 +127,12 @@ public class V2exDatabase extends SQLiteOpenHelper {
                 + ReviewColumns.REVIEW_IMPORT_HASHCODE + " TEXT NOT NULL,"
                 + "UNIQUE (" + ReviewColumns.REVIEW_ID + ") ON CONFLICT REPLACE)");
 
+        db.execSQL("CREATE TABLE " + Tables.SEARCH + " ("
+                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + SearchColumns.SEARCH_KEYWORD + " TEXT,"
+                + SearchColumns.SEARCH_UPDATE_TIME + " INTEGER,"
+                + "UNIQUE (" + SearchColumns.SEARCH_KEYWORD + ") ON CONFLICT REPLACE)");
+
         // Defines an SQLite statement that builds the Picasa picture URL table
         db.execSQL("CREATE TABLE " + Tables.PICASA_IMAGES + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -164,6 +171,7 @@ public class V2exDatabase extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + Tables.FEEDS);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.NODES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.REVIEWS);
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.SEARCH);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.PICASA_IMAGES);
             db.execSQL("DROP TABLE IF EXISTS " + Tables.MODI_DATE);
             onCreate(db);

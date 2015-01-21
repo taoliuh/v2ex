@@ -72,6 +72,14 @@
 
     <style name="Theme.V2ex.Images" parent="Theme.V2ex.WithNavDrawer" />
 
+    <style name="Theme.V2ex.Search" parent="Theme.V2ex.WithoutNavDrawer" >
+        <item name="colorPrimary">@color/theme_primary_search</item>
+        <item name="colorPrimaryDark">@color/theme_primary_dark_search</item>
+        <item name="colorAccent">@color/theme_accent_3</item>
+
+        <item name="android:textColorLink">@color/theme_accent_2</item>
+    </style>
+
     <style name="ActionBarThemeOverlay" parent="">
         <item name="android:textColorPrimary">#fff</item>
         <item name="colorControlNormal">?actionBarIconColor</item>

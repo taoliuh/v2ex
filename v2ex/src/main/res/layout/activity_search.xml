@@ -1,0 +1,78 @@
+<!--
+  Copyright 2014 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    app:shadowDrawable="@drawable/header_shadow">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headerbar"
+        tools:context=".ui.SearchActivity" >
+
+        <FrameLayout
+            android:id="@+id/feeds_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- Posters fragment showing the posters list -->
+            <fragment android:name="com.sonaive.v2ex.ui.FeedsFragment"
+                android:id="@+id/feeds_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/list_fragment_layout" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/search_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- Search fragment showing the search history list -->
+            <fragment android:name="com.sonaive.v2ex.ui.SearchFragment"
+                android:id="@+id/search_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/list_fragment_layout" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/headerbar"
+        style="@style/HeaderBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar_actionbar_search" />
+        <!-- placeholder, empty except on L -->
+    </LinearLayout>
+
+    <!-- Butter bar -->
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="?actionBarSize">
+        <include layout="@layout/include_butter_bar" />
+    </FrameLayout>
+
+</com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout>
