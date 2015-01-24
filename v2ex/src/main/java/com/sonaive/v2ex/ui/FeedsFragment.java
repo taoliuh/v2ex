@@ -18,12 +18,14 @@ package com.sonaive.v2ex.ui;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,11 +37,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
+import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
+import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
@@ -107,6 +112,20 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         }
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Cursor cursor = mAdapter.getCursor();
+                if (cursor != null && cursor.moveToPosition(position)) {
+                    Intent intent = new Intent(getActivity(), FeedDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    Parcelable feed = cursor2Parcelable(cursor);
+                    bundle.putParcelable("feed", feed);
+                    intent.putExtra("bundle", bundle);
+                    startActivity(intent);
+                }
+            }
+        }));
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
     }
@@ -217,6 +236,29 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         return loaderArgs;
     }
 
+    private Parcelable cursor2Parcelable(Cursor cursor) {
+        int feedId = cursor.getInt(FeedsQuery.FEED_ID);
+        String feedTitle = cursor.getString(FeedsQuery.FEED_TITLE);
+        String feedContent = cursor.getString(FeedsQuery.FEED_CONTENT);
+        String feedContentRendered = cursor.getString(FeedsQuery.FEED_CONTENT_RENDERED);
+        String feedMember = cursor.getString(FeedsQuery.FEED_MEMBER);
+        String feedNode = cursor.getString(FeedsQuery.FEED_NODE);
+        int feedReplies = cursor.getInt(FeedsQuery.FEED_REPLIES);
+        long feedCreated = cursor.getLong(FeedsQuery.FEED_CREATED);
+
+        Feed feed = new Feed();
+        feed.id = feedId;
+        feed.title = feedTitle;
+        feed.content = feedContent;
+        feed.content_rendered = feedContentRendered;
+        feed.member = ModelUtils.getAuthor(feedMember);
+        feed.node = ModelUtils.getNode(feedNode);
+        feed.replies = feedReplies;
+        feed.created = feedCreated;
+
+        return feed;
+    }
+
     private interface FeedsQuery {
         String[] PROJECTION = {
                 BaseColumns._ID,
@@ -231,5 +273,13 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         };
 
         int _ID = 0;
+        int FEED_ID = 1;
+        int FEED_TITLE = 2;
+        int FEED_CONTENT = 3;
+        int FEED_CONTENT_RENDERED = 4;
+        int FEED_MEMBER = 5;
+        int FEED_NODE = 6;
+        int FEED_REPLIES = 7;
+        int FEED_CREATED = 8;
     }
 }
