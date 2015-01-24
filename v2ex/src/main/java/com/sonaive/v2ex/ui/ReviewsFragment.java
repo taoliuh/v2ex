@@ -207,7 +207,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
                     appendQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT, String.valueOf(limit)).
                     build();
             return new CursorLoader(getActivity(), uri,
-                    PROJECTION, null, null, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " DESC");
+                    PROJECTION, null, null, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " ASC");
         }
 
         @Override
