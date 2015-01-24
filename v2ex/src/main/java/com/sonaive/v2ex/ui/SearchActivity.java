@@ -2,6 +2,8 @@ package com.sonaive.v2ex.ui;
 
 import android.app.FragmentManager;
 import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,13 +13,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.ui.event.SimpleEvent;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.ui.widgets.OnQueryListener;
 import com.sonaive.v2ex.ui.widgets.SimpleSearchView;
 import com.sonaive.v2ex.util.UIUtils;
-
-import de.greenrobot.event.EventBus;
 
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
@@ -26,24 +25,29 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
  */
 public class SearchActivity extends BaseActivity implements OnQueryListener {
     private static final String TAG = makeLogTag(SearchActivity.class);
+    public static final int EXTRA_SEARCH_FEEDS = 1;
+    public static final int EXTRA_SEARCH_NODES = 2;
+    private static final String ARG_ACTION_SEARCH = "action_search";
+    private static final String ARG_SHOW_SEARCH_FRG = "show_search_frg";
 
     /** The handler message for updating the search query. */
     private static final int MESSAGE_QUERY_UPDATE = 1;
     /** The delay before actual requerying in millisecs. */
     private static final int QUERY_UPDATE_DELAY_MILLIS = 2000;
 
-    private static final String ARG_SHOW_SEARCH_FRG = "show_search_frg";
-
     FragmentManager fm;
     FeedsFragment mFeedsFragment = null;
+    NodesFragment mNodesFragment = null;
     SearchFragment mSearchFragment = null;
     SimpleSearchView searchView;
 
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private FrameLayout feedsFrgContainer;
+    private FrameLayout nodesFrgContainer;
     private FrameLayout searchFrgContainer;
     private View mButterBar;
     private boolean isShowSearchFragment = true;
+    private int actionSearch;
     String mQuery = "";
 
 
@@ -64,15 +68,22 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
         }
     };
 
+    public static Intent getCallingIntent(Context context, int extra) {
+        Intent intent = new Intent(context, SearchActivity.class);
+        intent.putExtra(ARG_ACTION_SEARCH, extra);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        // Post message to Poster fragment since we don't use setArguments method.
-        EventBus.getDefault().postSticky(new SimpleEvent(String.valueOf(ITEM_SEARCH)));
 
         if (savedInstanceState != null) {
+            actionSearch = savedInstanceState.getInt(ARG_ACTION_SEARCH);
             isShowSearchFragment = savedInstanceState.getBoolean(ARG_SHOW_SEARCH_FRG);
+        } else {
+            actionSearch = getIntent().getIntExtra(ARG_ACTION_SEARCH, 0);
         }
 
         Toolbar toolbar = getActionBarToolbar();
@@ -85,9 +96,11 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
         });
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         feedsFrgContainer = (FrameLayout) findViewById(R.id.feeds_fragment_container);
+        nodesFrgContainer = (FrameLayout) findViewById(R.id.nodes_fragment_container);
         searchFrgContainer = (FrameLayout) findViewById(R.id.search_fragment_container);
         mButterBar = findViewById(R.id.butter_bar);
         feedsFrgContainer.setVisibility(View.INVISIBLE);
+        nodesFrgContainer.setVisibility(View.INVISIBLE);
         searchFrgContainer.setVisibility(View.VISIBLE);
 
         fm = getFragmentManager();
@@ -102,6 +115,7 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(ARG_ACTION_SEARCH, actionSearch);
         outState.putBoolean(ARG_SHOW_SEARCH_FRG, isShowSearchFragment);
     }
 
@@ -111,7 +125,11 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
         searchView = (SimpleSearchView) actionBarToolbar.findViewById(R.id.search_view);
         if (searchView != null) {
             searchView.setOnQueryListener(this);
-            searchView.setHint(R.string.hint_search_title);
+            if (actionSearch == EXTRA_SEARCH_FEEDS) {
+                searchView.setHint(R.string.hint_search_title);
+            } else {
+                searchView.setHint(R.string.hint_search_nodes);
+            }
         }
         return actionBarToolbar;
     }
@@ -120,6 +138,7 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
     protected void onResume() {
         super.onResume();
         mFeedsFragment = (FeedsFragment) getFragmentManager().findFragmentById(R.id.feeds_fragment);
+        mNodesFragment = (NodesFragment) getFragmentManager().findFragmentById(R.id.nodes_fragment);
         mSearchFragment = (SearchFragment) getFragmentManager().findFragmentById(R.id.search_fragment);
         checkShowNoNetworkButterBar();
         updateFragContentTopClearance();
@@ -148,7 +167,7 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
 
     // Updates the Feeds fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
-        if (mSearchFragment == null || mFeedsFragment == null) {
+        if (mSearchFragment == null || mFeedsFragment == null || mNodesFragment == null) {
             return;
         }
         final boolean butterBarVisible = mButterBar != null
@@ -159,30 +178,41 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
         mDrawShadowFrameLayout.setShadowTopOffset(actionBarClearance + butterBarClearance);
         mFeedsFragment.setContentTopClearance(actionBarClearance + butterBarClearance, isActionBarShown());
         mSearchFragment.setContentTopClearance(actionBarClearance + butterBarClearance);
+        mNodesFragment.setContentTopClearance(actionBarClearance + butterBarClearance);
     }
 
     private void onQuery(final String s) {
 
         if (s.trim().isEmpty()) {
-            if (mSearchFragment == null) {
-                mSearchFragment = new SearchFragment();
+            if (actionSearch == EXTRA_SEARCH_FEEDS) {
+                fm.beginTransaction().show(mSearchFragment).hide(mFeedsFragment).commit();
+                feedsFrgContainer.setVisibility(View.INVISIBLE);
+            } else if (actionSearch == EXTRA_SEARCH_NODES) {
+                fm.beginTransaction().show(mSearchFragment).hide(mNodesFragment).commit();
+                nodesFrgContainer.setVisibility(View.INVISIBLE);
             }
-            fm.beginTransaction().show(mSearchFragment).hide(mFeedsFragment).commit();
-            feedsFrgContainer.setVisibility(View.INVISIBLE);
             searchFrgContainer.setVisibility(View.VISIBLE);
             isShowSearchFragment = true;
         } else {
-            fm.beginTransaction().show(mFeedsFragment).hide(mSearchFragment).commit();
-            feedsFrgContainer.setVisibility(View.VISIBLE);
-            searchFrgContainer.setVisibility(View.INVISIBLE);
-            isShowSearchFragment = false;
             Bundle args = new Bundle();
             args.putString("keyword", s);
             args.putInt("menu", ITEM_SEARCH);
             requestQueryUpdate(args);
-            if (null != mFeedsFragment) {
-                mFeedsFragment.requestQueryUpdate(args);
+            if (actionSearch == EXTRA_SEARCH_FEEDS) {
+                fm.beginTransaction().show(mFeedsFragment).hide(mSearchFragment).commit();
+                feedsFrgContainer.setVisibility(View.VISIBLE);
+                if (null != mFeedsFragment) {
+                    mFeedsFragment.requestQueryUpdate(args);
+                }
+            } else if (actionSearch == EXTRA_SEARCH_NODES) {
+                fm.beginTransaction().show(mNodesFragment).hide(mSearchFragment).commit();
+                nodesFrgContainer.setVisibility(View.VISIBLE);
+                if (null != mNodesFragment) {
+                    mNodesFragment.requestQueryUpdate(args);
+                }
             }
+            searchFrgContainer.setVisibility(View.INVISIBLE);
+            isShowSearchFragment = false;
         }
         updateFragContentTopClearance();
     }

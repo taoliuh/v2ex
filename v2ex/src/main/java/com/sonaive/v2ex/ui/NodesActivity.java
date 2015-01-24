@@ -15,8 +15,13 @@
  */
 package com.sonaive.v2ex.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.sonaive.v2ex.R;
@@ -70,6 +75,29 @@ public class NodesActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.nodes, menu);
+
+        MenuItem refreshMenu = menu.findItem(R.id.menu_refresh);
+        if (isRefreshing()) {
+            refreshMenu.setVisible(true);
+            refreshMenu.setActionView(R.layout.progress_bar);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_search) {
+            Intent intent = SearchActivity.getCallingIntent(this, SearchActivity.EXTRA_SEARCH_NODES);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean canSwipeRefreshChildScrollUp() {
         if (mFrag != null) {
             return mFrag.canRecyclerViewScrollUp();
@@ -92,10 +120,6 @@ public class NodesActivity extends BaseActivity {
     protected void requestDataRefresh() {
         super.requestDataRefresh();
         Bundle args = new Bundle();
-//        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-//        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
-//        args.putString(Api.ARG_API_NAME, Api.API_NODES_SPECIFIC);
-//        args.putString(Api.ARG_API_PARAMS_ID, "2");
         args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
         SyncHelper.requestManualSync(this, args);
     }

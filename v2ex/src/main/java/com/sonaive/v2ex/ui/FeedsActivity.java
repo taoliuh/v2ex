@@ -102,7 +102,7 @@ public class FeedsActivity extends BaseActivity implements OnQueryListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
+            Intent intent = SearchActivity.getCallingIntent(this, SearchActivity.EXTRA_SEARCH_FEEDS);
             startActivity(intent);
             return true;
         }

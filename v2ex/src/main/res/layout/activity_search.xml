@@ -43,6 +43,18 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/nodes_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- Nodes fragment showing the node list -->
+            <fragment android:name="com.sonaive.v2ex.ui.NodesFragment"
+                android:id="@+id/nodes_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/list_fragment_layout" />
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/search_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

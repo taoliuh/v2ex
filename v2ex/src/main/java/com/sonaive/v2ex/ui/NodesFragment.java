@@ -21,6 +21,8 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -37,6 +39,7 @@ import com.sonaive.v2ex.ui.adapter.NodeCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
+import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
@@ -48,17 +51,38 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
 
     private static final String TAG = makeLogTag(NodesFragment.class);
 
+    /** The handler message for updating the search query. */
+    private static final int MESSAGE_QUERY_UPDATE = 1;
+    /** The delay before actual requerying in millisecs. */
+    private static final int QUERY_UPDATE_DELAY_MILLIS = 100;
+
     FlexibleRecyclerView mRecyclerView = null;
     TextView mEmptyView = null;
 
     NodeCursorAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
+    String keyword;
+    Bundle loaderArgs;
+
+    private Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MESSAGE_QUERY_UPDATE) {
+                Bundle args = (Bundle) msg.obj;
+                keyword = args.getString("keyword");
+                reloadFromArguments(keyword);
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new NodeCursorAdapter(getActivity(), null, 0);
         mAdapter.setOnLoadMoreDataListener(this);
+        loaderArgs = new Bundle();
         Bundle args = new Bundle();
         args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
         SyncHelper.requestManualSync(getActivity(), args);
@@ -92,6 +116,22 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         return ViewCompat.canScrollVertically(mRecyclerView, -1);
     }
 
+    public void requestQueryUpdate(Bundle arguments) {
+        mHandler.removeMessages(MESSAGE_QUERY_UPDATE);
+        mHandler.sendMessageDelayed(Message.obtain(mHandler, MESSAGE_QUERY_UPDATE, arguments),
+                QUERY_UPDATE_DELAY_MILLIS);
+    }
+
+    public void reloadFromArguments(String keyword) {
+        getLoaderManager().restartLoader(1, buildQueryParameter(keyword), new NodesLoaderCallback());
+    }
+
+    private Bundle buildQueryParameter(String keyword) {
+        loaderArgs.putInt("limit", (mAdapter.getLoadedPage() + 1) * PaginationCursorAdapter.pageSize);
+        loaderArgs.putString("keyword", keyword == null ? "" : keyword);
+        return loaderArgs;
+    }
+
     @Override
     public void onLoadMoreData() {
         mAdapter.setLoadingState(LoadingStatus.LOADING);
@@ -101,11 +141,19 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
     class NodesLoaderCallback implements LoaderManager.LoaderCallbacks<Cursor> {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            String selectionClause = null;
+            if (args != null) {
+                String keyword = args.getString("keyword");
+
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    selectionClause = "node_title LIKE '%" + keyword + "%'";
+                }
+            }
             return new CursorLoader(
                     getActivity(),                                     // Context
                     V2exContract.Nodes.CONTENT_URI,                    // Table to query
                     PROJECTION,                                        // Projection to return
-                    null,                                              // No selection clause
+                    selectionClause,                                              // No selection clause
                     null,                                              // No selection arguments
                     V2exContract.Nodes.NODE_ID + " ASC"                // Default sort order
             );
@@ -115,7 +163,9 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             LOGD(TAG, "Nodes count is: " + (data == null ? 0 : data.getCount()));
             mAdapter.setLoadingState(LoadingStatus.FINISH);
-            ((NodesActivity) getActivity()).onRefreshingStateChanged(false);
+            if (getActivity() instanceof NodesActivity) {
+                ((NodesActivity) getActivity()).onRefreshingStateChanged(false);
+            }
 
             if (data == null || data.getCount() == 0) {
                 mEmptyView.setVisibility(View.VISIBLE);
