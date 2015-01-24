@@ -30,7 +30,7 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
     /** The handler message for updating the search query. */
     private static final int MESSAGE_QUERY_UPDATE = 1;
     /** The delay before actual requerying in millisecs. */
-    private static final int QUERY_UPDATE_DELAY_MILLIS = 100;
+    private static final int QUERY_UPDATE_DELAY_MILLIS = 2000;
 
     private static final String ARG_SHOW_SEARCH_FRG = "show_search_frg";
 
@@ -227,13 +227,12 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
 
     @Override
     public void onQueryTextChange(String s) {
+        onQuery(s);
     }
 
     public void onEvent(String keyword) {
         if (searchView != null) {
             searchView.setText(keyword);
-
-            onQuery(keyword);
         }
     }
 }

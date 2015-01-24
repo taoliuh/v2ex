@@ -186,12 +186,17 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
             int limit = args.getInt("limit");
             int offset = args.getInt("offset");
-            LOGD(TAG, "Feeds limit is: " + limit + ", offset is: " + offset);
+            String keyword = args.getString("keyword");
+            LOGD(TAG, "Feeds limit is: " + limit + ", offset is: " + offset + ", keyword is: " + keyword);
             Uri uri = V2exContract.Feeds.CONTENT_URI.buildUpon().
                     appendQueryParameter(V2exContract.QUERY_PARAMETER_LIMIT, String.valueOf(limit)).
                     build();
+            String selectionClause = null;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                selectionClause = "feed_title LIKE '%" + keyword + "%'";
+            }
             return new CursorLoader(getActivity(), uri,
-                    FeedsQuery.PROJECTION, null, null, V2exContract.Feeds.FEED_ID + " DESC");
+                    FeedsQuery.PROJECTION, selectionClause, null, V2exContract.Feeds.FEED_ID + " DESC");
         }
 
         @Override
@@ -215,13 +220,15 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 mEmptyView.setVisibility(View.GONE);
             }
 
-            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+            if (getActivity() instanceof FeedsActivity) {
+                ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+            }
             mAdapter.swapCursor(data);
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            loader = null;
+            mAdapter.swapCursor(null);
         }
     }
 

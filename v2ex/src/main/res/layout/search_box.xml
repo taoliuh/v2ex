@@ -16,7 +16,8 @@
         android:layout_marginEnd="60dp"
         android:singleLine="true"
         android:ems="10"
-        android:hint="Search Email"
+        android:textColor="@color/search_text"
+        android:textCursorDrawable="@drawable/cursor_drawable"
         android:background="@android:color/transparent"
         android:imeOptions="actionSearch" >
 
@@ -29,6 +30,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
-        android:src="@drawable/ic_navigation_cancel" />
+        android:src="@drawable/ic_cancel" />
 
 </merge>
