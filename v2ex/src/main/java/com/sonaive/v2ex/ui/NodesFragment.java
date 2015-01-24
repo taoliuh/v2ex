@@ -27,9 +27,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.SyncHelper;
+import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.NodeCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.widget.LoadingStatus;
@@ -46,7 +49,7 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
     private static final String TAG = makeLogTag(NodesFragment.class);
 
     FlexibleRecyclerView mRecyclerView = null;
-    View mEmptyView = null;
+    TextView mEmptyView = null;
 
     NodeCursorAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
@@ -56,6 +59,9 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         super.onCreate(savedInstanceState);
         mAdapter = new NodeCursorAdapter(getActivity(), null, 0);
         mAdapter.setOnLoadMoreDataListener(this);
+        Bundle args = new Bundle();
+        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
+        SyncHelper.requestManualSync(getActivity(), args);
     }
 
     @Override
@@ -65,7 +71,7 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mEmptyView = root.findViewById(android.R.id.empty);
+        mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
     }
 
@@ -89,9 +95,6 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
     @Override
     public void onLoadMoreData() {
         mAdapter.setLoadingState(LoadingStatus.LOADING);
-//        Bundle args = new Bundle();
-//        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
-//        SyncHelper.requestManualSync(getActivity(), args);
         LOGD(TAG, "Load more nodes, loading state is: " + LoadingStatus.LOADING);
     }
 
@@ -113,6 +116,14 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
             LOGD(TAG, "Nodes count is: " + (data == null ? 0 : data.getCount()));
             mAdapter.setLoadingState(LoadingStatus.FINISH);
             ((NodesActivity) getActivity()).onRefreshingStateChanged(false);
+
+            if (data == null || data.getCount() == 0) {
+                mEmptyView.setVisibility(View.VISIBLE);
+                mEmptyView.setText(getActivity().getString(R.string.no_data));
+            } else {
+                mEmptyView.setVisibility(View.GONE);
+            }
+
             mAdapter.swapCursor(data);
         }
 

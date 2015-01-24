@@ -36,6 +36,8 @@ import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.sync.SyncHelper;
+import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.util.UIUtils;
@@ -89,6 +91,9 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         // Initializes the CursorLoader, the loader id must starts from 1, because
         // The BaseActivity already takes 0 loader id.
         getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
+        Bundle args = new Bundle();
+        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
+        SyncHelper.requestManualSync(getActivity(), args);
     }
 
     @Override
@@ -191,7 +196,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 mEmptyView.setVisibility(View.GONE);
             }
 
-//            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
+            ((FeedsActivity) getActivity()).onRefreshingStateChanged(false);
             mAdapter.swapCursor(data);
         }
 
