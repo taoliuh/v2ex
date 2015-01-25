@@ -42,6 +42,7 @@ import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
+import com.sonaive.v2ex.ui.event.SimpleEvent;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
 import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
 import com.sonaive.v2ex.util.ModelUtils;
@@ -49,6 +50,8 @@ import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
+
+import de.greenrobot.event.EventBus;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
@@ -74,6 +77,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     Bundle loaderArgs;
     String keyword;
+    String nodeId;
 
     private Handler mHandler = new Handler() {
 
@@ -96,9 +100,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         // Initializes the CursorLoader, the loader id must starts from 1, because
         // The BaseActivity already takes 0 loader id.
         getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
-        Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-        SyncHelper.requestManualSync(getActivity(), args);
     }
 
     @Override
@@ -130,6 +131,22 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         return root;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEvent(SimpleEvent event) {
+        nodeId = event.eventMessage;
+    }
+
     public void setContentTopClearance(final int clearance, final boolean isActionbarShown) {
         if (mRecyclerView != null) {
             mRecyclerView.setContentTopClearance(clearance);
@@ -143,11 +160,12 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                         mRecyclerView.smoothScrollBy(0, -clearance);
                     }
                 } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-                    int[] findFirstVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(null);
-                    LOGD(TAG, "StaggeredGridLayoutManager, first complete visible item position is: " + findFirstVisibleItemPositions[0]);
-                    if (findFirstVisibleItemPositions[0] == 0) {
-                        mRecyclerView.smoothScrollBy(0, -clearance);
-                    }
+                    // Just need to annotate these lines since it will crash on nexus 7.
+//                    int[] findFirstVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(null);
+//                    LOGD(TAG, "StaggeredGridLayoutManager, first complete visible item position is: " + findFirstVisibleItemPositions[0]);
+//                    if (findFirstVisibleItemPositions[0] == 0) {
+//                        mRecyclerView.smoothScrollBy(0, -clearance);
+//                    }
                 }
             }
         }

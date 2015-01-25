@@ -93,7 +93,6 @@ public class V2exDatabase extends SQLiteOpenHelper {
                 + FeedColumns.FEED_CREATED + " TEXT NOT NULL,"
                 + FeedColumns.FEED_LAST_MODIFIED + " TEXT NOT NULL,"
                 + FeedColumns.FEED_LAST_TOUCHED + " TEXT NOT NULL,"
-                + FeedColumns.FEED_TYPE + " TEXT NOT NULL,"
                 + FeedColumns.FEED_IMPORT_HASHCODE + " TEXT NOT NULL,"
                 + "UNIQUE (" + FeedColumns.FEED_ID + ") ON CONFLICT REPLACE)");
 

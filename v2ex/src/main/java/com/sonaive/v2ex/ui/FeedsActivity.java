@@ -15,24 +15,23 @@
  */
 package com.sonaive.v2ex.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.sync.ExceptionEvent;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
-import com.sonaive.v2ex.ui.widgets.OnQueryListener;
-import com.sonaive.v2ex.ui.widgets.SimpleSearchView;
 import com.sonaive.v2ex.util.UIUtils;
+
+import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
 
@@ -41,21 +40,43 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/18/14.
  */
-public class FeedsActivity extends BaseActivity implements OnQueryListener {
+public class FeedsActivity extends BaseActivity {
     private static final String TAG = makeLogTag(FeedsActivity.class);
+    private static final String ARG_NODE_ID = "node_id";
+
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
     private FeedsFragment mFrag;
+    private int nodeId;
+
+    public Intent getCallingIntent(Context context, int nodeId) {
+        Intent intent = new Intent(context, FeedsActivity.class);
+        intent.putExtra(ARG_NODE_ID, nodeId);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feeds);
+        if (savedInstanceState != null) {
+            nodeId = savedInstanceState.getInt(ARG_NODE_ID);
+        } else {
+            if (getIntent() != null) {
+                nodeId = getIntent().getIntExtra(ARG_NODE_ID, -1);
+            } else {
+                nodeId = -1;
+            }
+        }
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
         registerHideableHeaderView(mButterBar);
+
+        Bundle args = new Bundle();
+        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
+        SyncHelper.requestManualSync(this, args);
     }
 
     @Override
@@ -65,13 +86,9 @@ public class FeedsActivity extends BaseActivity implements OnQueryListener {
     }
 
     @Override
-    protected Toolbar getActionBarToolbar() {
-        Toolbar actionBarToolbar = super.getActionBarToolbar();
-        SimpleSearchView searchView = (SimpleSearchView) actionBarToolbar.findViewById(R.id.search_view);
-        if (searchView != null) {
-            searchView.setOnQueryListener(this);
-        }
-        return actionBarToolbar;
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ARG_NODE_ID, nodeId);
     }
 
     @Override
@@ -230,20 +247,5 @@ public class FeedsActivity extends BaseActivity implements OnQueryListener {
                 }
             }
         }, 3000);
-    }
-
-    @Override
-    public void onSubmit(String s) {
-        Toast.makeText(this, "onSubmit, text is: " + s, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onClear() {
-        Toast.makeText(this, "onClear", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onQueryTextChange(String s) {
-        Toast.makeText(this, "onQueryTextChange, text is: " + s, Toast.LENGTH_SHORT).show();
     }
 }

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
+import com.sonaive.v2ex.sync.V2exDataHandler;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -40,7 +41,7 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 /**
  * Created by liutao on 12/6/14.
  */
-public abstract class Api {
+public class Api {
 
     private static final String TAG = makeLogTag(Api.class);
 
@@ -85,22 +86,54 @@ public abstract class Api {
         GET, POST
     }
 
+    public Api(Context context, Bundle params, String api) {
+        mContext = context;
+        if (params != null) {
+            mArguments = params;
+        } else {
+            mArguments = new Bundle();
+        }
+        mUrl = Api.API_URLS.get(api);
+    }
+
+    public Api(Context context, Bundle params, String api, String dataKey) {
+        mContext = context;
+        if (params != null) {
+            mArguments = params;
+        } else {
+            mArguments = new Bundle();
+        }
+        mArguments.putString(V2exDataHandler.ARG_DATA_KEY, dataKey);
+        mUrl = Api.API_URLS.get(api);
+    }
+
     public Bundle sync(HttpMethod httpMethod) {
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
         okHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         Request request = null;
-
+        HashMap params = null;
+        String json = mArguments.getString(ARG_API_PARAMS);
         if (httpMethod == HttpMethod.GET) {
+            if (json != null) {
+                params = new Gson().fromJson(json, HashMap.class);
+                StringBuilder builder = new StringBuilder(mUrl).append("?");
+                for (Map.Entry<String, String> entry : ((HashMap<String, String>) params).entrySet()) {
+                    builder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+                }
+                builder.deleteCharAt(builder.length() - 1);
+                mUrl = builder.toString();
+            }
             request = new Request.Builder()
                     .url(mUrl)
                     .build();
         } else {
-            String json = mArguments.getString(ARG_API_PARAMS);
-            HashMap params = new Gson().fromJson(json, HashMap.class);
             FormEncodingBuilder formBodyBuilder = new FormEncodingBuilder();
-            for (Map.Entry<String, String> entry : ((HashMap<String, String>) params).entrySet()) {
-                formBodyBuilder.add(entry.getKey(), entry.getValue());
+            if (json != null) {
+                params = new Gson().fromJson(json, HashMap.class);
+                for (Map.Entry<String, String> entry : ((HashMap<String, String>) params).entrySet()) {
+                    formBodyBuilder.add(entry.getKey(), entry.getValue());
+                }
             }
             RequestBody formBody = formBodyBuilder.build();
             request = new Request.Builder()

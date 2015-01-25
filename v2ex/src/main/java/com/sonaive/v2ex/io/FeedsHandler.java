@@ -29,7 +29,6 @@ import com.sonaive.v2ex.Config;
 import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
-import com.sonaive.v2ex.sync.api.FeedsApi;
 import com.sonaive.v2ex.util.ModelUtils;
 
 import java.util.ArrayList;
@@ -47,9 +46,6 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class FeedsHandler extends JSONHandler {
 
     private static final String TAG = makeLogTag(FeedsHandler.class);
-
-    // The api type.
-    private int apiType;
 
     private HashMap<String, Feed> mFeeds = new HashMap<>();
 
@@ -112,7 +108,6 @@ public class FeedsHandler extends JSONHandler {
     @Override
     public String getBody(Bundle data) {
         if (data != null) {
-            apiType = data.getInt(FeedsApi.ARG_TYPE);
             return data.getString(Api.ARG_RESULT);
         }
         return "";
@@ -148,7 +143,6 @@ public class FeedsHandler extends JSONHandler {
                 .withValue(V2exContract.Feeds.FEED_CREATED, feed.created)
                 .withValue(V2exContract.Feeds.FEED_LAST_MODIFIED, feed.last_modified)
                 .withValue(V2exContract.Feeds.FEED_LAST_TOUCHED, feed.last_touched)
-                .withValue(V2exContract.Feeds.FEED_TYPE, apiType)
                 .withValue(V2exContract.Feeds.FEED_IMPORT_HASHCODE, feed.getImportHashcode())
                 .build());
     }

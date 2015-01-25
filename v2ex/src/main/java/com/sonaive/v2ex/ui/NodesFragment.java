@@ -18,11 +18,13 @@ package com.sonaive.v2ex.ui;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -37,6 +39,7 @@ import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.NodeCursorAdapter;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
+import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -94,6 +97,18 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Cursor cursor = mAdapter.getCursor();
+                if (cursor != null && cursor.moveToPosition(position)) {
+                    Intent intent = new Intent(getActivity(), FeedsActivity.class);
+                    int nodeId = cursor.getInt(cursor.getColumnIndex(V2exContract.Nodes.NODE_ID));
+                    intent.putExtra("node_id", nodeId);
+                    startActivity(intent);
+                }
+            }
+        }));
         mRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;

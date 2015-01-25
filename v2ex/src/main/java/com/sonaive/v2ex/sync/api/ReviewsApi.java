@@ -23,20 +23,20 @@ import com.sonaive.v2ex.sync.V2exDataHandler;
 /**
  * Created by liutao on 12/15/14.
  */
-public class ReviewsApi extends Api {
-
-    public ReviewsApi(Context context, Bundle params) {
-        mContext = context;
-        if (params != null) {
-            mArguments = params;
-        } else {
-            mArguments = new Bundle();
-        }
-        mArguments.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_REVIEWS);
-        int topicId = -1;
-        if (params != null) {
-            topicId = params.getInt(Api.ARG_API_PARAMS_ID, -1);
-        }
-        mUrl = Api.API_URLS.get(Api.API_REVIEWS).concat("?topic_id=" + topicId);
-    }
-}
+//public class ReviewsApi extends Api {
+//
+//    public ReviewsApi(Context context, Bundle params) {
+//        mContext = context;
+//        if (params != null) {
+//            mArguments = params;
+//        } else {
+//            mArguments = new Bundle();
+//        }
+//        mArguments.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_REVIEWS);
+//        int topicId = -1;
+//        if (params != null) {
+//            topicId = params.getInt(Api.ARG_API_PARAMS_ID, -1);
+//        }
+//        mUrl = Api.API_URLS.get(Api.API_REVIEWS).concat("?topic_id=" + topicId);
+//    }
+//}

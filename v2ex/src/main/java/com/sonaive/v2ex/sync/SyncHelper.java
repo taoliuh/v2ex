@@ -27,14 +27,10 @@ import android.os.Bundle;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
-import com.sonaive.v2ex.sync.api.FeedsApi;
-import com.sonaive.v2ex.sync.api.NodesApi;
-import com.sonaive.v2ex.sync.api.ReviewsApi;
 import com.sonaive.v2ex.sync.api.UserIdentityApi;
 import com.sonaive.v2ex.util.AccountUtils;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import de.greenrobot.event.EventBus;
 
@@ -158,28 +154,28 @@ public class SyncHelper {
                 break;
             }
             case Api.API_TOPICS_LATEST: {
-                FeedsApi latestFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_LATEST);
+                Api latestFeedsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_FEEDS);
                 // save the remote data to the database
                 mDataHandler.applyData(new Bundle[] {latestFeedsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_TOPICS_HOT: {
-                FeedsApi hotFeedsApi = new FeedsApi(mContext, FeedsApi.TYPE_HOT);
+                Api hotFeedsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_FEEDS);
                 mDataHandler.applyData(new Bundle[] {hotFeedsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_NODES_ALL: {
-                NodesApi allNodesApi = new NodesApi(mContext, NodesApi.TYPE_ALL);
+                Api allNodesApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_NODES);
                 mDataHandler.applyData(new Bundle[] {allNodesApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_NODES_SPECIFIC: {
-                NodesApi specificNodesApi = new NodesApi(mContext, NodesApi.TYPE_SPECIFIC, args);
+                Api specificNodesApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_NODES);
                 mDataHandler.applyData(new Bundle[] {specificNodesApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_REVIEWS: {
-                ReviewsApi reviewsApi = new ReviewsApi(mContext, args);
+                Api reviewsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_REVIEWS);
                 mDataHandler.applyData(new Bundle[] {reviewsApi.sync(Api.HttpMethod.GET)});
                 break;
             }

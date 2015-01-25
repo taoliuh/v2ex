@@ -23,39 +23,39 @@ import com.sonaive.v2ex.sync.V2exDataHandler;
 /**
  * Created by liutao on 12/13/14.
  */
-public class FeedsApi extends Api {
-
-    public static final int TYPE_LATEST = 0;
-    public static final int TYPE_HOT = 1;
-    public static final int TYPE_SPECIFIC = 2;
-
-    public FeedsApi(Context context, int type) {
-        this(context, type, null);
-    }
-
-    public FeedsApi(Context context, int type, Bundle params) {
-        mContext = context;
-        if (params != null) {
-            mArguments = params;
-        } else {
-            mArguments = new Bundle();
-        }
-        mArguments.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
-        if (type == TYPE_LATEST) {
-            mUrl = Api.API_URLS.get(Api.API_TOPICS_LATEST);
-            mArguments.putInt(Api.ARG_TYPE, TYPE_LATEST);
-
-        } else if (type == TYPE_HOT) {
-            mUrl = Api.API_URLS.get(Api.API_TOPICS_HOT);
-            mArguments.putInt(Api.ARG_TYPE, TYPE_HOT);
-
-        } else {
-            String id = null;
-            if (params != null) {
-                id = params.getString(Api.ARG_API_PARAMS_ID, null);
-            }
-            mUrl = Api.API_URLS.get(Api.API_TOPICS_SPECIFIC).concat("?id=" + id);
-            mArguments.putInt(Api.ARG_TYPE, TYPE_SPECIFIC);
-        }
-    }
-}
+//public class FeedsApi extends Api {
+//
+//    public static final int TYPE_LATEST = 0;
+//    public static final int TYPE_HOT = 1;
+//    public static final int TYPE_SPECIFIC = 2;
+//
+//    public FeedsApi(Context context, int type) {
+//        this(context, type, null);
+//    }
+//
+//    public FeedsApi(Context context, int type, Bundle params) {
+//        mContext = context;
+//        if (params != null) {
+//            mArguments = params;
+//        } else {
+//            mArguments = new Bundle();
+//        }
+//        mArguments.putString(V2exDataHandler.ARG_DATA_KEY, V2exDataHandler.DATA_KEY_FEEDS);
+//        if (type == TYPE_LATEST) {
+//            mUrl = Api.API_URLS.get(Api.API_TOPICS_LATEST);
+//            mArguments.putInt(Api.ARG_TYPE, TYPE_LATEST);
+//
+//        } else if (type == TYPE_HOT) {
+//            mUrl = Api.API_URLS.get(Api.API_TOPICS_HOT);
+//            mArguments.putInt(Api.ARG_TYPE, TYPE_HOT);
+//
+//        } else {
+//            String id = null;
+//            if (params != null) {
+//                id = params.getString(Api.ARG_API_PARAMS_ID, null);
+//            }
+//            mUrl = Api.API_URLS.get(Api.API_TOPICS_SPECIFIC).concat("?id=" + id);
+//            mArguments.putInt(Api.ARG_TYPE, TYPE_SPECIFIC);
+//        }
+//    }
+//}

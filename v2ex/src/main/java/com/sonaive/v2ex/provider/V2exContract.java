@@ -84,8 +84,6 @@ public class V2exContract {
         String FEED_CREATED = "feed_created";
         String FEED_LAST_MODIFIED = "feed_last_modified";
         String FEED_LAST_TOUCHED = "feed_last_touched";
-        /** The feed type(latest, hot, etc.) */
-        String FEED_TYPE = "feed_type";
         /** The hashcode of the data used to create this record. */
         String FEED_IMPORT_HASHCODE = "feed_import_hashcode";
     }
