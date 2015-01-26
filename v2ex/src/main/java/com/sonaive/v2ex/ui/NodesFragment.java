@@ -86,9 +86,6 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         mAdapter = new NodeCursorAdapter(getActivity(), null, 0);
         mAdapter.setOnLoadMoreDataListener(this);
         loaderArgs = new Bundle();
-        Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
-        SyncHelper.requestManualSync(getActivity(), args);
     }
 
     @Override

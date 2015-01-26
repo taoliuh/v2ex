@@ -49,6 +49,7 @@ public class NodesActivity extends BaseActivity {
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
+        syncResource();
     }
 
     @Override
@@ -119,6 +120,10 @@ public class NodesActivity extends BaseActivity {
     @Override
     protected void requestDataRefresh() {
         super.requestDataRefresh();
+        syncResource();
+    }
+
+    public void syncResource() {
         Bundle args = new Bundle();
         args.putString(Api.ARG_API_NAME, Api.API_NODES_ALL);
         SyncHelper.requestManualSync(this, args);
