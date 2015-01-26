@@ -25,6 +25,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.sonaive.v2ex.io.model.Review;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.sync.api.Api;
@@ -50,7 +51,7 @@ public class ReviewsHandler extends JSONHandler {
 
     private int page = 1;
 
-    private int topicId;
+    private String topicId;
 
     public ReviewsHandler(Context context) {
         super(context);
@@ -115,7 +116,12 @@ public class ReviewsHandler extends JSONHandler {
     @Override
     public String getBody(Bundle data) {
         if (data != null) {
-            topicId = data.getInt(Api.ARG_API_PARAMS_ID);
+            String requestParams = data.getString(Api.ARG_API_PARAMS);
+            JsonObject jo = new Gson().fromJson(requestParams, JsonObject.class);
+            JsonElement topicIdJsonElement = jo.get("topic_id");
+            if (topicIdJsonElement != null) {
+                topicId = topicIdJsonElement.getAsString();
+            }
             return data.getString(Api.ARG_RESULT);
         }
         return "";
@@ -162,7 +168,7 @@ public class ReviewsHandler extends JSONHandler {
 //        Uri uri = V2exContract.Reviews.CONTENT_URI.buildUpon().encodedQuery("limit=" + offset + "," + limit).build();
         Uri uri = V2exContract.Reviews.CONTENT_URI;
         Cursor cursor = mContext.getContentResolver().query(uri, ReviewHashcodeQuery.PROJECTION,
-                "review_topic_id = ?", new String[] {String.valueOf(topicId)}, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " DESC");
+                "review_topic_id = ?", new String[] {topicId}, V2exContract.Reviews.REVIEW_LAST_MODIFIED + " DESC");
         if (cursor == null) {
             LOGE(TAG, "Error querying REVIEW hashcodes (got null cursor)");
             return null;

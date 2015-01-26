@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
@@ -49,6 +50,8 @@ import com.sonaive.v2ex.widget.HeaderViewRecyclerAdapter;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
+
+import java.util.HashMap;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
@@ -113,11 +116,12 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
             mAdapter.setLoadingState(LoadingStatus.LOADING);
 
+            HashMap<String, String> params = new HashMap<>();
+            params.put("topic_id", String.valueOf(mFeed.id));
             Bundle args = new Bundle();
             args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
-            args.putInt(Api.ARG_API_PARAMS_ID, mFeed.id);
+            args.putString(Api.ARG_API_PARAMS, new Gson().toJson(params));
             SyncHelper.requestManualSync(getActivity(), args);
-
         }
     }
 

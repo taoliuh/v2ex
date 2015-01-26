@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,6 +78,7 @@ public class FeedsActivity extends BaseActivity {
             }
         }
         EventBus.getDefault().postSticky(new SimpleEvent(String.valueOf(nodeTitle == null ? "" : nodeTitle)));
+
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
@@ -90,6 +92,16 @@ public class FeedsActivity extends BaseActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         enableActionBarAutoHide((RecyclerView) findViewById(R.id.recycler_view));
+        if (nodeId != -1) {
+            Toolbar toolbar = getActionBarToolbar();
+            toolbar.setNavigationIcon(R.drawable.ic_up);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+        }
     }
 
     @Override

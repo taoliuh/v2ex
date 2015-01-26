@@ -47,7 +47,7 @@ public class Api {
 
     public static final String ARG_TYPE = "arg_type";
     public static final String ARG_RESULT = "arg_result";
-    public static final String ARG_API_PARAMS_ID = "arg_params_id";
+//    public static final String ARG_API_PARAMS_ID = "arg_params_id";
     public static final String ARG_API_NAME = "arg_api_name";
     public static final String ARG_API_PARAMS = "arg_params";
 
