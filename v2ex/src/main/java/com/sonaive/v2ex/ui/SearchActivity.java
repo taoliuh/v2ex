@@ -205,13 +205,13 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
             args.putInt("menu", ITEM_SEARCH);
             requestQueryUpdate(args);
             if (actionSearch == EXTRA_SEARCH_FEEDS) {
-                fm.beginTransaction().show(mFeedsFragment).hide(mSearchFragment).commit();
+                fm.beginTransaction().show(mFeedsFragment).hide(mSearchFragment).remove(mNodesFragment).commit();
                 feedsFrgContainer.setVisibility(View.VISIBLE);
                 if (null != mFeedsFragment) {
                     mFeedsFragment.requestQueryUpdate(args);
                 }
             } else if (actionSearch == EXTRA_SEARCH_NODES) {
-                fm.beginTransaction().show(mNodesFragment).hide(mSearchFragment).commit();
+                fm.beginTransaction().show(mNodesFragment).hide(mSearchFragment).remove(mFeedsFragment).commit();
                 nodesFrgContainer.setVisibility(View.VISIBLE);
                 if (null != mNodesFragment) {
                     mNodesFragment.requestQueryUpdate(args);

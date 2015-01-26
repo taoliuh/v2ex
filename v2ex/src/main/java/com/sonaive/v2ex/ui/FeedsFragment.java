@@ -90,9 +90,6 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         mAdapter = new FeedCursorAdapter(getActivity(), null, 0);
         mAdapter.setOnLoadMoreDataListener(this);
         loaderArgs = new Bundle();
-        // Initializes the CursorLoader, the loader id must starts from 1, because
-        // The BaseActivity already takes 0 loader id.
-        getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
     @Override
@@ -108,6 +105,14 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
         mRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Initializes the CursorLoader, the loader id must starts from 1, because
+        // The BaseActivity already takes 0 loader id.
+        getLoaderManager().initLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
     @Override
@@ -254,7 +259,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
                 V2exContract.Feeds.FEED_MEMBER,
                 V2exContract.Feeds.FEED_NODE,
                 V2exContract.Feeds.FEED_REPLIES,
-                V2exContract.Feeds.FEED_CREATED
+                V2exContract.Feeds.FEED_LAST_MODIFIED
         };
 
         int _ID = 0;

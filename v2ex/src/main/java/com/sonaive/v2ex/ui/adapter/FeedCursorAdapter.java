@@ -81,7 +81,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
         if (cursor != null) {
             String title = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
             String content = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_CONTENT));
-            String time = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_CREATED));
+            String time = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_LAST_MODIFIED));
             String replies = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_REPLIES));
             String memberJson = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_MEMBER));
             String nodeJson = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_NODE));
@@ -174,7 +174,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
         String feedMember = cursor.getString(FeedsQuery.FEED_MEMBER);
         String feedNode = cursor.getString(FeedsQuery.FEED_NODE);
         int feedReplies = cursor.getInt(FeedsQuery.FEED_REPLIES);
-        long feedCreated = cursor.getLong(FeedsQuery.FEED_CREATED);
+        long lastModified = cursor.getLong(FeedsQuery.FEED_LAST_MODIFIED);
 
         Feed feed = new Feed();
         feed.id = feedId;
@@ -184,7 +184,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
         feed.member = ModelUtils.getAuthor(feedMember);
         feed.node = ModelUtils.getNode(feedNode);
         feed.replies = feedReplies;
-        feed.created = feedCreated;
+        feed.last_modified = lastModified;
 
         return feed;
     }
@@ -199,7 +199,7 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
                 V2exContract.Feeds.FEED_MEMBER,
                 V2exContract.Feeds.FEED_NODE,
                 V2exContract.Feeds.FEED_REPLIES,
-                V2exContract.Feeds.FEED_CREATED
+                V2exContract.Feeds.FEED_LAST_MODIFIED
         };
 
         int _ID = 0;
@@ -210,6 +210,6 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
         int FEED_MEMBER = 5;
         int FEED_NODE = 6;
         int FEED_REPLIES = 7;
-        int FEED_CREATED = 8;
+        int FEED_LAST_MODIFIED = 8;
     }
 }
