@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -84,7 +85,6 @@ public class FeedsActivity extends BaseActivity {
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
         registerHideableHeaderView(mButterBar);
-
         syncResource();
     }
 
@@ -93,6 +93,7 @@ public class FeedsActivity extends BaseActivity {
         super.onPostCreate(savedInstanceState);
         enableActionBarAutoHide((RecyclerView) findViewById(R.id.recycler_view));
         if (nodeId != -1) {
+            setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             Toolbar toolbar = getActionBarToolbar();
             toolbar.setNavigationIcon(R.drawable.ic_up);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -101,6 +102,8 @@ public class FeedsActivity extends BaseActivity {
                     finish();
                 }
             });
+        } else {
+            setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
     }
 

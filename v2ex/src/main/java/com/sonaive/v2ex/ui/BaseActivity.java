@@ -441,6 +441,11 @@ public class BaseActivity extends ActionBarActivity implements
         }
     }
 
+    protected void setDrawerLockMode(int lockMode) {
+        ScrollView navContent = (ScrollView) findViewById(R.id.navdrawer);
+        mDrawerLayout.setDrawerLockMode(lockMode, navContent);
+    }
+
     // Returns whether we are connected to the internet.
     protected boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(
