@@ -41,7 +41,6 @@ import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
-import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**

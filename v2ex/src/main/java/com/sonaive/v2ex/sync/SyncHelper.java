@@ -153,15 +153,12 @@ public class SyncHelper {
                 userIdentityApi.verifyUserIdentity(accountName);
                 break;
             }
-            case Api.API_TOPICS_LATEST: {
-                Api latestFeedsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_FEEDS);
+            case Api.API_TOPICS_LATEST:
+            case Api.API_TOPICS_HOT:
+            case Api.API_TOPICS_SPECIFIC: {
+                Api feedsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_FEEDS);
                 // save the remote data to the database
-                mDataHandler.applyData(new Bundle[] {latestFeedsApi.sync(Api.HttpMethod.GET)});
-                break;
-            }
-            case Api.API_TOPICS_HOT: {
-                Api hotFeedsApi = new Api(mContext, args, api, V2exDataHandler.DATA_KEY_FEEDS);
-                mDataHandler.applyData(new Bundle[] {hotFeedsApi.sync(Api.HttpMethod.GET)});
+                mDataHandler.applyData(new Bundle[] {feedsApi.sync(Api.HttpMethod.GET)});
                 break;
             }
             case Api.API_NODES_ALL: {

@@ -18,14 +18,12 @@ package com.sonaive.v2ex.ui;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,15 +35,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
-import com.sonaive.v2ex.io.model.Feed;
 import com.sonaive.v2ex.provider.V2exContract;
-import com.sonaive.v2ex.sync.SyncHelper;
-import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.adapter.FeedCursorAdapter;
 import com.sonaive.v2ex.ui.event.SimpleEvent;
 import com.sonaive.v2ex.ui.widgets.FlexibleRecyclerView;
-import com.sonaive.v2ex.ui.widgets.RecyclerItemClickListener;
-import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.util.UIUtils;
 import com.sonaive.v2ex.widget.LoadingStatus;
 import com.sonaive.v2ex.widget.OnLoadMoreDataListener;
@@ -77,7 +70,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
 
     Bundle loaderArgs;
     String keyword;
-    String nodeId;
+    String nodeTitle = "";
 
     private Handler mHandler = new Handler() {
 
@@ -120,7 +113,7 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().registerSticky(this);
     }
 
     @Override
@@ -130,7 +123,9 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
     }
 
     public void onEvent(SimpleEvent event) {
-        nodeId = event.eventMessage;
+        EventBus.getDefault().removeStickyEvent(event);
+        nodeTitle = event.eventMessage;
+        getLoaderManager().restartLoader(1, buildQueryParameter(), new FeedLoaderCallback());
     }
 
     public void setContentTopClearance(final int clearance, final boolean isActionbarShown) {
@@ -198,9 +193,11 @@ public class FeedsFragment extends Fragment implements OnLoadMoreDataListener {
             String selectionClause = null;
             if (keyword != null && !keyword.trim().isEmpty()) {
                 selectionClause = "feed_title LIKE '%" + keyword + "%'";
+            } else if (!nodeTitle.isEmpty()) {
+                selectionClause = "feed_node LIKE '%" + nodeTitle + "%'";
             }
             return new CursorLoader(getActivity(), uri,
-                    FeedsQuery.PROJECTION, selectionClause, null, V2exContract.Feeds.FEED_ID + " DESC");
+                    FeedsQuery.PROJECTION, selectionClause, null, V2exContract.Feeds.FEED_LAST_MODIFIED + " DESC");
         }
 
         @Override

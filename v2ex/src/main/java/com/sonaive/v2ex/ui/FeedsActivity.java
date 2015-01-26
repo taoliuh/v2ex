@@ -24,10 +24,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.gson.Gson;
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.sync.ExceptionEvent;
 import com.sonaive.v2ex.sync.SyncHelper;
 import com.sonaive.v2ex.sync.api.Api;
+import com.sonaive.v2ex.ui.event.SimpleEvent;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.UIUtils;
 
@@ -43,14 +45,17 @@ import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 public class FeedsActivity extends BaseActivity {
     private static final String TAG = makeLogTag(FeedsActivity.class);
     private static final String ARG_NODE_ID = "node_id";
+    private static final String ARG_NODE_TITLE = "node_title";
 
     private DrawShadowFrameLayout mDrawShadowFrameLayout;
     private View mButterBar;
     private FeedsFragment mFrag;
     private int nodeId;
+    private String nodeTitle;
 
-    public Intent getCallingIntent(Context context, int nodeId) {
+    public static Intent getCallingIntent(Context context, String nodeTitle, int nodeId) {
         Intent intent = new Intent(context, FeedsActivity.class);
+        intent.putExtra(ARG_NODE_TITLE, nodeTitle);
         intent.putExtra(ARG_NODE_ID, nodeId);
         return intent;
     }
@@ -61,22 +66,24 @@ public class FeedsActivity extends BaseActivity {
         setContentView(R.layout.activity_feeds);
         if (savedInstanceState != null) {
             nodeId = savedInstanceState.getInt(ARG_NODE_ID);
+            nodeTitle = savedInstanceState.getString(ARG_NODE_TITLE);
         } else {
             if (getIntent() != null) {
                 nodeId = getIntent().getIntExtra(ARG_NODE_ID, -1);
+                nodeTitle = getIntent().getStringExtra(ARG_NODE_TITLE);
             } else {
                 nodeId = -1;
+                nodeTitle = "";
             }
         }
+        EventBus.getDefault().postSticky(new SimpleEvent(String.valueOf(nodeTitle == null ? "" : nodeTitle)));
         mButterBar = findViewById(R.id.butter_bar);
         mDrawShadowFrameLayout = (DrawShadowFrameLayout) findViewById(R.id.main_content);
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
         registerHideableHeaderView(mButterBar);
 
-        Bundle args = new Bundle();
-        args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-        SyncHelper.requestManualSync(this, args);
+        syncResource();
     }
 
     @Override
@@ -89,6 +96,7 @@ public class FeedsActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(ARG_NODE_ID, nodeId);
+        outState.putString(ARG_NODE_TITLE, nodeTitle);
     }
 
     @Override
@@ -150,18 +158,29 @@ public class FeedsActivity extends BaseActivity {
         super.requestDataRefresh();
         invalidateOptionsMenu();
         if (!checkShowNoNetworkButterBar()) {
-            Bundle args = new Bundle();
-            args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
-            SyncHelper.requestManualSync(this, args);
+            syncResource();
         } else {
             onRefreshingStateChanged(false);
         }
-
     }
 
     @Override
     protected void onNetworkChange() {
         checkShowNoNetworkButterBar();
+    }
+
+    public void syncResource() {
+        HashMap<String, String> params = new HashMap<>();
+        Bundle args = new Bundle();
+
+        if (nodeId != -1) {
+            args.putString(Api.ARG_API_NAME, Api.API_TOPICS_SPECIFIC);
+            params.put("node_id", String.valueOf(nodeId));
+            args.putString(Api.ARG_API_PARAMS, new Gson().toJson(params));
+        } else {
+            args.putString(Api.ARG_API_NAME, Api.API_TOPICS_LATEST);
+        }
+        SyncHelper.requestManualSync(this, args);
     }
 
     public void onEventMainThread(ExceptionEvent event) {

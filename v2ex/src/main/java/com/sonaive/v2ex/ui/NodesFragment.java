@@ -102,9 +102,9 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
             public void onItemClick(View view, int position) {
                 Cursor cursor = mAdapter.getCursor();
                 if (cursor != null && cursor.moveToPosition(position)) {
-                    Intent intent = new Intent(getActivity(), FeedsActivity.class);
+                    String nodeTitle = cursor.getString(cursor.getColumnIndex(V2exContract.Nodes.NODE_TITLE));
                     int nodeId = cursor.getInt(cursor.getColumnIndex(V2exContract.Nodes.NODE_ID));
-                    intent.putExtra("node_id", nodeId);
+                    Intent intent = FeedsActivity.getCallingIntent(getActivity(), nodeTitle, nodeId);
                     startActivity(intent);
                 }
             }
@@ -200,6 +200,7 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
 
     private static final String[] PROJECTION = {
             V2exContract.Nodes._ID,
+            V2exContract.Nodes.NODE_ID,
             V2exContract.Nodes.NODE_TITLE,
             V2exContract.Nodes.NODE_HEADER,
             V2exContract.Nodes.NODE_TOPICS
