@@ -41,14 +41,20 @@ import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
+import static com.sonaive.v2ex.util.LogUtils.LOGD;
+import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
+
 /**
  * Created by liutao on 12/18/14.
  */
 public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter.ViewHolder> {
 
+    private static final String TAG = makeLogTag(FeedCursorAdapter.class);
+
     Context mContext;
 
     ImageLoader mImageLoader;
+    Cursor mCursor;
 
     /**
      * Recommended constructor.
@@ -61,11 +67,18 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
     public FeedCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         mImageLoader = new ImageLoader(context);
+        mCursor = c;
         mContext = context;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final Cursor cursor) {
+    public Cursor swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        return super.swapCursor(newCursor);
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         if (cursor != null) {
             String title = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_TITLE));
             String content = cursor.getString(cursor.getColumnIndex(V2exContract.Feeds.FEED_CONTENT));
@@ -76,6 +89,19 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
 
             Member member = ModelUtils.getAuthor(memberJson);
             Node node = ModelUtils.getNode(nodeJson);
+            holder.card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCursor != null && mCursor.moveToPosition(holder.getPosition())) {
+                        Intent intent = new Intent(mContext, FeedDetailActivity.class);
+                        Bundle bundle = new Bundle();
+                        Parcelable feed = cursor2Parcelable(mCursor);
+                        bundle.putParcelable("feed", feed);
+                        intent.putExtra("bundle", bundle);
+                        mContext.startActivity(intent);
+                    }
+                }
+            });
             holder.title.setText(title);
             if (content != null) {
                 holder.content.setVisibility(View.VISIBLE);
@@ -139,5 +165,52 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
             replies = (TextView) view.findViewById(R.id.replies);
             nodeTitle = (TextView) view.findViewById(R.id.node_title);
         }
+    }
+
+    private static Parcelable cursor2Parcelable(Cursor cursor) {
+        int feedId = cursor.getInt(FeedsQuery.FEED_ID);
+        String feedTitle = cursor.getString(FeedsQuery.FEED_TITLE);
+        String feedContent = cursor.getString(FeedsQuery.FEED_CONTENT);
+        String feedContentRendered = cursor.getString(FeedsQuery.FEED_CONTENT_RENDERED);
+        String feedMember = cursor.getString(FeedsQuery.FEED_MEMBER);
+        String feedNode = cursor.getString(FeedsQuery.FEED_NODE);
+        int feedReplies = cursor.getInt(FeedsQuery.FEED_REPLIES);
+        long feedCreated = cursor.getLong(FeedsQuery.FEED_CREATED);
+
+        Feed feed = new Feed();
+        feed.id = feedId;
+        feed.title = feedTitle;
+        feed.content = feedContent;
+        feed.content_rendered = feedContentRendered;
+        feed.member = ModelUtils.getAuthor(feedMember);
+        feed.node = ModelUtils.getNode(feedNode);
+        feed.replies = feedReplies;
+        feed.created = feedCreated;
+
+        return feed;
+    }
+
+    private interface FeedsQuery {
+        String[] PROJECTION = {
+                BaseColumns._ID,
+                V2exContract.Feeds.FEED_ID,
+                V2exContract.Feeds.FEED_TITLE,
+                V2exContract.Feeds.FEED_CONTENT,
+                V2exContract.Feeds.FEED_CONTENT_RENDERED,
+                V2exContract.Feeds.FEED_MEMBER,
+                V2exContract.Feeds.FEED_NODE,
+                V2exContract.Feeds.FEED_REPLIES,
+                V2exContract.Feeds.FEED_CREATED
+        };
+
+        int _ID = 0;
+        int FEED_ID = 1;
+        int FEED_TITLE = 2;
+        int FEED_CONTENT = 3;
+        int FEED_CONTENT_RENDERED = 4;
+        int FEED_MEMBER = 5;
+        int FEED_NODE = 6;
+        int FEED_REPLIES = 7;
+        int FEED_CREATED = 8;
     }
 }
