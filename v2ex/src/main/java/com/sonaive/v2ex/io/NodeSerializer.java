@@ -34,7 +34,7 @@ public class NodeSerializer implements JsonSerializer<Node> {
         result.add("id", new JsonPrimitive(src.id));
         result.add("name", new JsonPrimitive(src.name));
         result.add("title", new JsonPrimitive(src.title));
-        result.add("title_alternative", new JsonPrimitive(src.title_alternative));
+        result.add("title_alternative", new JsonPrimitive(src.title_alternative == null ?  "" : src.title_alternative));
         result.add("url", new JsonPrimitive(src.url));
         result.add("topics", new JsonPrimitive(src.topics));
         result.add("avatar_mini", new JsonPrimitive(src.avatar_mini));
