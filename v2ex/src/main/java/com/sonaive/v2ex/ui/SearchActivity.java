@@ -183,6 +183,12 @@ public class SearchActivity extends BaseActivity implements OnQueryListener {
 
     private void onQuery(final String s) {
 
+        if (mSearchFragment == null || mFeedsFragment == null || mNodesFragment == null) {
+            mFeedsFragment = (FeedsFragment) getFragmentManager().findFragmentById(R.id.feeds_fragment);
+            mNodesFragment = (NodesFragment) getFragmentManager().findFragmentById(R.id.nodes_fragment);
+            mSearchFragment = (SearchFragment) getFragmentManager().findFragmentById(R.id.search_fragment);
+        }
+
         if (s.trim().isEmpty()) {
             if (actionSearch == EXTRA_SEARCH_FEEDS) {
                 fm.beginTransaction().show(mSearchFragment).hide(mFeedsFragment).commit();
