@@ -19,7 +19,7 @@
     <string name="noun_reply">个回复</string>
     <string name="error_network_unavailable">网络不可用</string>
     <string name="close">关闭</string>
-    <string name="no_data">数据列表为空</string>
+    <string name="no_data">暂无数据</string>
 
     <!-- Menu item that allows the user to start a search for a session by name. After clicking,
     they type in their search query. -->

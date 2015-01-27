@@ -16,7 +16,9 @@
 package com.sonaive.v2ex.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.ui.FeedsActivity;
 import com.sonaive.v2ex.widget.CursorAdapter;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
@@ -34,6 +37,9 @@ import com.sonaive.v2ex.widget.PaginationCursorAdapter;
  * Created by liutao on 12/15/14.
  */
 public class NodeCursorAdapter extends PaginationCursorAdapter<NodeCursorAdapter.ViewHolder> {
+
+    private Context mContext;
+    private Cursor mCursor;
 
     /**
      * Recommended constructor.
@@ -45,10 +51,18 @@ public class NodeCursorAdapter extends PaginationCursorAdapter<NodeCursorAdapter
      */
     public NodeCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+        mContext = context;
+        mCursor = c;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public Cursor swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        return super.swapCursor(newCursor);
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         if (cursor != null) {
             String title = cursor.getString(cursor.getColumnIndex(V2exContract.Nodes.NODE_TITLE));
             String header = cursor.getString(cursor.getColumnIndex(V2exContract.Nodes.NODE_HEADER));
@@ -61,6 +75,18 @@ public class NodeCursorAdapter extends PaginationCursorAdapter<NodeCursorAdapter
                 holder.header.setText(Html.fromHtml(header));
             }
             holder.topics.setText(topics + "  topics");
+            holder.card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCursor != null && mCursor.moveToPosition(holder.getPosition())) {
+                        String nodeTitle = mCursor.getString(mCursor.getColumnIndex(V2exContract.Nodes.NODE_TITLE));
+                        int nodeId = mCursor.getInt(mCursor.getColumnIndex(V2exContract.Nodes.NODE_ID));
+                        Intent intent = FeedsActivity.getCallingIntent(mContext, nodeTitle, nodeId);
+                        mContext.startActivity(intent);
+                    }
+
+                }
+            });
         }
     }
 
@@ -80,11 +106,13 @@ public class NodeCursorAdapter extends PaginationCursorAdapter<NodeCursorAdapter
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        public CardView card;
         public TextView title;
         public TextView header;
         public TextView topics;
         public ViewHolder(View view) {
             super(view);
+            card = (CardView) view.findViewById(R.id.card_container);
             title = (TextView) view.findViewById(R.id.title);
             header = (TextView) view.findViewById(R.id.header);
             topics = (TextView) view.findViewById(R.id.topics_num);

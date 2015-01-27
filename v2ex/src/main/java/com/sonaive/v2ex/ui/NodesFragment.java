@@ -94,18 +94,6 @@ public class NodesFragment extends Fragment implements OnLoadMoreDataListener {
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Cursor cursor = mAdapter.getCursor();
-                if (cursor != null && cursor.moveToPosition(position)) {
-                    String nodeTitle = cursor.getString(cursor.getColumnIndex(V2exContract.Nodes.NODE_TITLE));
-                    int nodeId = cursor.getInt(cursor.getColumnIndex(V2exContract.Nodes.NODE_ID));
-                    Intent intent = FeedsActivity.getCallingIntent(getActivity(), nodeTitle, nodeId);
-                    startActivity(intent);
-                }
-            }
-        }));
         mRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) root.findViewById(android.R.id.empty);
         return root;
