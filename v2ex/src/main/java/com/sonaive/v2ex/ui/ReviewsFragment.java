@@ -26,6 +26,7 @@ import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -95,9 +96,15 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         mFeed = args.getParcelable("feed");
         initHeader(header);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        if (UIUtils.isTablet(getActivity())) {
+            StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setFullSpan(true);
+            header.setLayoutParams(layoutParams);
+            mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(R.integer.feeds_columns), StaggeredGridLayoutManager.VERTICAL);
+        } else {
+            mLayoutManager = new LinearLayoutManager(getActivity());
+        }
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         headerAdapter = new HeaderViewRecyclerAdapter(mAdapter);
         headerAdapter.addHeaderView(header);
         headerAdapter.addFooterView(footer);
@@ -194,7 +201,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             if (mFeed.member != null) {
                 nodeTitle.setText(mFeed.node.title);
             }
-            time.setText(DateUtils.getRelativeTimeSpanString(mFeed.created * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
+            time.setText(DateUtils.getRelativeTimeSpanString(mFeed.last_modified * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
             replies.setText(mFeed.replies + getString(R.string.noun_reply));
         }
     }
