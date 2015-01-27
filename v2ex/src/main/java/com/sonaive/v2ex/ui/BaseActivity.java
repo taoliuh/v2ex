@@ -135,11 +135,10 @@ public class BaseActivity extends ActionBarActivity implements
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
-    protected static final int ITEM_MAIN = -4;
-    protected static final int ITEM_SEARCH = -5;
+    protected static final int ITEM_SEARCH = -4;
 
     // titles for navdrawer items (indices must correspond to the above)
-    private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
+    private static final int[] NAVDRAWER_TITLE_RES_ID = new int[] {
             R.string.menu_latest_feeds,
             R.string.menu_all_nodes,
             R.string.menu_picasa,

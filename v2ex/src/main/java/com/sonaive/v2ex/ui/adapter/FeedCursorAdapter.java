@@ -37,7 +37,6 @@ import com.sonaive.v2ex.io.model.Member;
 import com.sonaive.v2ex.io.model.Node;
 import com.sonaive.v2ex.provider.V2exContract;
 import com.sonaive.v2ex.ui.FeedDetailActivity;
-import com.sonaive.v2ex.ui.FeedsActivity;
 import com.sonaive.v2ex.util.ImageLoader;
 import com.sonaive.v2ex.util.ModelUtils;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
@@ -123,15 +122,6 @@ public class FeedCursorAdapter extends PaginationCursorAdapter<FeedCursorAdapter
             
             if (node != null) {
                 holder.nodeTitle.setText(node.title);
-                holder.nodeTitle.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mCursor != null && mCursor.moveToPosition(holder.getPosition())) {
-                            Intent intent = FeedsActivity.getCallingIntent(mContext, node.title, node.id);
-                            mContext.startActivity(intent);
-                        }
-                    }
-                });
             }
             
             holder.time.setText(DateUtils.getRelativeTimeSpanString(Long.valueOf(time) * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));

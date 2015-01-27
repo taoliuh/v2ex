@@ -18,12 +18,14 @@ package com.sonaive.v2ex.ui;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -97,9 +99,13 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         initHeader(header);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         if (UIUtils.isTablet(getActivity())) {
-            StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setFullSpan(true);
-            header.setLayoutParams(layoutParams);
+            StaggeredGridLayoutManager.LayoutParams headerLayoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            headerLayoutParams.setFullSpan(true);
+            header.setLayoutParams(headerLayoutParams);
+
+            StaggeredGridLayoutManager.LayoutParams footerLayoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            footerLayoutParams.setFullSpan(true);
+            footer.setLayoutParams(footerLayoutParams);
             mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(R.integer.feeds_columns), StaggeredGridLayoutManager.VERTICAL);
         } else {
             mLayoutManager = new LinearLayoutManager(getActivity());
@@ -176,6 +182,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     private void initHeader(View header) {
         if (mFeed != null) {
             ImageLoader imageLoader = new ImageLoader(getActivity(), R.drawable.person_image_empty);
+            CardView cardView = (CardView) header.findViewById(R.id.nodeCard);
             TextView title = (TextView) header.findViewById(R.id.title);
             HtmlTextView content = (HtmlTextView) header.findViewById(R.id.content);
             ImageView avatar = (ImageView) header.findViewById(R.id.avatar);
@@ -198,8 +205,15 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
                 name.setText(mFeed.member.username);
             }
 
-            if (mFeed.member != null) {
+            if (mFeed.node != null) {
                 nodeTitle.setText(mFeed.node.title);
+                cardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = FeedsActivity.getCallingIntent(getActivity(), mFeed.node.title, mFeed.node.id);
+                        startActivity(intent);
+                    }
+                });
             }
             time.setText(DateUtils.getRelativeTimeSpanString(mFeed.last_modified * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
             replies.setText(mFeed.replies + getString(R.string.noun_reply));

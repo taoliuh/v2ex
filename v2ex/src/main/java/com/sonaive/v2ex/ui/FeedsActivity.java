@@ -15,10 +15,12 @@
  */
 package com.sonaive.v2ex.ui;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.IntentCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -201,6 +203,15 @@ public class FeedsActivity extends BaseActivity {
     public void onEventMainThread(ExceptionEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
         showExceptionButterBar(event);
+    }
+
+    /**
+     * Feed fragment is an embedded fragment which may cause unexpected bug.
+     */
+    public void removeFragment() {
+        if (mFrag != null) {
+            getFragmentManager().beginTransaction().remove(mFrag).commit();
+        }
     }
 
     public void updateSwipeRefreshProgressbarTopClearence() {

@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.sonaive.v2ex.R;
 import com.sonaive.v2ex.provider.V2exContract;
+import com.sonaive.v2ex.ui.BaseActivity;
 import com.sonaive.v2ex.ui.FeedsActivity;
 import com.sonaive.v2ex.widget.CursorAdapter;
 import com.sonaive.v2ex.widget.PaginationCursorAdapter;
