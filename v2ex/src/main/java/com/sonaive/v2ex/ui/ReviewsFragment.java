@@ -56,6 +56,8 @@ import com.sonaive.v2ex.widget.PaginationCursorAdapter;
 
 import java.util.HashMap;
 
+import de.greenrobot.event.EventBus;
+
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
@@ -68,6 +70,7 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
     FlexibleRecyclerView mRecyclerView = null;
     TextView mEmptyView = null;
+    View header;
     View footer;
 
     ReviewCursorAdapter mAdapter;
@@ -91,12 +94,9 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
-        View header = inflater.inflate(R.layout.item_feed_detail, container, false);
+        header = inflater.inflate(R.layout.item_feed_detail, container, false);
         footer = inflater.inflate(R.layout.item_footer, container, false);
 
-        Bundle args = getArguments();
-        mFeed = args.getParcelable("feed");
-        initHeader(header);
         mRecyclerView = (FlexibleRecyclerView) root.findViewById(R.id.recycler_view);
         if (UIUtils.isTablet(getActivity())) {
             StaggeredGridLayoutManager.LayoutParams headerLayoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -108,6 +108,11 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
             footer.setLayoutParams(footerLayoutParams);
             mLayoutManager = new StaggeredGridLayoutManager(getResources().getInteger(R.integer.feeds_columns), StaggeredGridLayoutManager.VERTICAL);
         } else {
+            RecyclerView.LayoutParams headerLayoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            header.setLayoutParams(headerLayoutParams);
+
+            RecyclerView.LayoutParams footerLayoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            footer.setLayoutParams(footerLayoutParams);
             mLayoutManager = new LinearLayoutManager(getActivity());
         }
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -120,22 +125,15 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (!((FeedDetailActivity) getActivity()).checkShowNoNetworkButterBar()) {
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().registerSticky(this);
+    }
 
-            // Set progress bar refreshing.
-            ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
-            ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
-            mAdapter.setLoadingState(LoadingStatus.LOADING);
-
-            HashMap<String, String> params = new HashMap<>();
-            params.put("topic_id", String.valueOf(mFeed.id));
-            Bundle args = new Bundle();
-            args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
-            args.putString(Api.ARG_API_PARAMS, new Gson().toJson(params));
-            SyncHelper.requestManualSync(getActivity(), args);
-        }
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -144,6 +142,28 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
         // Initializes the CursorLoader, the loader id must starts from 1, because
         // The BaseActivity already takes 0 loader id.
         getLoaderManager().initLoader(1, buildQueryParameter(), new ReviewsLoaderCallback());
+    }
+
+    public void onEvent(Bundle bundle) {
+        EventBus.getDefault().removeStickyEvent(bundle);
+        if (bundle != null) {
+            mFeed = bundle.getParcelable("feed");
+            initHeader(header);
+            if (!((FeedDetailActivity) getActivity()).checkShowNoNetworkButterBar()) {
+
+                // Set progress bar refreshing.
+                ((FeedDetailActivity) getActivity()).updateSwipeRefreshProgressbarTopClearence();
+                ((BaseActivity) getActivity()).onRefreshingStateChanged(true);
+                mAdapter.setLoadingState(LoadingStatus.LOADING);
+
+                HashMap<String, String> params = new HashMap<>();
+                params.put("topic_id", String.valueOf(mFeed.id));
+                Bundle args = new Bundle();
+                args.putString(Api.ARG_API_NAME, Api.API_REVIEWS);
+                args.putString(Api.ARG_API_PARAMS, new Gson().toJson(params));
+                SyncHelper.requestManualSync(getActivity(), args);
+            }
+        }
     }
 
     public void setContentTopClearance(final int clearance, final boolean isActionbarShown) {

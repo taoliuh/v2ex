@@ -28,6 +28,8 @@ import com.sonaive.v2ex.sync.api.Api;
 import com.sonaive.v2ex.ui.widgets.DrawShadowFrameLayout;
 import com.sonaive.v2ex.util.UIUtils;
 
+import de.greenrobot.event.EventBus;
+
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -46,6 +48,11 @@ public class FeedDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_detail);
 
+        if (getIntent() != null) {
+            args = getIntent().getBundleExtra("bundle");
+            EventBus.getDefault().postSticky(args);
+        }
+
         Toolbar toolbar = getActionBarToolbar();
         toolbar.setNavigationIcon(R.drawable.ic_up);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -60,13 +67,6 @@ public class FeedDetailActivity extends BaseActivity {
         overridePendingTransition(0, 0);
         registerHideableHeaderView(findViewById(R.id.headerbar));
         registerHideableHeaderView(mButterBar);
-
-        if (getIntent() != null) {
-            args = getIntent().getBundleExtra("bundle");
-        }
-        mFrag = new ReviewsFragment();
-        mFrag.setArguments(args);
-        getFragmentManager().beginTransaction().add(R.id.swipe_refresh_layout, mFrag, "reviews_fragment").commit();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class FeedDetailActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
 
-        mFrag = (ReviewsFragment) getFragmentManager().findFragmentByTag("reviews_fragment");
+        mFrag = (ReviewsFragment) getFragmentManager().findFragmentById(R.id.reviews_fragment);
 
         checkShowNoNetworkButterBar();
         updateFragContentTopClearance();
@@ -153,7 +153,7 @@ public class FeedDetailActivity extends BaseActivity {
     // Updates the Feeds fragment content top clearance to take our chrome into account
     private void updateFragContentTopClearance() {
 
-        mFrag = (ReviewsFragment) getFragmentManager().findFragmentByTag("reviews_fragment");
+        mFrag = (ReviewsFragment) getFragmentManager().findFragmentById(R.id.reviews_fragment);
         if (mFrag == null) {
             return;
         }
