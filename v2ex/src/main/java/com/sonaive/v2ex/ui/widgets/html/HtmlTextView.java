@@ -18,10 +18,16 @@ package com.sonaive.v2ex.ui.widgets.html;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.widget.TextView;
 
 import java.io.InputStream;
+
+import static com.sonaive.v2ex.util.LogUtils.LOGE;
 
 public class HtmlTextView extends JellyBeanSpanFixTextView {
 
@@ -85,11 +91,31 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         } catch (RuntimeException e) {
             setText("");
         }
-
         // make links work
-        setMovementMethod(LinkMovementMethod.getInstance());
+        setMovementMethod(LinkMovementCheck.getInstance());
 
         // no flickering when clicking textview for Android < 4, but overriders color...
 //        text.setTextColor(getResources().getColor(android.R.color.secondary_text_dark_nodisable));
+    }
+
+    static class LinkMovementCheck extends LinkMovementMethod {
+
+        public static MovementMethod getInstance() {
+            if (sInstance == null)
+                sInstance = new LinkMovementCheck();
+
+            return sInstance;
+        }
+
+        private static LinkMovementCheck sInstance;
+        @Override
+        public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
+            try {
+                return super.onTouchEvent(widget, buffer, event);
+            } catch (Exception e) {
+                LOGE(TAG, "No activity found to handle displaying images!");
+                return true;
+            }
+        }
     }
 }

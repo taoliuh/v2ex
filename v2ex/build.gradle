@@ -39,4 +39,5 @@ dependencies {
     compile 'com.github.bumptech.glide:okhttp-integration:1.1.0'
     compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.github.chrisbanes.photoview:library:1.2.3'
 }

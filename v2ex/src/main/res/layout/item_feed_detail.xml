@@ -50,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="@dimen/line_spacing_extra"
                 android:scrollHorizontally="true"
+                android:autoLink="all"
                 android:visibility="gone" />
 
             <RelativeLayout

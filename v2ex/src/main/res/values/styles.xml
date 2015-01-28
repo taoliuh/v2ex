@@ -80,6 +80,12 @@
         <item name="android:textColorLink">@color/theme_accent_2</item>
     </style>
 
+    <style name="Theme.V2ex.ViewPager" parent="Theme.V2ex.WithoutNavDrawer" >
+        <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorPrimaryDark">@android:color/background_dark</item>
+        <item name="colorAccent">@color/theme_accent_3</item>
+    </style>
+
     <style name="ActionBarThemeOverlay" parent="">
         <item name="android:textColorPrimary">#fff</item>
         <item name="colorControlNormal">?actionBarIconColor</item>

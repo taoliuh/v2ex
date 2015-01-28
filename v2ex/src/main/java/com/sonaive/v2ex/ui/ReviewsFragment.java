@@ -17,6 +17,7 @@ package com.sonaive.v2ex.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.ActivityNotFoundException;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import de.greenrobot.event.EventBus;
 
 import static com.sonaive.v2ex.util.LogUtils.LOGD;
+import static com.sonaive.v2ex.util.LogUtils.LOGE;
 import static com.sonaive.v2ex.util.LogUtils.makeLogTag;
 
 /**
@@ -213,7 +215,8 @@ public class ReviewsFragment extends Fragment implements OnLoadMoreDataListener 
 
             title.setText(mFeed.title);
             content.setVisibility(View.VISIBLE);
-            content.setText(Html.fromHtml(mFeed.content_rendered, new URLImageParser(getActivity(), content), null));
+            content.setHtmlFromString(mFeed.content_rendered, false);
+//            content.setText(Html.fromHtml(mFeed.content_rendered, new URLImageParser(getActivity(), content), null));
             if (mFeed.member != null) {
                 String avatarUrl = mFeed.member.avatar_large;
                 if (avatarUrl != null) {
